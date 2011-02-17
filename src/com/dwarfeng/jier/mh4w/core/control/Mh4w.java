@@ -40,10 +40,12 @@ import com.dwarfeng.jier.mh4w.core.model.cm.DefaultFileSelectModel;
 import com.dwarfeng.jier.mh4w.core.model.cm.DefaultLoggerModel;
 import com.dwarfeng.jier.mh4w.core.model.cm.DefaultMutilangModel;
 import com.dwarfeng.jier.mh4w.core.model.cm.DefaultResourceModel;
+import com.dwarfeng.jier.mh4w.core.model.cm.DefaultStateModel;
 import com.dwarfeng.jier.mh4w.core.model.cm.FileSelectModel;
 import com.dwarfeng.jier.mh4w.core.model.cm.LoggerModel;
 import com.dwarfeng.jier.mh4w.core.model.cm.MutilangModel;
 import com.dwarfeng.jier.mh4w.core.model.cm.ResourceModel;
+import com.dwarfeng.jier.mh4w.core.model.cm.StateModel;
 import com.dwarfeng.jier.mh4w.core.model.eum.BlockKey;
 import com.dwarfeng.jier.mh4w.core.model.eum.CoreConfig;
 import com.dwarfeng.jier.mh4w.core.model.eum.LoggerStringKey;
@@ -166,8 +168,12 @@ public final class Mh4w {
 		THREAD_FACTORY.newThread(new Exitor()).start();
 	}
 
-
-
+	private boolean isReadyForCount(){
+		if(Objects.isNull(manager.getFileSelectModel().getAttendanceFile())) return false;
+		if(Objects.isNull(manager.getFileSelectModel().getWorkticketFile())) return false;
+		
+		return true;
+	}
 
 
 
@@ -182,6 +188,7 @@ public final class Mh4w {
 		private MutilangModel loggerMutilangModel = new DefaultMutilangModel();
 		private MutilangModel labelMutilangModel = new DefaultMutilangModel();
 		private FileSelectModel fileSelectModel = new DefaultFileSelectModel();
+		private StateModel stateModel = new DefaultStateModel();
 		//structs
 		private FinishedFlowTaker finishedFlowTaker = new DefaultFinishedFlowTaker(backgroundModel);
 		//obvs
@@ -221,7 +228,8 @@ public final class Mh4w {
 			protected MainFrame newMainFrameImpl() {
 				MainFrame mainFrame = new MainFrame(
 						labelMutilangModel.getMutilang(),
-						fileSelectModel
+						fileSelectModel,
+						stateModel
 				);
 				mainFrame.addObverser(mainFrameObverser);
 				return mainFrame;
@@ -296,8 +304,9 @@ public final class Mh4w {
 		 * 释放资源。
 		 */
 		public void dispose() {
-			// TODO Auto-generated method stub
-			
+			loggerModel.removeObverser(loggerObverser);
+			loggerMutilangModel.removeObverser(loggerMutilangObverser);
+			coreConfigModel.removeObverser(coreConfigObverser);
 		}
 
 		/**
@@ -354,6 +363,13 @@ public final class Mh4w {
 		 */
 		public FileSelectModel getFileSelectModel() {
 			return fileSelectModel;
+		}
+
+		/**
+		 * @return the stateModel
+		 */
+		public StateModel getStateModel() {
+			return stateModel;
 		}
 
 		/**
@@ -791,10 +807,20 @@ public final class Mh4w {
 						formatInfo(LoggerStringKey.Mh4w_FlowProvider_18, files[0].getAbsolutePath());
 					}
 					
+					//更新状态模型-是否能够进行统计了
+					manager.getStateModel().setReadyForCount(isReadyForCount());
+					
 					message(LoggerStringKey.Mh4w_FlowProvider_16);
 					
 				}catch (Exception e) {
 					message(LoggerStringKey.Mh4w_FlowProvider_14);
+				}finally {
+					Mh4wUtil.invokeInEventQueue(new Runnable() {
+						@Override
+						public void run() {
+							manager.getGuiController().attendanceClickUnlock();
+						}
+					});
 				}
 			}
 			
@@ -851,14 +877,24 @@ public final class Mh4w {
 					if(files.length == 0){
 						info(LoggerStringKey.Mh4w_FlowProvider_17);
 					}else{
-						manager.getFileSelectModel().setAttendanceFile(files[0]);
+						manager.getFileSelectModel().setWorkticketFile(files[0]);
 						formatInfo(LoggerStringKey.Mh4w_FlowProvider_18, files[0].getAbsolutePath());
 					}
+					
+					//更新状态模型-是否能够进行统计了
+					manager.getStateModel().setReadyForCount(isReadyForCount());
 					
 					message(LoggerStringKey.Mh4w_FlowProvider_20);
 					
 				}catch (Exception e) {
 					message(LoggerStringKey.Mh4w_FlowProvider_21);
+				}finally {
+					Mh4wUtil.invokeInEventQueue(new Runnable() {
+						@Override
+						public void run() {
+							manager.getGuiController().workticketClickUnlock();
+						}
+					});
 				}
 			}
 			
@@ -910,14 +946,14 @@ public final class Mh4w {
 			}
 
 			//保存核心配置
-			info(LoggerStringKey.Mh4w_Exitor_6);
+			info(LoggerStringKey.Mh4w_Exitor_7);
 			PropConfigSaver coreConfigSaver = null;
 			try{
 				try{
 					coreConfigSaver = new PropConfigSaver(getResource(ResourceKey.CONFIGURATION_CORE).openOutputStream());
 					coreConfigSaver.save(manager.getCoreConfigModel());
 				}catch (IOException e) {
-					warn(LoggerStringKey.Mh4w_Exitor_5, e);
+					warn(LoggerStringKey.Mh4w_Exitor_6, e);
 					getResource(ResourceKey.CONFIGURATION_CORE).reset();
 					coreConfigSaver = new PropConfigSaver(getResource(ResourceKey.CONFIGURATION_CORE).openOutputStream());
 					coreConfigSaver.save(manager.getCoreConfigModel());
@@ -928,7 +964,7 @@ public final class Mh4w {
 				}
 				
 			}catch (Exception e) {
-				warn(LoggerStringKey.Mh4w_Exitor_7, e);
+				warn(LoggerStringKey.Mh4w_Exitor_8, e);
 			}
 			
 			//释放界面
@@ -946,6 +982,7 @@ public final class Mh4w {
 			}
 			
 			//释放模型
+			info(LoggerStringKey.Mh4w_Exitor_5);
 			manager.dispose();
 			
 			//解除对象的引用
@@ -965,7 +1002,6 @@ public final class Mh4w {
 		private void warn(LoggerStringKey loggerStringKey, Throwable e){
 			manager.getLoggerModel().getLogger().warn(getLabel(loggerStringKey), e);
 		}
-	
 	
 		private String getLabel(LoggerStringKey loggerStringKey){
 			return manager.getLoggerMutilangModel().getMutilang().getString(loggerStringKey.getName());

@@ -14,6 +14,7 @@ public enum LabelStringKey implements Name{
 	MainFrame_1(new DefaultName("MainFrame.1")),
 	MainFrame_2(new DefaultName("MainFrame.2")),
 	MainFrame_3(new DefaultName("MainFrame.3")),
+	MainFrame_4(new DefaultName("MainFrame.4")),
 
 	;
 

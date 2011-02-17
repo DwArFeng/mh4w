@@ -49,6 +49,7 @@ public enum LoggerStringKey implements Name{
 	Mh4w_Exitor_5(new DefaultName("Mh4w.Exitor.5")),
 	Mh4w_Exitor_6(new DefaultName("Mh4w.Exitor.6")),
 	Mh4w_Exitor_7(new DefaultName("Mh4w.Exitor.7")),
+	Mh4w_Exitor_8(new DefaultName("Mh4w.Exitor.8")),
 
 	;
 

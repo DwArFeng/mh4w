@@ -1,7 +1,6 @@
 package com.dwarfeng.jier.mh4w.core.view.ctrl;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.Objects;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -9,7 +8,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
 
-import com.dwarfeng.dutil.basic.io.CT;
 import com.dwarfeng.jier.mh4w.core.model.struct.Mutilang;
 import com.dwarfeng.jier.mh4w.core.view.gui.MainFrame;
 
@@ -189,7 +187,6 @@ public abstract class AbstractGuiController implements GuiController {
 			}
 
 			int status = chooser.showOpenDialog(mainFrame);
-			CT.trace(status);
 			if(status == JFileChooser.APPROVE_OPTION){
 				if(mutiSelectionEnabled){
 					return chooser.getSelectedFiles();
@@ -203,5 +200,39 @@ public abstract class AbstractGuiController implements GuiController {
 			lock.writeLock().unlock();
 		}
 	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.dwarfeng.jier.mh4w.core.view.ctrl.GuiController#attendanceClickUnlock()
+	 */
+	@Override
+	public boolean attendanceClickUnlock() {
+		lock.writeLock().lock();
+		try{
+			if(Objects.isNull(mainFrame)) return false;
+			mainFrame.attendanceClickUnlock();
+			return true;
+		}finally {
+			lock.writeLock().unlock();
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.dwarfeng.jier.mh4w.core.view.ctrl.GuiController#workticketClickUnlock()
+	 */
+	@Override
+	public boolean workticketClickUnlock() {
+		lock.writeLock().lock();
+		try{
+			if(Objects.isNull(mainFrame)) return false;
+			mainFrame.workticketClickUnlock();
+			return true;
+		}finally {
+			lock.writeLock().unlock();
+		}
+	}
+	
+	
 	
 }

@@ -1,7 +1,13 @@
 package com.dwarfeng.jier.mh4w.core.view.gui;
 
+import java.awt.Cursor;
 import java.awt.Font;
 import java.awt.Image;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.File;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.Set;
@@ -16,22 +22,20 @@ import javax.swing.SwingConstants;
 import com.dwarfeng.dutil.basic.gui.swing.JImagePanel;
 import com.dwarfeng.dutil.basic.prog.ObverserSet;
 import com.dwarfeng.jier.mh4w.core.model.cm.FileSelectModel;
+import com.dwarfeng.jier.mh4w.core.model.cm.StateModel;
 import com.dwarfeng.jier.mh4w.core.model.eum.ImageKey;
 import com.dwarfeng.jier.mh4w.core.model.eum.ImageSize;
 import com.dwarfeng.jier.mh4w.core.model.eum.LabelStringKey;
 import com.dwarfeng.jier.mh4w.core.model.obv.FileSelectAdapter;
 import com.dwarfeng.jier.mh4w.core.model.obv.FileSelectObverser;
+import com.dwarfeng.jier.mh4w.core.model.obv.StateAdapter;
+import com.dwarfeng.jier.mh4w.core.model.obv.StateObverser;
 import com.dwarfeng.jier.mh4w.core.model.struct.Mutilang;
 import com.dwarfeng.jier.mh4w.core.model.struct.MutilangSupported;
 import com.dwarfeng.jier.mh4w.core.util.Constants;
 import com.dwarfeng.jier.mh4w.core.util.ImageUtil;
+import com.dwarfeng.jier.mh4w.core.util.Mh4wUtil;
 import com.dwarfeng.jier.mh4w.core.view.obv.MainFrameObverser;
-import java.io.File;
-import java.awt.Cursor;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 
 /**
  * 程序的主界面。
@@ -54,12 +58,21 @@ public final class MainFrame extends JFrame implements MutilangSupported, Obvers
 	private final JImagePanel attendanceFilePanel;
 	private final JImagePanel workticketFilePanel;
 	private final JLabel attendanceLabel;
-	private final JLabel workticketLabel;
+	private final JButton countButton;
 
+	private final JLabel workticketLabel;
+	
+	/*
+	 * 非 final 域。
+	 */
+	private boolean attendanceClickLock = false;
+	private boolean workticketClickLock = false;
+	
 	/*
 	 * 各模型。
 	 */
 	private FileSelectModel fileSelectModel;
+	private StateModel stateModel;
 	
 	/*
 	 * 各模型的观察器。
@@ -72,13 +85,19 @@ public final class MainFrame extends JFrame implements MutilangSupported, Obvers
 		 */
 		@Override
 		public void fireAttendanceFileChanged(File oldValue, File newValue) {
-			if(Objects.nonNull(newValue)){
-				attendanceFilePanel.setImage(xls_green);
-				attendanceFilePanel.setToolTipText(newValue.getAbsolutePath());
-			}else {
-				attendanceFilePanel.setImage(xls_red);
-				attendanceFilePanel.setToolTipText(getLabel(LabelStringKey.MainFrame_3));
-			}
+			Mh4wUtil.invokeInEventQueue(new Runnable() {
+				@Override
+				public void run() {
+					if(Objects.nonNull(newValue)){
+						attendanceFilePanel.setImage(xls_green);
+						attendanceFilePanel.setToolTipText(newValue.getAbsolutePath());
+					}else {
+						attendanceFilePanel.setImage(xls_red);
+						attendanceFilePanel.setToolTipText(getLabel(LabelStringKey.MainFrame_3));
+					}
+				}
+			});
+
 		}
 
 		/*
@@ -87,28 +106,56 @@ public final class MainFrame extends JFrame implements MutilangSupported, Obvers
 		 */
 		@Override
 		public void fireWorkticketFileChanged(File oldValue, File newValue) {
-			if(Objects.nonNull(newValue)){
-				workticketFilePanel.setImage(xls_green);
-				workticketFilePanel.setToolTipText(newValue.getAbsolutePath());
-			}else {
-				workticketFilePanel.setImage(xls_red);
-				workticketFilePanel.setToolTipText(getLabel(LabelStringKey.MainFrame_3));
-			}
+			Mh4wUtil.invokeInEventQueue(new Runnable() {
+				@Override
+				public void run() {
+					if(Objects.nonNull(newValue)){
+						workticketFilePanel.setImage(xls_green);
+						workticketFilePanel.setToolTipText(newValue.getAbsolutePath());
+					}else {
+						workticketFilePanel.setImage(xls_red);
+						workticketFilePanel.setToolTipText(getLabel(LabelStringKey.MainFrame_3));
+					}
+				}
+			});
 		}
 		
 	};
+	private final StateObverser countReadyObverser = new StateAdapter() {
+		
+		/*
+		 * (non-Javadoc)
+		 * @see com.dwarfeng.jier.mh4w.core.model.obv.StateAdapter#fireReadyForCountChanged(boolean)
+		 */
+		@Override
+		public void fireReadyForCountChanged(boolean newValue) {
+			Mh4wUtil.invokeInEventQueue(new Runnable() {
+				@Override
+				public void run() {
+					countButton.setEnabled(newValue);
+				}
+			});
+		};
+		
+	};
+	
+	
 	/**
 	 * 新实例。
 	 */
 	public MainFrame() {
-		this(Constants.getDefaultLabelMutilang(), null);
+		this(Constants.getDefaultLabelMutilang(), null, null);
 	}
 	
 	/**
 	 * 新实例。
 	 * @param mutilang
 	 */
-	public MainFrame(Mutilang mutilang, FileSelectModel fileSelectModel) {
+	public MainFrame(
+			Mutilang mutilang, 
+			FileSelectModel fileSelectModel,
+			StateModel stateModel
+			) {
 		Objects.requireNonNull(mutilang, "入口参数 mutilang 不能为 null。");
 		
 		this.mutilang = mutilang;
@@ -134,7 +181,10 @@ public final class MainFrame extends JFrame implements MutilangSupported, Obvers
 		attendanceFilePanel.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				fireSelectAttendanceFile();
+				if(! attendanceClickLock){
+					attendanceClickLock = true;
+					fireSelectAttendanceFile();
+				}
 			}
 		});
 		attendanceFilePanel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
@@ -146,7 +196,10 @@ public final class MainFrame extends JFrame implements MutilangSupported, Obvers
 		workticketFilePanel.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				fireSelectWorkticketFile();
+				if(! workticketClickLock){
+					workticketClickLock = true;
+					fireSelectWorkticketFile();
+				}
 			}
 		});
 		workticketFilePanel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
@@ -161,11 +214,11 @@ public final class MainFrame extends JFrame implements MutilangSupported, Obvers
 		workticketLabel.setBounds(245, 167, 150, 25);
 		getContentPane().add(workticketLabel);
 		
-		JButton button = new JButton();
-		button.setText((String) null);
-		button.setFont(new Font("SansSerif", Font.PLAIN, 14));
-		button.setBounds(245, 200, 150, 40);
-		getContentPane().add(button);
+		countButton = new JButton();
+		countButton.setText(getLabel(LabelStringKey.MainFrame_4));
+		countButton.setFont(new Font("SansSerif", Font.PLAIN, 14));
+		countButton.setBounds(245, 200, 150, 40);
+		getContentPane().add(countButton);
 		
 		JToggleButton toggleButton = new JToggleButton();
 		toggleButton.setToolTipText((String) null);
@@ -220,6 +273,16 @@ public final class MainFrame extends JFrame implements MutilangSupported, Obvers
 		}
 		
 		this.fileSelectModel = fileSelectModel;
+		
+		//设置统计准备模型
+		if(Objects.nonNull(stateModel)){
+			stateModel.addObverser(countReadyObverser);
+			countButton.setEnabled(stateModel.isReadyForCount());
+		}else{
+			countButton.setEnabled(false);
+		}
+		
+		this.stateModel = stateModel;
 	}
 
 	/*
@@ -326,6 +389,45 @@ public final class MainFrame extends JFrame implements MutilangSupported, Obvers
 		}
 		
 		this.fileSelectModel = fileSelectModel;
+	}
+	
+	/**
+	 * @return the countReadyModel
+	 */
+	public StateModel getStateModel() {
+		return stateModel;
+	}
+
+	/**
+	 * @param stateModel the stateModel to set
+	 */
+	public void setCountReadyModel(StateModel stateModel) {
+		if(Objects.nonNull(this.stateModel)){
+			this.stateModel.removeObverser(countReadyObverser);
+		}
+		
+		if(Objects.nonNull(stateModel)){
+			stateModel.addObverser(countReadyObverser);
+			countButton.setEnabled(stateModel.isReadyForCount());
+		}else{
+			countButton.setEnabled(false);
+		}
+		
+		this.stateModel = stateModel;
+	}
+
+	/**
+	 * 解除考勤文件面板的点击锁定。
+	 */
+	public void attendanceClickUnlock(){
+		attendanceClickLock = false;
+	}
+	
+	/**
+	 * 解除工时文件面本的点击锁定。
+	 */
+	public void workticketClickUnlock(){
+		workticketClickLock = false;
 	}
 
 	private void fireFireWindowClosing() {
