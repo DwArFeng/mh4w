@@ -11,11 +11,14 @@ import com.dwarfeng.jier.mh4w.core.model.struct.DefaultName;
 public enum BlockKey implements Name{
 	
 	INITIALIZE(new DefaultName("initialize")),
-	LOAD_LIB(new DefaultName("load_lib")),
 	CLOSING(new DefaultName("closing")),
 	SELECT_ATTENDANCE_FILE(new DefaultName("select_attendance_file")),
 	SELECT_WORKTICKET_FILE(new DefaultName("select_workticket_file")),
 	RESET_COUNT(new DefaultName("reset_count")),
+	SHOW_DETAIL_FRAME(new DefaultName("show_detail_frame")),
+	HIDE_DETAIL_FRAME(new DefaultName("hide_detail_frame")),
+	COUNT(new DefaultName("count")),
+
 	;
 
 	private Name name;

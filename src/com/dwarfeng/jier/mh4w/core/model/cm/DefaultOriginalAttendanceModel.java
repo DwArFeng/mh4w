@@ -195,43 +195,6 @@ public class DefaultOriginalAttendanceModel extends AbstractOriginalAttendanceMo
 
 	/*
 	 * (non-Javadoc)
-	 * @see java.util.List#addAll(java.util.Collection)
-	 */
-	@Override
-	public boolean addAll(Collection<? extends OriginalAttendanceData> c) {
-		lock.writeLock().lock();
-		try{
-			boolean aFlag = false;
-			for(OriginalAttendanceData originalAttendanceData : c){
-				if(notLockAdd(originalAttendanceData)) aFlag = true;
-			}
-			return aFlag;
-		}finally {
-			lock.writeLock().unlock();
-		}
-	}
-
-	
-	@Override
-	public boolean addAll(int index, Collection<? extends OriginalAttendanceData> c) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean removeAll(Collection<?> c) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean retainAll(Collection<?> c) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	/*
-	 * (non-Javadoc)
 	 * @see java.util.List#clear()
 	 */
 	@Override
@@ -405,4 +368,21 @@ public class DefaultOriginalAttendanceModel extends AbstractOriginalAttendanceMo
 		}
 	}
 
+	@Override
+	public boolean addAll(Collection<? extends OriginalAttendanceData> c) {
+		throw new UnsupportedOperationException("不支持此方法");
+	}
+	@Override
+	public boolean addAll(int index, Collection<? extends OriginalAttendanceData> c) {
+		throw new UnsupportedOperationException("不支持此方法");
+	}
+	@Override
+	public boolean removeAll(Collection<?> c) {
+		throw new UnsupportedOperationException("不支持此方法");
+	}
+	@Override
+	public boolean retainAll(Collection<?> c) {
+		throw new UnsupportedOperationException("不支持此方法");
+	}
+	
 }

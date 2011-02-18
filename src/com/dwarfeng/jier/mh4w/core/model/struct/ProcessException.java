@@ -8,7 +8,7 @@ package com.dwarfeng.jier.mh4w.core.model.struct;
  */
 public class ProcessException extends Exception{
 
-	private static final long serialVersionUID = 3395463093993235210L;
+	private static final long serialVersionUID = 1035831008327881660L;
 
 	public ProcessException() {
 	}

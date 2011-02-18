@@ -85,4 +85,43 @@ public interface GuiController extends ExternalReadWriteThreadSafe{
 	 */
 	public boolean workticketClickUnlock();
 	
+	/**
+	 * 设置详细按钮的选择状态。
+	 * @param value 指定的选择状态。
+	 * @param isAdjusting 是否属于调整。
+	 * @return 是否成功执行。
+	 */
+	public boolean setDetailButtonSelect(boolean value, boolean isAdjusting);
+	
+	/**
+	 * 新建一个详细界面。
+	 * @return 是否执行成功。
+	 */
+	public boolean newDetailFrame();
+	
+	/**
+	 * 释放详细界面。
+	 * @return 是否执行成功。
+	 */
+	public boolean disposeDetialFrame();
+	
+	/**
+	 * 是否已经拥有详细界面实例。
+	 * @return 是否拥有详细界面实例。
+	 */
+	public boolean hasDetailFrame();
+	
+	/**
+	 * 返回详细界面是否可见。
+	 * @return 详细界面是否可见。
+	 */
+	public boolean getDetailFrameVisible();
+	
+	/**
+	 * 设置详细界面的可见性。
+	 * @param aFlag 详细界面的可见性。
+	 * @return 是否执行成功。
+	 */
+	public boolean setDetailFrameVisible(boolean aFlag);
+	
 }

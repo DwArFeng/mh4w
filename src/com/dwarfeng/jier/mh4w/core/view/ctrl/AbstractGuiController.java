@@ -1,14 +1,17 @@
 package com.dwarfeng.jier.mh4w.core.view.ctrl;
 
+import java.awt.Point;
 import java.io.File;
 import java.util.Objects;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import javax.swing.JFileChooser;
+import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileFilter;
 
 import com.dwarfeng.jier.mh4w.core.model.struct.Mutilang;
+import com.dwarfeng.jier.mh4w.core.view.gui.DetailFrame;
 import com.dwarfeng.jier.mh4w.core.view.gui.MainFrame;
 
 /**
@@ -22,7 +25,7 @@ public abstract class AbstractGuiController implements GuiController {
 	protected final ReadWriteLock lock = new ReentrantReadWriteLock();
 	
 	protected MainFrame mainFrame = null;
-
+	protected DetailFrame detailFrame = null;
 	
 	
 	/* 
@@ -233,6 +236,126 @@ public abstract class AbstractGuiController implements GuiController {
 		}
 	}
 	
-	
+	/*
+	 * (non-Javadoc)
+	 * @see com.dwarfeng.jier.mh4w.core.view.ctrl.GuiController#setDetailButtonSelect(boolean, boolean)
+	 */
+	@Override
+	public boolean setDetailButtonSelect(boolean value, boolean isAdjusting) {
+		lock.writeLock().lock();
+		try{
+			if(Objects.isNull(mainFrame)) return false;
+			mainFrame.setDetailButtonSelect(value, isAdjusting);
+			return true;
+		}finally {
+			lock.writeLock().unlock();
+		}
+	}
+
+	/*
+	 *  (non-Javadoc)
+	 * @see com.dwarfeng.jier.mh4w.core.view.ctrl.GuiController#newDetailFrame()
+	 */
+	@Override
+	public boolean newDetailFrame() {
+		lock.writeLock().lock();
+		try{
+			if(Objects.isNull(detailFrame)){
+				detailFrame = newDetailFrameImpl();
+				return Objects.nonNull(detailFrame);
+			}else{
+				return false;
+			}
+		}finally {
+			lock.writeLock().unlock();
+		}
+	}
+
+	/**
+	 * 新建详细面板的实现方法。
+	 *  <p> 该方法已经在调用方法处上锁，不用单独上锁。
+	 * @return 新的详细界面。
+	 */
+	protected abstract DetailFrame newDetailFrameImpl();
+
+	/* 
+	 * (non-Javadoc)
+	 * @see com.dwarfeng.jier.mh4w.core.view.ctrl.GuiController#disposeDetialFrame()
+	 */
+	@Override
+	public boolean disposeDetialFrame() {
+		lock.writeLock().lock();
+		try{
+			if(Objects.nonNull(detailFrame)){
+				if(disposeDetailFrameImpl()){
+					detailFrame = null;
+					return true;
+				}else{
+					return false;
+				}
+			}else {
+				return false;
+			}
+		}finally {
+			lock.writeLock().unlock();
+		}
+	}
+
+	/**
+	 * 释放详细面板的实现方法。
+	 * <p> 该方法已在调用方法处上锁，不用单独上锁。
+	 * @return 是否释放成功。
+	 */
+	protected abstract boolean disposeDetailFrameImpl();
+
+	/* 
+	 * (non-Javadoc)
+	 * @see com.dwarfeng.jier.mh4w.core.view.ctrl.GuiController#hasDetailFrame()
+	 */
+	@Override
+	public boolean hasDetailFrame() {
+		lock.readLock().lock();
+		try{
+			return Objects.nonNull(detailFrame);
+		}finally {
+			lock.readLock().unlock();
+		}
+	}
+
+	/*
+	 *  (non-Javadoc)
+	 * @see com.dwarfeng.jier.mh4w.core.view.ctrl.GuiController#getDetailFrameVisible()
+	 */
+	@Override
+	public boolean getDetailFrameVisible() {
+		lock.readLock().lock();
+		try{
+			if(Objects.isNull(detailFrame)) return false;
+			return detailFrame.isVisible();
+		}finally {
+			lock.readLock().unlock();
+		}
+	}
+
+	/*
+	 *  (non-Javadoc)
+	 * @see com.dwarfeng.jier.mh4w.core.view.ctrl.GuiController#setDetailFrameVisible(boolean)
+	 */
+	@Override
+	public boolean setDetailFrameVisible(boolean aFlag) {
+		lock.writeLock().lock();
+		try{
+			if(Objects.isNull(detailFrame)) return false;
+			if(aFlag){
+				Point dest = new Point(0,0);
+				SwingUtilities.convertPointToScreen(dest, mainFrame);
+				detailFrame.setBounds(dest.x + mainFrame.getWidth(), dest.y, 700, 800);
+			}
+			detailFrame.setVisible(aFlag);
+			return true;
+		}finally {
+			lock.writeLock().unlock();
+		}
+	}
 	
 }

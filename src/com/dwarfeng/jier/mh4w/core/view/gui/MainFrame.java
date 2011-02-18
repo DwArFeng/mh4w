@@ -40,6 +40,8 @@ import com.dwarfeng.jier.mh4w.core.util.Mh4wUtil;
 import com.dwarfeng.jier.mh4w.core.view.obv.MainFrameObverser;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.ItemEvent;
 
 /**
  * 程序的主界面。
@@ -81,6 +83,7 @@ public final class MainFrame extends JFrame implements MutilangSupported, Obvers
 	 */
 	private boolean attendanceClickLock = false;
 	private boolean workticketClickLock = false;
+	private boolean detailButtonAdjusting = false;
 	
 	/*
 	 * 各模型。
@@ -268,12 +271,30 @@ public final class MainFrame extends JFrame implements MutilangSupported, Obvers
 		getContentPane().add(workticketLabel);
 		
 		countButton = new JButton();
+		countButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				fireCount();
+			}
+		});
 		countButton.setText(getLabel(LabelStringKey.MainFrame_4));
 		countButton.setFont(new Font("SansSerif", Font.PLAIN, 14));
 		countButton.setBounds(245, 200, 150, 40);
 		getContentPane().add(countButton);
 		
 		detailButton = new JToggleButton();
+		detailButton.addItemListener(new ItemListener() {
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				if(! detailButtonAdjusting){
+					if(detailButton.isSelected()){
+						fireShowDetailFrame();
+					}else{
+						fireHideDetailFrame();
+					}
+				}
+			}
+		});
 		detailButton.setToolTipText((String) null);
 		detailButton.setBounds(190, 200, 40, 40);
 		getContentPane().add(detailButton);
@@ -544,6 +565,20 @@ public final class MainFrame extends JFrame implements MutilangSupported, Obvers
 		workticketClickLock = false;
 	}
 
+	/**
+	 * 设置详细按钮的选择状态。
+	 * @param value 指定的选择状态。
+	 * @param isAdjusting 是否属于调整。
+	 */
+	public void setDetailButtonSelect(boolean value, boolean isAdjusting) {
+		try{
+			detailButtonAdjusting = isAdjusting;
+			detailButton.setSelected(value);
+		}finally {
+			detailButtonAdjusting = false;
+		}
+	}
+
 	private void fireFireWindowClosing() {
 		for(MainFrameObverser obverser : obversers){
 			if(Objects.nonNull(obverser)) obverser.fireWindowClosing();
@@ -565,6 +600,24 @@ public final class MainFrame extends JFrame implements MutilangSupported, Obvers
 	private void fireCountReset() {
 		for(MainFrameObverser obverser : obversers){
 			if(Objects.nonNull(obverser)) obverser.fireCountReset();
+		}
+	}
+
+	private void fireHideDetailFrame() {
+		for(MainFrameObverser obverser : obversers){
+			if(Objects.nonNull(obverser)) obverser.fireHideDetailFrame();
+		}
+	}
+
+	private void fireShowDetailFrame() {
+		for(MainFrameObverser obverser : obversers){
+			if(Objects.nonNull(obverser)) obverser.fireShowDetailFrame();
+		}
+	}
+	
+	private void fireCount(){
+		for(MainFrameObverser obverser : obversers){
+			if(Objects.nonNull(obverser)) obverser.fireCount();
 		}
 	}
 

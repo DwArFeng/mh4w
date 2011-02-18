@@ -2,11 +2,6 @@
 <root>
 	<key value="initialize">
 	</key>
-	<key value="load_lib">
-		<dictionary value="initialize"/>
-		<dictionary value="check_lib"/>
-		<dictionary value="closing"/>
-	</key>
 	<key value="closing">
 		<dictionary value="initialize"/>
 	</key>
@@ -20,5 +15,20 @@
 		<dictionary value="initialize"/>
 		<dictionary value="select_attendance_file"/>
 		<dictionary value="select_workticket_file"/>
+	</key>
+	<key value="show_detail_frame">
+		<dictionary value="initialize"/>
+	</key>
+	<key value="hide_detail_frame">
+		<dictionary value="initialize"/>
+	</key>
+	<key value="count">
+		<dictionary value="initialize"/>
+				<dictionary value="closing"/>
+				<dictionary value="select_attendance_file"/>
+				<dictionary value="select_workticket_file"/>
+				<dictionary value="reset_count"/>
+				<dictionary value="show_detail_frame"/>
+				<dictionary value="hide_detail_frame"/>
 	</key>
 </root>

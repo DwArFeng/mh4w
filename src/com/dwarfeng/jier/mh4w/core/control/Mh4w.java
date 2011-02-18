@@ -69,7 +69,11 @@ import com.dwarfeng.jier.mh4w.core.util.Constants;
 import com.dwarfeng.jier.mh4w.core.util.Mh4wUtil;
 import com.dwarfeng.jier.mh4w.core.view.ctrl.AbstractGuiController;
 import com.dwarfeng.jier.mh4w.core.view.ctrl.GuiController;
+import com.dwarfeng.jier.mh4w.core.view.gui.DetailFrame;
 import com.dwarfeng.jier.mh4w.core.view.gui.MainFrame;
+import com.dwarfeng.jier.mh4w.core.view.obv.DetailFrameAdapter;
+import com.dwarfeng.jier.mh4w.core.view.obv.DetailFrameObverser;
+import com.dwarfeng.jier.mh4w.core.view.obv.MainFrameAdapter;
 import com.dwarfeng.jier.mh4w.core.view.obv.MainFrameObverser;
 
 /**
@@ -237,9 +241,31 @@ public final class Mh4w {
 				mainFrame.dispose();
 				return true;
 			}
+
+			/*
+			 * (non-Javadoc)
+			 * @see com.dwarfeng.jier.mh4w.core.view.ctrl.AbstractGuiController#newDetailFrameImpl()
+			 */
+			@Override
+			protected DetailFrame newDetailFrameImpl() {
+				DetailFrame detailFrame = new DetailFrame();
+				detailFrame.addObverser(detailFrameObverser);
+				return detailFrame;
+			}
+
+			/*
+			 * (non-Javadoc)
+			 * @see com.dwarfeng.jier.mh4w.core.view.ctrl.AbstractGuiController#disposeDetailFrameImpl()
+			 */
+			@Override
+			protected boolean disposeDetailFrameImpl() {
+				detailFrame.removeObverser(detailFrameObverser);
+				detailFrame.dispose();
+				return true;
+			}
 		};
 		//GUI obversers
-		private final MainFrameObverser mainFrameObverser = new MainFrameObverser() {
+		private final MainFrameObverser mainFrameObverser = new MainFrameAdapter() {
 			
 			/*
 			 * (non-Javadoc)
@@ -276,6 +302,39 @@ public final class Mh4w {
 			public void fireCountReset() {
 				manager.getBackgroundModel().submit(flowProvider.newCountResetFlow());
 			}
+
+			/* 
+			 * (non-Javadoc)
+			 * @see com.dwarfeng.jier.mh4w.core.view.obv.MainFrameAdapter#fireHideDetailFrame()
+			 */
+			@Override
+			public void fireHideDetailFrame() {
+				manager.getBackgroundModel().submit(flowProvider.newHideDetailFrameFlow());
+			}
+
+			/* 
+			 * (non-Javadoc)
+			 * @see com.dwarfeng.jier.mh4w.core.view.obv.MainFrameAdapter#fireShowDetailFrame()
+			 */
+			@Override
+			public void fireShowDetailFrame() {
+				manager.getBackgroundModel().submit(flowProvider.newShowDetailFrameFlow());
+			}
+			
+			/*
+			 * (non-Javadoc)
+			 * @see com.dwarfeng.jier.mh4w.core.view.obv.MainFrameAdapter#fireCount()
+			 */
+			@Override
+			public void fireCount() {
+				manager.getBackgroundModel().submit(flowProvider.newCountFlow());
+			};
+			
+		};
+		private final DetailFrameObverser detailFrameObverser = new DetailFrameAdapter() {
+			
+			
+			
 		};
 		
 		
@@ -434,6 +493,30 @@ public final class Mh4w {
 		 */
 		public Flow newCountResetFlow() {
 			return new CountResetFlow();
+		}
+
+		/**
+		 * 获取一个新的显示详细面板流。
+		 * @return 新的显示详细面板流。
+		 */
+		public Flow newShowDetailFrameFlow() {
+			return new ShowDetailFrameFlow();
+		}
+
+		/**
+		 * 获取一个新的隐藏详细面板流。
+		 * @return 新的隐藏详细面板流。
+		 */
+		public Flow newHideDetailFrameFlow() {
+			return new HideDetailFrameFlow();
+		}
+
+		/**
+		 * 获取一个新的统计流。
+		 * @return 新的统计流。
+		 */
+		public Flow newCountFlow() {
+			return new CountFlow();
 		}
 
 		/**
@@ -758,6 +841,7 @@ public final class Mh4w {
 						public void run() {
 							manager.getGuiController().newMainFrame();
 							manager.getGuiController().setMainFrameVisible(true);
+							manager.getGuiController().newDetailFrame();
 						}
 					});
 					
@@ -980,6 +1064,109 @@ public final class Mh4w {
 						@Override
 						public void run() {
 							manager.getGuiController().workticketClickUnlock();
+						}
+					});
+				}
+			}
+			
+		}
+
+		private final class ShowDetailFrameFlow extends AbstractInnerFlow{
+		
+			public ShowDetailFrameFlow() {
+				super(BlockKey.SHOW_DETAIL_FRAME,manager.getLoggerMutilangModel().getMutilang().getString(LoggerStringKey.Mh4w_FlowProvider_25.getName()));
+			}
+		
+			/*
+			 * (non-Javadoc)
+			 * @see com.dwarfeng.tp.core.control.Mh4w.FlowProvider.AbstractInnerFlow#processImpl()
+			 */
+			@Override
+			protected void processImpl() {
+				try{
+					if(getState() != RuntimeState.RUNNING){
+						throw new IllegalStateException("程序还未启动或已经结束");
+					}
+					
+					info(LoggerStringKey.Mh4w_FlowProvider_25);
+					Mh4wUtil.invokeInEventQueue(new Runnable() {
+						@Override
+						public void run() {
+							manager.guiController.setDetailFrameVisible(true);
+						}
+					});
+					
+					message(LoggerStringKey.Mh4w_FlowProvider_29);
+					
+				}catch (Exception e) {
+					message(LoggerStringKey.Mh4w_FlowProvider_26);
+				}
+			}
+			
+		}
+
+		private final class HideDetailFrameFlow extends AbstractInnerFlow{
+		
+			public HideDetailFrameFlow() {
+				super(BlockKey.HIDE_DETAIL_FRAME,manager.getLoggerMutilangModel().getMutilang().getString(LoggerStringKey.Mh4w_FlowProvider_27.getName()));
+			}
+		
+			/*
+			 * (non-Javadoc)
+			 * @see com.dwarfeng.tp.core.control.Mh4w.FlowProvider.AbstractInnerFlow#processImpl()
+			 */
+			@Override
+			protected void processImpl() {
+				try{
+					if(getState() != RuntimeState.RUNNING){
+						throw new IllegalStateException("程序还未启动或已经结束");
+					}
+					
+					info(LoggerStringKey.Mh4w_FlowProvider_27);
+					Mh4wUtil.invokeInEventQueue(new Runnable() {
+						@Override
+						public void run() {
+							manager.guiController.setDetailFrameVisible(false);
+						}
+					});
+					
+					message(LoggerStringKey.Mh4w_FlowProvider_30);
+					
+				}catch (Exception e) {
+					message(LoggerStringKey.Mh4w_FlowProvider_28);
+				}
+			}
+			
+		}
+
+		private final class CountFlow extends AbstractMayChangeStateFlow{
+		
+			public CountFlow() {
+				super(BlockKey.SELECT_ATTENDANCE_FILE,manager.getLoggerMutilangModel().getMutilang().getString(LoggerStringKey.Mh4w_FlowProvider_13.getName()));
+			}
+		
+			/*
+			 * (non-Javadoc)
+			 * @see com.dwarfeng.tp.core.control.Mh4w.FlowProvider.AbstractInnerFlow#processImpl()
+			 */
+			@Override
+			protected void processImpl() {
+				try{
+					if(getState() != RuntimeState.RUNNING){
+						throw new IllegalStateException("程序还未启动或已经结束");
+					}
+					
+					
+					
+					message(LoggerStringKey.Mh4w_FlowProvider_16);
+					
+				}catch (Exception e) {
+					message(LoggerStringKey.Mh4w_FlowProvider_14);
+				}finally {
+					Mh4wUtil.invokeInEventQueue(new Runnable() {
+						@Override
+						public void run() {
+							manager.getGuiController().attendanceClickUnlock();
 						}
 					});
 				}
