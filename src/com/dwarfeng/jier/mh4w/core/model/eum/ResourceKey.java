@@ -37,7 +37,7 @@ public enum ResourceKey implements Name{
 	TOOL_HISTORY("tool.history"),
 	
 	/**∞‡¥Œ–≈œ¢*/
-	SHIFT_SHIFTS("shift.shifts")
+	SHIFT_SHIFTS("define.shifts")
 	
 	;
 

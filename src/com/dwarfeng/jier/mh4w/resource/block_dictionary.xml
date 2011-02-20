@@ -24,17 +24,23 @@
 	</key>
 	<key value="count">
 		<dictionary value="initialize"/>
-				<dictionary value="closing"/>
-				<dictionary value="select_attendance_file"/>
-				<dictionary value="select_workticket_file"/>
-				<dictionary value="reset_count"/>
-				<dictionary value="show_detail_frame"/>
-				<dictionary value="hide_detail_frame"/>
+		<dictionary value="closing"/>
+		<dictionary value="select_attendance_file"/>
+		<dictionary value="select_workticket_file"/>
+		<dictionary value="reset_count"/>
+		<dictionary value="show_detail_frame"/>
+		<dictionary value="hide_detail_frame"/>
+		<dictionary value="show_attr_frame"/>
+		<dictionary value="dispose_attr_frame"/>
+		<dictionary value="reload_attr"/>
 	</key>
 	<key value="show_attr_frame">
 		<dictionary value="initialize"/>
 	</key>
 	<key value="dispose_attr_frame">
+		<dictionary value="initialize"/>
+	</key>
+	<key value="reload_attr">
 		<dictionary value="initialize"/>
 	</key>
 </root>

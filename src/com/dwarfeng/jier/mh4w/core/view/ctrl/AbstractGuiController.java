@@ -358,6 +358,36 @@ public abstract class AbstractGuiController implements GuiController {
 			lock.writeLock().unlock();
 		}
 	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see com.dwarfeng.jier.mh4w.core.view.ctrl.GuiController#getDetailFrameMutilang()
+	 */
+	@Override
+	public Mutilang getDetailFrameMutilang() {
+		lock.readLock().lock();
+		try{
+			if(Objects.isNull(detailFrame)) return null;
+			return detailFrame.getMutilang();
+		}finally {
+			lock.readLock().unlock();
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.dwarfeng.jier.mh4w.core.view.ctrl.GuiController#setDetailFrameMutilang(com.dwarfeng.jier.mh4w.core.model.struct.Mutilang)
+	 */
+	@Override
+	public boolean setDetailFrameMutilang(Mutilang mutilang) {
+		lock.writeLock().lock();
+		try{
+			if(Objects.isNull(detailFrame)) return false;
+			return detailFrame.setMutilang(mutilang);
+		}finally {
+			lock.writeLock().unlock();
+		}
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -455,6 +485,36 @@ public abstract class AbstractGuiController implements GuiController {
 			if(Objects.isNull(attrFrame)) return false;
 			attrFrame.setVisible(aFlag);
 			return true;
+		}finally {
+			lock.writeLock().unlock();
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.dwarfeng.jier.mh4w.core.view.ctrl.GuiController#getAttrFrameMutilang()
+	 */
+	@Override
+	public Mutilang getAttrFrameMutilang() {
+		lock.readLock().lock();
+		try{
+			if(Objects.isNull(attrFrame)) return null;
+			return attrFrame.getMutilang();
+		}finally {
+			lock.readLock().unlock();
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.dwarfeng.jier.mh4w.core.view.ctrl.GuiController#setAttrFrameMutilang(com.dwarfeng.jier.mh4w.core.model.struct.Mutilang)
+	 */
+	@Override
+	public boolean setAttrFrameMutilang(Mutilang mutilang) {
+		lock.writeLock().lock();
+		try{
+			if(Objects.isNull(attrFrame)) return false;
+			return attrFrame.setMutilang(mutilang);
 		}finally {
 			lock.writeLock().unlock();
 		}

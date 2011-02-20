@@ -142,7 +142,7 @@ public final class MainFrame extends JFrame implements MutilangSupported, Obvers
 		}
 		
 	};
-	private final StateObverser countReadyObverser = new StateAdapter() {
+	private final StateObverser stateObverser = new StateAdapter() {
 		
 		/*
 		 * (non-Javadoc)
@@ -254,6 +254,7 @@ public final class MainFrame extends JFrame implements MutilangSupported, Obvers
 		});
 		attendanceFilePanel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		attendanceFilePanel.setImage(xls_red);
+		attendanceFilePanel.setToolTipText(getLabel(LabelStringKey.MainFrame_3));
 		attendanceFilePanel.setBounds(25, 17, 150, 150);
 		getContentPane().add(attendanceFilePanel);
 		
@@ -269,6 +270,7 @@ public final class MainFrame extends JFrame implements MutilangSupported, Obvers
 		});
 		workticketFilePanel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		workticketFilePanel.setImage(xls_red);
+		workticketFilePanel.setToolTipText(getLabel(LabelStringKey.MainFrame_3));
 		workticketFilePanel.setBounds(245, 17, 150, 150);
 		getContentPane().add(workticketFilePanel);
 		
@@ -286,6 +288,7 @@ public final class MainFrame extends JFrame implements MutilangSupported, Obvers
 				fireCount();
 			}
 		});
+		countButton.setEnabled(false);
 		countButton.setText(getLabel(LabelStringKey.MainFrame_4));
 		countButton.setFont(new Font("SansSerif", Font.PLAIN, 14));
 		countButton.setBounds(245, 200, 150, 40);
@@ -305,6 +308,7 @@ public final class MainFrame extends JFrame implements MutilangSupported, Obvers
 			}
 		});
 		detailButton.setToolTipText((String) null);
+		detailButton.setIcon(new ImageIcon(detail_purple));
 		detailButton.setBounds(190, 200, 40, 40);
 		getContentPane().add(detailButton);
 		
@@ -335,7 +339,6 @@ public final class MainFrame extends JFrame implements MutilangSupported, Obvers
 				fireShowAttrFrame();
 			}
 		});
-		attrButton.setToolTipText((String) null);
 		attrButton.setOpaque(true);
 		attrButton.setBounds(25, 200, 40, 40);
 		getContentPane().add(attrButton);
@@ -360,19 +363,18 @@ public final class MainFrame extends JFrame implements MutilangSupported, Obvers
 		//设置文件选择模型
 		if(Objects.nonNull(fileSelectModel)){
 			fileSelectModel.addObverser(fileSelectObverser);
-			if(Objects.nonNull(fileSelectModel.getAttendanceFile())){
-				attendanceFilePanel.setImage(xls_green);
-				attendanceFilePanel.setToolTipText(fileSelectModel.getAttendanceFile().getAbsolutePath());
-			}else{
-				attendanceFilePanel.setImage(xls_red);
-				attendanceFilePanel.setToolTipText(getLabel(LabelStringKey.MainFrame_3));
-			}
-			if(Objects.nonNull(fileSelectModel.getWorkticketFile())){
-				workticketFilePanel.setImage(xls_green);
-				workticketFilePanel.setToolTipText(fileSelectModel.getWorkticketFile().getAbsolutePath());
-			}else{
-				workticketFilePanel.setImage(xls_red);
-				workticketFilePanel.setToolTipText(getLabel(LabelStringKey.MainFrame_3));
+			fileSelectModel.getLock().readLock().lock();
+			try{
+				if(Objects.nonNull(fileSelectModel.getAttendanceFile())){
+					attendanceFilePanel.setImage(xls_green);
+					attendanceFilePanel.setToolTipText(fileSelectModel.getAttendanceFile().getAbsolutePath());
+				}
+				if(Objects.nonNull(fileSelectModel.getWorkticketFile())){
+					workticketFilePanel.setImage(xls_green);
+					workticketFilePanel.setToolTipText(fileSelectModel.getWorkticketFile().getAbsolutePath());
+				}
+			}finally {
+				fileSelectModel.getLock().readLock().unlock();
 			}
 		}
 		
@@ -380,30 +382,35 @@ public final class MainFrame extends JFrame implements MutilangSupported, Obvers
 		
 		//设置统计准备模型
 		if(Objects.nonNull(stateModel)){
-			stateModel.addObverser(countReadyObverser);
-			countButton.setEnabled(stateModel.isReadyForCount());
-			
-			CountState countState = stateModel.getCountState();
-			boolean countResultOutdated = stateModel.isCountResultOutdated();
-			if(countState.equals(CountState.NOT_START)){
-				detailButton.setIcon(new ImageIcon(detail_purple));
-			}else if(countResultOutdated){
-				detailButton.setIcon(new ImageIcon(detail_gray));
-			}else{
-				switch (countState) {
-				case NOT_START:
+			stateModel.addObverser(stateObverser);
+			stateModel.getLock().readLock().lock();
+			try{
+				countButton.setEnabled(stateModel.isReadyForCount());
+				
+				CountState countState = stateModel.getCountState();
+				boolean countResultOutdated = stateModel.isCountResultOutdated();
+				if(countState.equals(CountState.NOT_START)){
 					detailButton.setIcon(new ImageIcon(detail_purple));
-					break;
-				case STARTED_ERROR:
-					detailButton.setIcon(new ImageIcon(detail_red));
-					break;
-				case STARTED_EXPORTED:
-					detailButton.setIcon(new ImageIcon(detail_green));
-					break;
-				case STARTED_WAITING:
-					detailButton.setIcon(new ImageIcon(detail_yellow));
-					break;
+				}else if(countResultOutdated){
+					detailButton.setIcon(new ImageIcon(detail_gray));
+				}else{
+					switch (countState) {
+					case NOT_START:
+						detailButton.setIcon(new ImageIcon(detail_purple));
+						break;
+					case STARTED_ERROR:
+						detailButton.setIcon(new ImageIcon(detail_red));
+						break;
+					case STARTED_EXPORTED:
+						detailButton.setIcon(new ImageIcon(detail_green));
+						break;
+					case STARTED_WAITING:
+						detailButton.setIcon(new ImageIcon(detail_yellow));
+						break;
+					}
 				}
+			}finally {
+				stateModel.getLock().readLock().unlock();
 			}
 		}else{
 			countButton.setEnabled(false);
@@ -493,6 +500,12 @@ public final class MainFrame extends JFrame implements MutilangSupported, Obvers
 	 */
 	@Override
 	public void dispose() {
+		if(Objects.nonNull(fileSelectModel)){
+			fileSelectModel.removeObverser(fileSelectObverser);
+		}
+		if(Objects.nonNull(stateModel)){
+			stateModel.removeObverser(stateObverser);
+		}
 		super.dispose();
 	}
 
@@ -507,24 +520,29 @@ public final class MainFrame extends JFrame implements MutilangSupported, Obvers
 	 * @param fileSelectModel the fileSelectModel to set
 	 */
 	public void setFileSelectModel(FileSelectModel fileSelectModel) {
+		attendanceFilePanel.setImage(xls_red);
+		attendanceFilePanel.setToolTipText(getLabel(LabelStringKey.MainFrame_3));
+		workticketFilePanel.setImage(xls_red);
+		workticketFilePanel.setToolTipText(getLabel(LabelStringKey.MainFrame_3));
+		
 		if(Objects.nonNull(this.fileSelectModel)){
 			this.fileSelectModel.removeObverser(fileSelectObverser);
 		}
+		
 		if(Objects.nonNull(fileSelectModel)){
 			fileSelectModel.addObverser(fileSelectObverser);
-			if(Objects.nonNull(fileSelectModel.getAttendanceFile())){
-				attendanceFilePanel.setImage(xls_green);
-				attendanceFilePanel.setToolTipText(fileSelectModel.getAttendanceFile().getAbsolutePath());
-			}else{
-				attendanceFilePanel.setImage(xls_red);
-				attendanceFilePanel.setToolTipText(getLabel(LabelStringKey.MainFrame_3));
-			}
-			if(Objects.nonNull(fileSelectModel.getWorkticketFile())){
-				workticketFilePanel.setImage(xls_green);
-				workticketFilePanel.setToolTipText(fileSelectModel.getWorkticketFile().getAbsolutePath());
-			}else{
-				workticketFilePanel.setImage(xls_red);
-				workticketFilePanel.setToolTipText(getLabel(LabelStringKey.MainFrame_3));
+			fileSelectModel.getLock().readLock().lock();
+			try{
+				if(Objects.nonNull(fileSelectModel.getAttendanceFile())){
+					attendanceFilePanel.setImage(xls_green);
+					attendanceFilePanel.setToolTipText(fileSelectModel.getAttendanceFile().getAbsolutePath());
+				}
+				if(Objects.nonNull(fileSelectModel.getWorkticketFile())){
+					workticketFilePanel.setImage(xls_green);
+					workticketFilePanel.setToolTipText(fileSelectModel.getWorkticketFile().getAbsolutePath());
+				}
+			}finally {
+				fileSelectModel.getLock().readLock().unlock();
 			}
 		}
 		
@@ -542,39 +560,44 @@ public final class MainFrame extends JFrame implements MutilangSupported, Obvers
 	 * @param stateModel the stateModel to set
 	 */
 	public void setStateModel(StateModel stateModel) {
+		countButton.setEnabled(false);
+		detailButton.setIcon(new ImageIcon(detail_purple));
+		
 		if(Objects.nonNull(this.stateModel)){
-			this.stateModel.removeObverser(countReadyObverser);
+			this.stateModel.removeObverser(stateObverser);
 		}
 		
 		if(Objects.nonNull(stateModel)){
-			stateModel.addObverser(countReadyObverser);
-			countButton.setEnabled(stateModel.isReadyForCount());
-			
-			CountState countState = stateModel.getCountState();
-			boolean countResultOutdated = stateModel.isCountResultOutdated();
-			if(countState.equals(CountState.NOT_START)){
-				detailButton.setIcon(new ImageIcon(detail_purple));
-			}else if(countResultOutdated){
-				detailButton.setIcon(new ImageIcon(detail_gray));
-			}else{
-				switch (countState) {
-				case NOT_START:
+			stateModel.addObverser(stateObverser);
+			stateModel.getLock().readLock().lock();
+			try{
+				countButton.setEnabled(stateModel.isReadyForCount());
+				
+				CountState countState = stateModel.getCountState();
+				boolean countResultOutdated = stateModel.isCountResultOutdated();
+				if(countState.equals(CountState.NOT_START)){
 					detailButton.setIcon(new ImageIcon(detail_purple));
-					break;
-				case STARTED_ERROR:
-					detailButton.setIcon(new ImageIcon(detail_red));
-					break;
-				case STARTED_EXPORTED:
-					detailButton.setIcon(new ImageIcon(detail_green));
-					break;
-				case STARTED_WAITING:
-					detailButton.setIcon(new ImageIcon(detail_yellow));
-					break;
+				}else if(countResultOutdated){
+					detailButton.setIcon(new ImageIcon(detail_gray));
+				}else{
+					switch (countState) {
+					case NOT_START:
+						detailButton.setIcon(new ImageIcon(detail_purple));
+						break;
+					case STARTED_ERROR:
+						detailButton.setIcon(new ImageIcon(detail_red));
+						break;
+					case STARTED_EXPORTED:
+						detailButton.setIcon(new ImageIcon(detail_green));
+						break;
+					case STARTED_WAITING:
+						detailButton.setIcon(new ImageIcon(detail_yellow));
+						break;
+					}
 				}
+			}finally {
+				stateModel.getLock().readLock().unlock();
 			}
-		}else{
-			countButton.setEnabled(false);
-			detailButton.setIcon(new ImageIcon(detail_purple));
 		}
 		
 		this.stateModel = stateModel;

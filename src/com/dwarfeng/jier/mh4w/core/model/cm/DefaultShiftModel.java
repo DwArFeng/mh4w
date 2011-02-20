@@ -151,8 +151,15 @@ public final class DefaultShiftModel extends AbstractShiftModel {
 		lock.writeLock().lock();
 		try{
 			shiftMap.clear();
+			fireCleared();
 		}finally {
 			lock.writeLock().unlock();
+		}
+	}
+
+	private void fireCleared() {
+		for(ShiftObverser obverser : obversers){
+			if(Objects.nonNull(obverser)) obverser.fireShiftCleared();
 		}
 	}
 

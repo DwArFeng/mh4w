@@ -17,12 +17,15 @@ import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
 import com.dwarfeng.dutil.basic.prog.ObverserSet;
+import com.dwarfeng.jier.mh4w.core.model.cm.CoreConfigModel;
 import com.dwarfeng.jier.mh4w.core.model.cm.ShiftModel;
 import com.dwarfeng.jier.mh4w.core.model.eum.LabelStringKey;
 import com.dwarfeng.jier.mh4w.core.model.struct.Mutilang;
 import com.dwarfeng.jier.mh4w.core.model.struct.MutilangSupported;
 import com.dwarfeng.jier.mh4w.core.util.Constants;
 import com.dwarfeng.jier.mh4w.core.view.obv.AttrFrameObverser;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 public class AttrFrame extends JDialog implements MutilangSupported, ObverserSet<AttrFrameObverser>{
 	
@@ -38,6 +41,7 @@ public class AttrFrame extends JDialog implements MutilangSupported, ObverserSet
 	private final JButton refreshButton;
 	private final JTabbedPane tabbedPane;
 	private final JShiftPanel shiftPanel;
+	private final JCoreConfigPanel coreConfigPanel;
 	
 	/*
 	 * 非 final 域。
@@ -55,14 +59,14 @@ public class AttrFrame extends JDialog implements MutilangSupported, ObverserSet
 	 * 新实例。
 	 */
 	public AttrFrame() {
-		this(null, Constants.getDefaultLabelMutilang(), null);
+		this(null, Constants.getDefaultLabelMutilang(), null, null);
 	}
 	
 	/**
 	 * 
 	 * @param mutilang
 	 */
-	public AttrFrame(JFrame jframe, Mutilang mutilang, ShiftModel shiftModel) {
+	public AttrFrame(JFrame jframe, Mutilang mutilang, CoreConfigModel coreConfigModel, ShiftModel shiftModel) {
 		super(jframe, true);
 		
 		Objects.requireNonNull(mutilang, "入口参数 mutilang 不能为 null。");
@@ -94,6 +98,12 @@ public class AttrFrame extends JDialog implements MutilangSupported, ObverserSet
 		buttonPane.setLayout(gbl_buttonPane);
 		
 		refreshButton = new JButton();
+		refreshButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				fireReloadAttr();
+			}
+		});
 		refreshButton.setText(getLabel(LabelStringKey.AttrFrame_1));
 		
 		GridBagConstraints gbc_refreshButton = new GridBagConstraints();
@@ -105,8 +115,8 @@ public class AttrFrame extends JDialog implements MutilangSupported, ObverserSet
 		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		getContentPane().add(tabbedPane);
 		
-		JPanel panel = new JPanel();
-		tabbedPane.addTab(getLabel(LabelStringKey.AttrFrame_3), null, panel, null);
+		coreConfigPanel = new JCoreConfigPanel(mutilang, coreConfigModel);
+		tabbedPane.addTab(getLabel(LabelStringKey.AttrFrame_3), null, coreConfigPanel, null);
 		
 		shiftPanel = new JShiftPanel(mutilang, shiftModel);
 		tabbedPane.addTab(getLabel(LabelStringKey.AttrFrame_4), null, shiftPanel, null);
@@ -133,6 +143,7 @@ public class AttrFrame extends JDialog implements MutilangSupported, ObverserSet
 		
 		//更新子面板
 		shiftPanel.setMutilang(mutilang);
+		coreConfigPanel.setMutilang(mutilang);
 		
 		//更新各标签的文本。
 		setTitle(getLabel(LabelStringKey.AttrFrame_2));
@@ -187,6 +198,7 @@ public class AttrFrame extends JDialog implements MutilangSupported, ObverserSet
 	 */
 	@Override
 	public void dispose() {
+		coreConfigPanel.dispose();
 		shiftPanel.dispose();
 		super.dispose();
 	}
@@ -194,6 +206,12 @@ public class AttrFrame extends JDialog implements MutilangSupported, ObverserSet
 	private void fireAttrFrameClosing() {
 		for(AttrFrameObverser obverser : obversers){
 			if(Objects.nonNull(obverser)) obverser.fireAttrFrameClosing();
+		}
+	}
+
+	private void fireReloadAttr() {
+		for(AttrFrameObverser obverser : obversers){
+			if(Objects.nonNull(obverser)) obverser.fireReloadAttr();
 		}
 	}
 

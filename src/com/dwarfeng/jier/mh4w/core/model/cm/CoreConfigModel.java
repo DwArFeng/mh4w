@@ -11,6 +11,48 @@ import java.util.Locale;
 public interface CoreConfigModel extends SyncConfigModel {
 	
 	/**
+	 * 获取考勤表的起始列。
+	 * @return 考勤表的起始列。
+	 */
+	public int getAttendanceStartRow();
+	
+	/**
+	 * 获取考勤表中部门所在的列。
+	 * @return 考勤表中部门所在的列。
+	 */
+	public int getAttendanceDepartmentColumn();
+	
+	/**
+	 * 获取考勤表中工号所在的列。
+	 * @return 考勤表中工号所在的列。
+	 */
+	public int getAttendanceWorkNumberColumn();
+	
+	/**
+	 * 获取考勤表中姓名所在的列。
+	 * @return 考勤表中姓名所在的列。
+	 */
+	public int getAttendacneNameColumn();
+	
+	/**
+	 * 获取考勤表中日期所在的列。
+	 * @return 考勤表中日期所在的列。
+	 */
+	public int getAttendanceDateColumn();
+	
+	/**
+	 * 获取考勤表中班次所在的列。
+	 * @return 考勤表中班次所在的列。
+	 */
+	public int getAttendanceShiftColumn();
+	
+	/**
+	 * 获取考勤表中记录所在的列。
+	 * @return 考勤表中班次所在的列
+	 */
+	public int getAttendanceRecordColumn();
+	
+	/**
 	 * 获取记录器多语言接口的当前语言。
 	 * @return 记录器多语言接口当前的语言。
 	 */

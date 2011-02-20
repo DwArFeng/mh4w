@@ -26,6 +26,19 @@ public enum LabelStringKey implements Name{
 	JShiftPanel_1(new DefaultName("JShiftPanel.1")),
 	JShiftPanel_2(new DefaultName("JShiftPanel.2")),
 
+	JCoreConfigPanel_1(new DefaultName("JCoreConfigPanel.1")),
+	JCoreConfigPanel_2(new DefaultName("JCoreConfigPanel.2")),
+
+	CoreConfig_1(new DefaultName("CoreConfig.1")),
+	CoreConfig_2(new DefaultName("CoreConfig.2")),
+	CoreConfig_3(new DefaultName("CoreConfig.3")),
+	CoreConfig_4(new DefaultName("CoreConfig.4")),
+	CoreConfig_5(new DefaultName("CoreConfig.5")),
+	CoreConfig_6(new DefaultName("CoreConfig.6")),
+	CoreConfig_7(new DefaultName("CoreConfig.7")),
+	CoreConfig_8(new DefaultName("CoreConfig.8")),
+	CoreConfig_9(new DefaultName("CoreConfig.9")),
+
 	;
 
 	private Name name;

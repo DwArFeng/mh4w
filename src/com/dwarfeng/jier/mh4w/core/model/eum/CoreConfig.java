@@ -4,6 +4,8 @@ import com.dwarfeng.dutil.develop.cfg.ConfigChecker;
 import com.dwarfeng.dutil.develop.cfg.ConfigEntry;
 import com.dwarfeng.dutil.develop.cfg.ConfigFirmProps;
 import com.dwarfeng.dutil.develop.cfg.ConfigKey;
+import com.dwarfeng.dutil.develop.cfg.checker.IntegerConfigChecker;
+import com.dwarfeng.dutil.develop.cfg.checker.MatchConfigChecker;
 import com.dwarfeng.dutil.develop.cfg.checker.NonNullConfigChecker;
 import com.dwarfeng.jier.mh4w.core.model.struct.DefaultConfigEntry;
 
@@ -15,18 +17,41 @@ import com.dwarfeng.jier.mh4w.core.model.struct.DefaultConfigEntry;
  */
 public enum CoreConfig implements ConfigEntry{
 	
-	/**记录器的使用语言*/
-	MUTILANG_LOGGER("mutilang.logger", "", new NonNullConfigChecker()),
+	/**考勤表的第一行数据行*/
+	ATTENDANCE_ROW_START("attendance.row.start", "2", new IntegerConfigChecker(1, Integer.MAX_VALUE), LabelStringKey.CoreConfig_3),
+	
+	/**考勤表中部门所在的列*/
+	ATTENDANCE_COLUMN_DEPARTMENT("attendance.column.department", "A", new MatchConfigChecker("[A-Z]+"), LabelStringKey.CoreConfig_4),
+	
+	/**考勤表中工号所在的列*/
+	ATTENDANCE_COLUMN_WORKNUMBER("attendance.column.worknumber", "B", new MatchConfigChecker("[A-Z]+"), LabelStringKey.CoreConfig_5),
+	
+	/**考勤表中姓名所在的列*/
+	ATTENDANCE_COLUMN_NAME("attendance.column.name", "C", new MatchConfigChecker("[A-Z]+"), LabelStringKey.CoreConfig_6),
+
+	/**考勤表中日期所在的列*/
+	ATTENDANCE_COLUMN_DATE("attendance.column.date", "D", new MatchConfigChecker("[A-Z]+"), LabelStringKey.CoreConfig_7),
+	
+	/**考勤表中班次所在的列*/
+	ATTENDANCE_COLUMN_SHIFT("attendance.column.shift", "E", new MatchConfigChecker("[A-Z]+"), LabelStringKey.CoreConfig_8),
+
+	/**考勤表中记录所在的列*/
+	ATTENDANCE_COLUMN_RECORD("attendance.column.record", "F", new MatchConfigChecker("[A-Z]+"), LabelStringKey.CoreConfig_9),
 	
 	/**标签的使用语言*/
-	MUTILANG_LABEL("mutilang.label", "", new NonNullConfigChecker()),
+	MUTILANG_LABEL("mutilang.label", "", new NonNullConfigChecker(), LabelStringKey.CoreConfig_1),
+	
+	/**记录器的使用语言*/
+	MUTILANG_LOGGER("mutilang.logger", "", new NonNullConfigChecker(), LabelStringKey.CoreConfig_2),
 	
 	;
 	
 	private final ConfigEntry configEntry;
+	private final LabelStringKey labelStringKey;
 	
-	private CoreConfig(String keyName, String defaultValue, ConfigChecker checker) {
+	private CoreConfig(String keyName, String defaultValue, ConfigChecker checker, LabelStringKey labelStringKey) {
 		this.configEntry = new DefaultConfigEntry(keyName, defaultValue, checker);
+		this.labelStringKey = labelStringKey;
 	}
 	
 	/*
@@ -45,6 +70,14 @@ public enum CoreConfig implements ConfigEntry{
 	@Override
 	public ConfigFirmProps getConfigFirmProps() {
 		return configEntry.getConfigFirmProps();
+	}
+	
+	/**
+	 * 获取该核心配置的标签文本，用于显示。
+	 * @return 核心配置的标签文本。
+	 */
+	public LabelStringKey getLabelStringKey(){
+		return labelStringKey;
 	}
 
 }

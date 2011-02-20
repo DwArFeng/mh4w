@@ -14,4 +14,9 @@ public interface AttrFrameObverser extends Obverser {
 	 */
 	public void fireAttrFrameClosing();
 
+	/**
+	 * 通知重新读取程序属性。
+	 */
+	public void fireReloadAttr();
+
 }

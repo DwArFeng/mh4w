@@ -68,6 +68,7 @@ import com.dwarfeng.jier.mh4w.core.model.struct.DefaultFinishedFlowTaker;
 import com.dwarfeng.jier.mh4w.core.model.struct.DefaultShift;
 import com.dwarfeng.jier.mh4w.core.model.struct.FinishedFlowTaker;
 import com.dwarfeng.jier.mh4w.core.model.struct.Flow;
+import com.dwarfeng.jier.mh4w.core.model.struct.Mutilang;
 import com.dwarfeng.jier.mh4w.core.model.struct.ProcessException;
 import com.dwarfeng.jier.mh4w.core.model.struct.Resource;
 import com.dwarfeng.jier.mh4w.core.model.struct.Shift;
@@ -224,6 +225,23 @@ public final class Mh4w {
 						loggerModel.getLogger().warn(loggerMutilangModel.getMutilang().getString(LoggerStringKey.Update_LoggerMutilang_1.getName()), e);
 					}
 				}
+				if(configKey.equals(CoreConfig.MUTILANG_LABEL.getConfigKey())){
+					try {
+						labelMutilangModel.setCurrentLocale(coreConfigModel.getLabelMutilangLocale());
+						labelMutilangModel.update();
+						Mutilang mutilang = labelMutilangModel.getMutilang();
+						Mh4wUtil.invokeInEventQueue(new Runnable() {
+							@Override
+							public void run() {
+								guiController.setMainFrameMutilang(mutilang);
+								guiController.setDetailFrameMutilang(mutilang);
+								guiController.setAttrFrameMutilang(mutilang);
+							}
+						});
+					} catch (ProcessException e) {
+						loggerModel.getLogger().warn(loggerMutilangModel.getMutilang().getString(LoggerStringKey.Update_LabelMutilang_1.getName()), e);
+					}
+				}
 			}
 		};
 		//GuiControllers
@@ -289,6 +307,7 @@ public final class Mh4w {
 				AttrFrame attrFrame = new AttrFrame(
 						mainFrame,
 						labelMutilangModel.getMutilang(),
+						coreConfigModel,
 						shiftModel
 				);
 				attrFrame.setLocationRelativeTo(mainFrame);
@@ -394,6 +413,15 @@ public final class Mh4w {
 			@Override
 			public void fireAttrFrameClosing() {
 				manager.getBackgroundModel().submit(flowProvider.newDisposeAttrFrameFlow());
+			};
+			
+			/*
+			 * (non-Javadoc)
+			 * @see com.dwarfeng.jier.mh4w.core.view.obv.AttrFrameAdapter#fireReloadAttr()
+			 */
+			@Override
+			public void fireReloadAttr() {
+				manager.getBackgroundModel().submit(flowProvider.newReloadAttrFlow());
 			};
 			
 		};
@@ -600,6 +628,14 @@ public final class Mh4w {
 		 */
 		public Flow newDisposeAttrFrameFlow() {
 			return new DisposeAttrFrameFlow();
+		}
+
+		/**
+		 * 获取一个新的重新读取属性流。
+		 * @return 新的重新读取属性流。
+		 */
+		public Flow newReloadAttrFlow() {
+			return new ReloadAttrFlow();
 		}
 
 		/**
@@ -943,7 +979,7 @@ public final class Mh4w {
 						shiftLoader = new XmlShiftLoader(getResource(ResourceKey.SHIFT_SHIFTS).openInputStream());
 						shiftLoader.load(unsafeShifts);
 					}finally{
-						if(Objects.nonNull(labelMutilangLoader)){
+						if(Objects.nonNull(shiftLoader)){
 							shiftLoader.close();
 						}
 					}
@@ -1184,13 +1220,6 @@ public final class Mh4w {
 					
 				}catch (Exception e) {
 					message(LoggerStringKey.Mh4w_FlowProvider_24);
-				}finally {
-					Mh4wUtil.invokeInEventQueue(new Runnable() {
-						@Override
-						public void run() {
-							manager.getGuiController().workticketClickUnlock();
-						}
-					});
 				}
 			}
 			
@@ -1287,13 +1316,6 @@ public final class Mh4w {
 					
 				}catch (Exception e) {
 					message(LoggerStringKey.Mh4w_FlowProvider_14);
-				}finally {
-					Mh4wUtil.invokeInEventQueue(new Runnable() {
-						@Override
-						public void run() {
-							manager.getGuiController().attendanceClickUnlock();
-						}
-					});
 				}
 			}
 			
@@ -1367,6 +1389,85 @@ public final class Mh4w {
 			}
 			
 		}
+
+		private final class ReloadAttrFlow extends AbstractMayChangeStateFlow{
+		
+			public ReloadAttrFlow() {
+				super(BlockKey.RELOAD_ATTR);
+			}
+		
+			/*
+			 * (non-Javadoc)
+			 * @see com.dwarfeng.tp.core.control.Mh4w.FlowProvider.AbstractInnerFlow#processImpl()
+			 */
+			@Override
+			protected void processImpl() {
+				try{
+					if(getState() != RuntimeState.RUNNING){
+						throw new IllegalStateException("程序还未启动或已经结束");
+					}
+					
+					info(LoggerStringKey.Mh4w_FlowProvider_38);
+					
+					//加载程序的核心配置。
+					info(LoggerStringKey.Mh4w_FlowProvider_6);
+					message(LoggerStringKey.Mh4w_FlowProvider_6);
+					PropConfigLoader coreConfigLoader = null;
+					try{
+						coreConfigLoader = new PropConfigLoader(getResource(ResourceKey.CONFIGURATION_CORE).openInputStream());
+						coreConfigLoader.load(manager.getCoreConfigModel());
+					}catch (IOException e) {
+						warn(LoggerStringKey.Mh4w_FlowProvider_4, e);
+						getResource(ResourceKey.CONFIGURATION_CORE).reset();
+						coreConfigLoader = new PropConfigLoader(getResource(ResourceKey.CONFIGURATION_CORE).openInputStream());
+						coreConfigLoader.load(manager.getCoreConfigModel());
+					}finally {
+						if(Objects.nonNull(coreConfigLoader)){
+							coreConfigLoader.close();
+						}
+					}
+					
+					//加载班次信息。
+					info(LoggerStringKey.Mh4w_FlowProvider_31);
+					message(LoggerStringKey.Mh4w_FlowProvider_31);
+					manager.getShiftModel().clear();
+					Set<UnsafeShift> unsafeShifts = new LinkedHashSet<>();
+					XmlShiftLoader shiftLoader = null;
+					try{
+						shiftLoader = new XmlShiftLoader(getResource(ResourceKey.SHIFT_SHIFTS).openInputStream());
+						shiftLoader.load(unsafeShifts);
+					}catch(IOException e){
+						warn(LoggerStringKey.Mh4w_FlowProvider_4, e);
+						getResource(ResourceKey.SHIFT_SHIFTS).reset();
+						shiftLoader = new XmlShiftLoader(getResource(ResourceKey.SHIFT_SHIFTS).openInputStream());
+						shiftLoader.load(unsafeShifts);
+					}finally{
+						if(Objects.nonNull(shiftLoader)){
+							shiftLoader.close();
+						}
+					}
+					
+					for(UnsafeShift unsafeShift : unsafeShifts){
+						String name = unsafeShift.getName();
+						TimeSection[] shiftSections = unsafeShift.getShiftSections();
+						TimeSection[] restSections = unsafeShift.getRestSections();
+						TimeSection[] extraShiftSections = unsafeShift.getExtraShiftSections();
+						
+						Shift shift = new DefaultShift(name, shiftSections, restSections, extraShiftSections);
+						manager.getShiftModel().add(shift);
+					}
+					
+					//可能会引起统计结果的过时
+					mayCountResultOutdated();
+					
+					message(LoggerStringKey.Mh4w_FlowProvider_39);
+					
+				}catch (Exception e) {
+					message(LoggerStringKey.Mh4w_FlowProvider_40);
+				}
+			}
+			
+		}
 	
 	}
 
@@ -1412,28 +1513,6 @@ public final class Mh4w {
 					warn(LoggerStringKey.Mh4w_Exitor_3);
 				}
 			}
-
-			//保存核心配置
-			info(LoggerStringKey.Mh4w_Exitor_7);
-			PropConfigSaver coreConfigSaver = null;
-			try{
-				try{
-					coreConfigSaver = new PropConfigSaver(getResource(ResourceKey.CONFIGURATION_CORE).openOutputStream());
-					coreConfigSaver.save(manager.getCoreConfigModel());
-				}catch (IOException e) {
-					warn(LoggerStringKey.Mh4w_Exitor_6, e);
-					getResource(ResourceKey.CONFIGURATION_CORE).reset();
-					coreConfigSaver = new PropConfigSaver(getResource(ResourceKey.CONFIGURATION_CORE).openOutputStream());
-					coreConfigSaver.save(manager.getCoreConfigModel());
-				}finally{
-					if(Objects.nonNull(coreConfigSaver)){
-						coreConfigSaver.close();
-					}
-				}
-				
-			}catch (Exception e) {
-				warn(LoggerStringKey.Mh4w_Exitor_8, e);
-			}
 			
 			//释放界面
 			info(LoggerStringKey.Mh4w_Exitor_4);
@@ -1442,6 +1521,8 @@ public final class Mh4w {
 					@Override
 					public void run() {
 						manager.getGuiController().disposeMainFrame();
+						manager.getGuiController().disposeAttrFrame();
+						manager.getGuiController().disposeDetialFrame();
 					}
 				});
 			} catch (InvocationTargetException ignore) {

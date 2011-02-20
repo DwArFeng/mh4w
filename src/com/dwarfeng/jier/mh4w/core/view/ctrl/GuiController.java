@@ -125,6 +125,19 @@ public interface GuiController extends ExternalReadWriteThreadSafe{
 	public boolean setDetailFrameVisible(boolean aFlag);
 	
 	/**
+	 * 获取该控制器中详细面板的多语言接口。
+	 * @return 该控制器中详细面板的多语言接口。
+	 */
+	public Mutilang getDetailFrameMutilang();
+	
+	/**
+	 * 设置该控制器中详细面板的多语言接口。
+	 * @param mutilang 指定的多语言接口。
+	 * @return 该操作是否对该对象造成了改变。
+	 */
+	public boolean setDetailFrameMutilang(Mutilang mutilang);
+	
+	/**
 	 * 新建一个属性界面。
 	 * @return 是否执行成功。
 	 */
@@ -154,5 +167,18 @@ public interface GuiController extends ExternalReadWriteThreadSafe{
 	 * @return 是否执行成功。
 	 */
 	public boolean setAttrFrameVisible(boolean aFlag);
+	
+	/**
+	 * 获取该控制器中属性面板的多语言接口。
+	 * @return 该控制器中属性面板的多语言接口。
+	 */
+	public Mutilang getAttrFrameMutilang();
+	
+	/**
+	 * 设置该控制器中属性面板的多语言接口。
+	 * @param mutilang 指定的多语言接口。
+	 * @return 该操作是否对该对象造成了改变。
+	 */
+	public boolean setAttrFrameMutilang(Mutilang mutilang);
 	
 }

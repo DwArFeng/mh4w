@@ -8,9 +8,11 @@ import java.util.WeakHashMap;
 import javax.swing.JFrame;
 
 import com.dwarfeng.dutil.basic.prog.ObverserSet;
+import com.dwarfeng.jier.mh4w.core.model.struct.Mutilang;
+import com.dwarfeng.jier.mh4w.core.model.struct.MutilangSupported;
 import com.dwarfeng.jier.mh4w.core.view.obv.DetailFrameObverser;
 
-public class DetailFrame extends JFrame implements ObverserSet<DetailFrameObverser>{
+public class DetailFrame extends JFrame implements MutilangSupported, ObverserSet<DetailFrameObverser>{
 
 	/**¹Û²ìÆ÷¼¯ºÏ*/
 	private final Set<DetailFrameObverser> obversers = Collections.newSetFromMap(new WeakHashMap<>());
@@ -55,6 +57,26 @@ public class DetailFrame extends JFrame implements ObverserSet<DetailFrameObvers
 	@Override
 	public void clearObverser() {
 		obversers.clear();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.dwarfeng.jier.mh4w.core.model.struct.MutilangSupported#getMutilang()
+	 */
+	@Override
+	public Mutilang getMutilang() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.dwarfeng.jier.mh4w.core.model.struct.MutilangSupported#setMutilang(com.dwarfeng.jier.mh4w.core.model.struct.Mutilang)
+	 */
+	@Override
+	public boolean setMutilang(Mutilang mutilang) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 }

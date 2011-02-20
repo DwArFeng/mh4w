@@ -1,9 +1,11 @@
 package com.dwarfeng.jier.mh4w.core.util;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.Objects;
@@ -11,6 +13,8 @@ import java.util.ResourceBundle;
 import java.util.Set;
 
 import com.dwarfeng.dutil.basic.str.Name;
+import com.dwarfeng.dutil.develop.cfg.ConfigKey;
+import com.dwarfeng.jier.mh4w.core.model.eum.CoreConfig;
 import com.dwarfeng.jier.mh4w.core.model.eum.LabelStringKey;
 import com.dwarfeng.jier.mh4w.core.model.eum.LoggerStringKey;
 import com.dwarfeng.jier.mh4w.core.model.struct.LoggerInfo;
@@ -33,6 +37,7 @@ public final class Constants {
 	private final static MutilangInfo defaultLabelMutilangInfo;
 	private final static Mutilang defaultLoggerMutilang = new DefaultLoggerMutilang();
 	private final static Mutilang defaultLabelMutilang = new DefaultLabelMutilang();
+	private final static List<CoreConfig> coreConfigOrder = new ArrayList<>(CoreConfig.values().length);
 
 	static{
 		
@@ -58,6 +63,17 @@ public final class Constants {
 		
 		defaultLoggerMutilangInfo = new InnerMutilangInfo(mutilangLabel, loggerMutilangDefaultMap);
 		defaultLabelMutilangInfo = new InnerMutilangInfo(mutilangLabel, labelMutilangDefaultMap);
+		
+		coreConfigOrder.add(CoreConfig.ATTENDANCE_ROW_START);
+		coreConfigOrder.add(CoreConfig.ATTENDANCE_COLUMN_DEPARTMENT);
+		coreConfigOrder.add(CoreConfig.ATTENDANCE_COLUMN_WORKNUMBER);
+		coreConfigOrder.add(CoreConfig.ATTENDANCE_COLUMN_NAME);
+		coreConfigOrder.add(CoreConfig.ATTENDANCE_COLUMN_DATE);
+		coreConfigOrder.add(CoreConfig.ATTENDANCE_COLUMN_SHIFT);
+		coreConfigOrder.add(CoreConfig.ATTENDANCE_COLUMN_RECORD);
+		//TODO 需要继续添加
+		coreConfigOrder.add(CoreConfig.MUTILANG_LABEL);
+		coreConfigOrder.add(CoreConfig.MUTILANG_LOGGER);
 	}
 
 	/**
@@ -138,6 +154,15 @@ public final class Constants {
 	 */
 	public static Mutilang getDefaultLabelMutilang(){
 		return defaultLabelMutilang;
+	}
+	
+	/**
+	 * 获取核心配置的显示顺序。
+	 * <p> 在视图中，配置的顺序应该按照该列表指定的顺序显示。
+	 * @return 核心配置的显示顺序。
+	 */
+	public static List<CoreConfig> getCoreConfigOrder(){
+		return coreConfigOrder;
 	}
 
 	/**

@@ -9,5 +9,7 @@ public abstract class AttrFrameAdapter implements AttrFrameObverser {
 
 	@Override
 	public void fireAttrFrameClosing() {}
+	@Override
+	public void fireReloadAttr() {}
 	
 }

@@ -20,6 +20,7 @@ public enum BlockKey implements Name{
 	COUNT(new DefaultName("count")),
 	SHOW_ATTR_FRAME(new DefaultName("show_attr_frame")),
 	DISPOSE_ATTR_FRAME(new DefaultName("dispose_attr_frame")),
+	RELOAD_ATTR(new DefaultName("reload_attr")),
 
 	;
 
