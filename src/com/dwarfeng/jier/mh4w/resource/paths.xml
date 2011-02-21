@@ -5,4 +5,5 @@
 	<info key="mutilang.logger.setting" path="attributes/mutilang/logger/setting.xml" default="/com/dwarfeng/jier/mh4w/resource/defaultres/mutilang/logger/setting.xml"></info>
 	<info key="mutilang.label.setting" path="attributes/mutilang/label/setting.xml" default="/com/dwarfeng/jier/mh4w/resource/defaultres/mutilang/label/setting.xml"></info>
 	<info key="define.shifts" path="attributes/define/shifts.xml" default="/com/dwarfeng/jier/mh4w/resource/defaultres/define/shifts.xml"></info>
+	<info key="define.jobs" path="attributes/define/jobs.xml" default="/com/dwarfeng/jier/mh4w/resource/defaultres/define/jobs.xml"></info>
 </root>

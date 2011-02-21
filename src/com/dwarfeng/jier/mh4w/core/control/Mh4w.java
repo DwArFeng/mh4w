@@ -221,6 +221,20 @@ public final class Mh4w {
 				finishedFlowTaker.setMutilang(loggerMutilangModel.getMutilang());
 			}
 		};
+		private MutilangObverser labelMutilangObverser = new MutilangAdapter() {
+			@Override
+			public void fireUpdated() {
+				Mutilang mutilang = labelMutilangModel.getMutilang();
+				Mh4wUtil.invokeInEventQueue(new Runnable() {
+					@Override
+					public void run() {
+						guiController.setMainFrameMutilang(mutilang);
+						guiController.setDetailFrameMutilang(mutilang);
+						guiController.setAttrFrameMutilang(mutilang);
+					}
+				});
+			};
+		};
 		private ConfigObverser coreConfigObverser = new ConfigAdapter() {
 			@Override
 			public void fireCurrentValueChanged(ConfigKey configKey, String oldValue, String newValue,String validValue) {
@@ -236,15 +250,6 @@ public final class Mh4w {
 					try {
 						labelMutilangModel.setCurrentLocale(coreConfigModel.getLabelMutilangLocale());
 						labelMutilangModel.update();
-						Mutilang mutilang = labelMutilangModel.getMutilang();
-						Mh4wUtil.invokeInEventQueue(new Runnable() {
-							@Override
-							public void run() {
-								guiController.setMainFrameMutilang(mutilang);
-								guiController.setDetailFrameMutilang(mutilang);
-								guiController.setAttrFrameMutilang(mutilang);
-							}
-						});
 					} catch (ProcessException e) {
 						loggerModel.getLogger().warn(loggerMutilangModel.getMutilang().getString(LoggerStringKey.Update_LabelMutilang_1.getName()), e);
 					}
@@ -460,6 +465,7 @@ public final class Mh4w {
 			
 			loggerModel.addObverser(loggerObverser);
 			loggerMutilangModel.addObverser(loggerMutilangObverser);
+			labelMutilangModel.addObverser(labelMutilangObverser);
 			coreConfigModel.addObverser(coreConfigObverser);
 			
 			try {
@@ -477,6 +483,7 @@ public final class Mh4w {
 		public void dispose() {
 			loggerModel.removeObverser(loggerObverser);
 			loggerMutilangModel.removeObverser(loggerMutilangObverser);
+			labelMutilangModel.removeObverser(labelMutilangObverser);
 			coreConfigModel.removeObverser(coreConfigObverser);
 		}
 
@@ -1008,12 +1015,12 @@ public final class Mh4w {
 					Set<UnsafeShift> unsafeShifts = new LinkedHashSet<>();
 					XmlShiftLoader shiftLoader = null;
 					try{
-						shiftLoader = new XmlShiftLoader(getResource(ResourceKey.SHIFT_SHIFTS).openInputStream());
+						shiftLoader = new XmlShiftLoader(getResource(ResourceKey.DEFINE_SHIFTS).openInputStream());
 						shiftLoader.load(unsafeShifts);
 					}catch(IOException e){
 						warn(LoggerStringKey.Mh4w_FlowProvider_4, e);
-						getResource(ResourceKey.SHIFT_SHIFTS).reset();
-						shiftLoader = new XmlShiftLoader(getResource(ResourceKey.SHIFT_SHIFTS).openInputStream());
+						getResource(ResourceKey.DEFINE_SHIFTS).reset();
+						shiftLoader = new XmlShiftLoader(getResource(ResourceKey.DEFINE_SHIFTS).openInputStream());
 						shiftLoader.load(unsafeShifts);
 					}finally{
 						if(Objects.nonNull(shiftLoader)){
@@ -1498,12 +1505,12 @@ public final class Mh4w {
 					Set<UnsafeShift> unsafeShifts = new LinkedHashSet<>();
 					XmlShiftLoader shiftLoader = null;
 					try{
-						shiftLoader = new XmlShiftLoader(getResource(ResourceKey.SHIFT_SHIFTS).openInputStream());
+						shiftLoader = new XmlShiftLoader(getResource(ResourceKey.DEFINE_SHIFTS).openInputStream());
 						shiftLoader.load(unsafeShifts);
 					}catch(IOException e){
 						warn(LoggerStringKey.Mh4w_FlowProvider_4, e);
-						getResource(ResourceKey.SHIFT_SHIFTS).reset();
-						shiftLoader = new XmlShiftLoader(getResource(ResourceKey.SHIFT_SHIFTS).openInputStream());
+						getResource(ResourceKey.DEFINE_SHIFTS).reset();
+						shiftLoader = new XmlShiftLoader(getResource(ResourceKey.DEFINE_SHIFTS).openInputStream());
 						shiftLoader.load(unsafeShifts);
 					}finally{
 						if(Objects.nonNull(shiftLoader)){

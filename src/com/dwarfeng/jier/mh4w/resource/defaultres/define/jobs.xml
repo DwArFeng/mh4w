@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root >
+	<job>
+		<name value="压机"/>
+		<value-per-hour value="9.8"/>
+		<column value="D"/>
+	</job>
+	<job>
+		<name value="数控"/>
+		<value-per-hour value="6.8"/>
+		<column value="E"/>
+	</job>
+	<job>
+		<name value="刨床"/>
+		<value-per-hour value="6.3"/>
+		<column value="F"/>
+	</job>
+	<job>
+		<name value="其它定额"/>
+		<value-per-hour value="6.3"/>
+		<column value="G"/>
+	</job>
+</root>

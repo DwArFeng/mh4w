@@ -36,6 +36,4 @@ public interface UnsafeShift {
 	 */
 	public TimeSection[] getExtraShiftSections() throws ProcessException;
 	
-
-
 }

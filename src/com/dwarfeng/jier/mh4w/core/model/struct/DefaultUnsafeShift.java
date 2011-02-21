@@ -1,6 +1,6 @@
 package com.dwarfeng.jier.mh4w.core.model.struct;
 
-import com.dwarfeng.jier.mh4w.core.util.TimeUtil;
+import com.dwarfeng.jier.mh4w.core.util.CountUtil;
 
 /**
  * 默认不安全班次。
@@ -94,8 +94,8 @@ public class DefaultUnsafeShift implements UnsafeShift {
 	}
 	
 	private TimeSection stringArray2TimeSection(String[] strs) throws Exception{
-		int start = TimeUtil.parseMinute(strs[0]);
-		int end = TimeUtil.parseMinute(strs[1]);
+		double start = CountUtil.string2Hour(strs[0]);
+		double end =  CountUtil.string2Hour(strs[1]);
 		return new TimeSection(start, end);
 	}
 

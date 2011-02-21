@@ -3,33 +3,33 @@ package com.dwarfeng.jier.mh4w.core.model.cm;
 import com.dwarfeng.dutil.basic.prog.ObverserSet;
 import com.dwarfeng.dutil.basic.str.Name;
 import com.dwarfeng.dutil.basic.threads.ExternalReadWriteThreadSafe;
-import com.dwarfeng.jier.mh4w.core.model.obv.ShiftObverser;
-import com.dwarfeng.jier.mh4w.core.model.struct.Shift;
+import com.dwarfeng.jier.mh4w.core.model.obv.JobObverser;
+import com.dwarfeng.jier.mh4w.core.model.struct.Job;
 
 /**
- * 班次模型。
+ * 工作模型。
  * <p> 模型中数据的读写均应该是线程安全的。
  * @author DwArFeng
  * @since 0.0.0-alpha
  */
-public interface ShiftModel extends ExternalReadWriteThreadSafe, ObverserSet<ShiftObverser>, Iterable<Shift>{
+public interface JobModel extends ExternalReadWriteThreadSafe, ObverserSet<JobObverser>, Iterable<Job>{
 	
 	/**
-	 * 向模型中增加指定的班次。
-	 * @param shift 指定的班次。
+	 * 向模型中增加指定的工作。
+	 * @param job 指定的工作。
 	 * @return 该操作是否改变了模型本身。
 	 */
-	public boolean add(Shift shift);
+	public boolean add(Job job);
 	
 	/**
-	 * 从模型中移除指定名称的班次。
+	 * 从模型中移除指定名称的工作。
 	 * @param name 指定的名称。
 	 * @return 该操作是否改变了模型本身。
 	 */
 	public boolean remove(String name);
 	
 	/**
-	 * 从模型中移除名称为指定名称对象的班次。
+	 * 从模型中移除名称为指定名称对象的工作。
 	 * @param name 指定的名称对象。
 	 * @return 该操作是否改变了模型本身。
 	 */
@@ -44,36 +44,36 @@ public interface ShiftModel extends ExternalReadWriteThreadSafe, ObverserSet<Shi
 	public int size();
 	
 	/**
-	 * 获取模型中是否包含指定名称的班次。
+	 * 获取模型中是否包含指定名称的工作。
 	 * @param name 指定的名称。
-	 * @return 是否包含指定名称的班次。
+	 * @return 是否包含指定名称的工作。
 	 */
 	public boolean contains(String name);
 	
 	/**
-	 * 获取模型中是否包含名称为指定名称对象的班次。
+	 * 获取模型中是否包含名称为指定名称对象的工作。
 	 * @param name 指定的名称对象。
-	 * @return 是否包含名称为指定名称对象的班次。
+	 * @return 是否包含名称为指定名称对象的工作。
 	 */
 	public default boolean contains(Name name){
 		return contains(name.getName());
 	}
 	
 	/**
-	 * 获取模型中名称为指定值的班次。
-	 * <p> 如果模型中不存在指定的班次，则返回 <code>null</code>。
+	 * 获取模型中名称为指定值的工作。
+	 * <p> 如果模型中不存在指定的工作，则返回 <code>null</code>。
 	 * @param name  指定的名称。
-	 * @return 模型中名称为指定值的班次。
+	 * @return 模型中名称为指定值的工作。
 	 */
-	public Shift get(String name);
+	public Job get(String name);
 	
 	/**
-	 * 获取模型中名称为指定的名称对象的班次。
-	 * <p> 如果模型中不存在指定的班次，则返回 <code>null</code>。
+	 * 获取模型中名称为指定的名称对象的工作。
+	 * <p> 如果模型中不存在指定的工作，则返回 <code>null</code>。
 	 * @param name 指定的名称对象。
-	 * @return 模型中名称为指定的名称对象的班次。
+	 * @return 模型中名称为指定的名称对象的工作。
 	 */
-	public default Shift get(Name name){
+	public default Job get(Name name){
 		return get(name.getName());
 	}
 	

@@ -9,15 +9,15 @@ import java.util.Objects;
  */
 public final class TimeSection {
 	
-	private final int start;
-	private final int end;
+	private final double start;
+	private final double end;
 	
 	/**
 	 * 新实例。
 	 * @param start 开始时间。
 	 * @param end 结束时间。
 	 */
-	public TimeSection(int start, int end) {
+	public TimeSection(double start, double end) {
 		super();
 		this.start = start;
 		this.end = end;
@@ -26,14 +26,14 @@ public final class TimeSection {
 	/**
 	 * @return the start
 	 */
-	public int getStart() {
+	public double getStart() {
 		return start;
 	}
 
 	/**
 	 * @return the end
 	 */
-	public int getEnd() {
+	public double getEnd() {
 		return end;
 	}
 
@@ -43,7 +43,7 @@ public final class TimeSection {
 	 */
 	@Override
 	public int hashCode() {
-		return start*1440 + end;
+		return Double.hashCode(start)*1440 + Double.hashCode(end);
 	}
 
 	/* 

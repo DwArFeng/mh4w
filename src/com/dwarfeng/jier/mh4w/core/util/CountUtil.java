@@ -5,9 +5,12 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.Objects;
 
+import com.dwarfeng.dutil.basic.num.NumberUtil;
+import com.dwarfeng.dutil.basic.num.unit.Time;
 import com.dwarfeng.jier.mh4w.core.model.cm.CoreConfigModel;
 import com.dwarfeng.jier.mh4w.core.model.cm.FileSelectModel;
 import com.dwarfeng.jier.mh4w.core.model.io.XlsOriginalAttendanceDataLoader;
+import com.dwarfeng.jier.mh4w.core.model.struct.TimeSection;
 
 /**
  *与统计有关工具方法。
@@ -65,6 +68,24 @@ public final class CountUtil {
 		
 		return new XlsOriginalAttendanceDataLoader(in, fileName, row_start, column_department, 
 				column_workNumber, column_name, column_date, column_shift, column_record);
+	}
+	
+	/**
+	 * 将时间格式（如 12:45）转换成该时间相对于零点所经过的小时。
+	 * @param string 指定的时间文本。
+	 * @return 将时间格式（如 12:45）转换成该时间相对于零点所经过的小时。
+	 */
+	public static double string2Hour(String string){
+		String[] strs = string.split(":");
+		if(strs.length == 1){
+			return Integer.parseInt(string);
+		}else if(strs.length == 2){
+			int hour = Integer.parseInt(strs[0]);
+			int minute = Integer.parseInt(strs[1]);
+			return NumberUtil.unitTrans((double) minute, Time.MIN, Time.HOR).doubleValue() + hour;
+		}else{
+			throw new IllegalArgumentException("时间工具 - 无效的传入参数：" + string);
+		}
 	}
 	
 	//禁止外部实例化。
