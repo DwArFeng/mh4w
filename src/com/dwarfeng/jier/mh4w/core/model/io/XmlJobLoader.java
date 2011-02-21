@@ -8,6 +8,7 @@ import java.util.Set;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
+import com.dwarfeng.dutil.basic.io.CT;
 import com.dwarfeng.dutil.basic.io.LoadFailedException;
 import com.dwarfeng.dutil.basic.io.StreamLoader;
 import com.dwarfeng.jier.mh4w.core.model.struct.DefaultUnsafeJob;
@@ -58,7 +59,7 @@ public class XmlJobLoader extends StreamLoader<Set<UnsafeJob>> {
 			for(Element job : jobs){
 				try{
 					String name = job.element("name").attributeValue("value");
-					String valuePerHour = job.element("value-per-hour value").attributeValue("value");
+					String valuePerHour = job.element("value-per-hour").attributeValue("value");
 					String originalColumn = job.element("column").attributeValue("value");
 					
 					UnsafeJob unsafeJob = new DefaultUnsafeJob(name, valuePerHour, originalColumn);

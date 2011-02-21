@@ -1,15 +1,12 @@
 package com.dwarfeng.jier.mh4w.core.view.gui;
 
 import java.awt.BorderLayout;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableModel;
 
 import com.dwarfeng.jier.mh4w.core.model.cm.DataListModel;
@@ -246,7 +243,7 @@ public class JOriginalAttendanceDataPanel extends JPanel implements MutilangSupp
 		}
 		
 		if(Objects.nonNull(this.originalAttendanceDataModel)){
-			originalAttendanceDataModel.removeObverser(originalAttendanceDataObverser);
+			this.originalAttendanceDataModel.removeObverser(originalAttendanceDataObverser);
 		}
 		
 		if(Objects.nonNull(originalAttendanceDataModel)){

@@ -25,6 +25,7 @@ public enum LabelStringKey implements Name{
 	AttrFrame_2(new DefaultName("AttrFrame.2")),
 	AttrFrame_3(new DefaultName("AttrFrame.3")),
 	AttrFrame_4(new DefaultName("AttrFrame.4")),
+	AttrFrame_5(new DefaultName("AttrFrame.5")),
 
 	JShiftPanel_1(new DefaultName("JShiftPanel.1")),
 	JShiftPanel_2(new DefaultName("JShiftPanel.2")),
@@ -48,6 +49,10 @@ public enum LabelStringKey implements Name{
 	JOriginalAttendanceDataPanel_4(new DefaultName("JOriginalAttendanceDataPanel.4")),
 	JOriginalAttendanceDataPanel_5(new DefaultName("JOriginalAttendanceDataPanel.5")),
 	JOriginalAttendanceDataPanel_6(new DefaultName("JOriginalAttendanceDataPanel.6")),
+	
+	JJobPanel_1(new DefaultName("JJobPanel.1")),
+	JJobPanel_2(new DefaultName("JJobPanel.2")),
+	JJobPanel_3(new DefaultName("JJobPanel.3")),
 
 	;
 

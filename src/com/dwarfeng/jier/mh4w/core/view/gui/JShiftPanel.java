@@ -24,6 +24,7 @@ import javax.swing.DefaultListCellRenderer;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.border.BevelBorder;
+import javax.swing.SwingConstants;
 
 public class JShiftPanel extends JPanel implements MutilangSupported{
 
@@ -115,8 +116,6 @@ public class JShiftPanel extends JPanel implements MutilangSupported{
 			});
 		}
 		
-		
-		
 	};
 
 	/**
@@ -147,6 +146,7 @@ public class JShiftPanel extends JPanel implements MutilangSupported{
 		adjustableBorderPanel.add(shiftsScrollPane, BorderLayout.WEST);
 		
 		shiftsLabel = new JLabel();
+		shiftsLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		shiftsLabel.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
 		shiftsLabel.setText(getLabel(LabelStringKey.JShiftPanel_1));
 		shiftsScrollPane.setColumnHeaderView(shiftsLabel);
@@ -160,6 +160,7 @@ public class JShiftPanel extends JPanel implements MutilangSupported{
 		adjustableBorderPanel.add(timeSectionsScrollPane, BorderLayout.CENTER);
 		
 		timeSectionsLabel = new JLabel();
+		timeSectionsLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		timeSectionsLabel.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
 		timeSectionsLabel.setText(getLabel(LabelStringKey.JShiftPanel_2));
 		timeSectionsScrollPane.setColumnHeaderView(timeSectionsLabel);

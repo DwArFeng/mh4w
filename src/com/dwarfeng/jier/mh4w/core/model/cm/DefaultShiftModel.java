@@ -1,8 +1,8 @@
 package com.dwarfeng.jier.mh4w.core.model.cm;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -19,7 +19,7 @@ import com.dwarfeng.jier.mh4w.core.model.struct.Shift;
  */
 public final class DefaultShiftModel extends AbstractShiftModel {
 	
-	private final Map<String, Shift> shiftMap = new HashMap<>();
+	private final Map<String, Shift> shiftMap = new LinkedHashMap<>();
 	
 	/**
 	 * ÐÂÊµÀý¡£

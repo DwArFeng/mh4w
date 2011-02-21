@@ -1,15 +1,12 @@
 package com.dwarfeng.jier.mh4w.core.view.gui;
 
 import java.awt.BorderLayout;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 import java.util.Objects;
 
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
@@ -153,6 +150,7 @@ public class JCoreConfigPanel extends JPanel implements MutilangSupported{
 		table.getColumnModel().getColumn(1).setCellRenderer(tableCellRenderer);
 		table.getColumnModel().getColumn(0).setHeaderValue(getLabel(LabelStringKey.JCoreConfigPanel_1));
 		table.getColumnModel().getColumn(1).setHeaderValue(getLabel(LabelStringKey.JCoreConfigPanel_2));
+		((JLabel) table.getTableHeader().getDefaultRenderer()).setHorizontalAlignment(JLabel.CENTER);
 		table.setFillsViewportHeight(true);
 		scrollPane.setViewportView(table);
 		

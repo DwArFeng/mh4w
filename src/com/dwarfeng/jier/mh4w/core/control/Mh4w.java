@@ -21,6 +21,7 @@ import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 
+import com.dwarfeng.dutil.basic.io.CT;
 import com.dwarfeng.dutil.basic.prog.DefaultVersion;
 import com.dwarfeng.dutil.basic.prog.RuntimeState;
 import com.dwarfeng.dutil.basic.prog.Version;
@@ -39,12 +40,14 @@ import com.dwarfeng.jier.mh4w.core.model.cm.DefaultBlockModel;
 import com.dwarfeng.jier.mh4w.core.model.cm.DefaultCoreConfigModel;
 import com.dwarfeng.jier.mh4w.core.model.cm.DefaultDataListModel;
 import com.dwarfeng.jier.mh4w.core.model.cm.DefaultFileSelectModel;
+import com.dwarfeng.jier.mh4w.core.model.cm.DefaultJobModel;
 import com.dwarfeng.jier.mh4w.core.model.cm.DefaultLoggerModel;
 import com.dwarfeng.jier.mh4w.core.model.cm.DefaultMutilangModel;
 import com.dwarfeng.jier.mh4w.core.model.cm.DefaultResourceModel;
 import com.dwarfeng.jier.mh4w.core.model.cm.DefaultShiftModel;
 import com.dwarfeng.jier.mh4w.core.model.cm.DefaultStateModel;
 import com.dwarfeng.jier.mh4w.core.model.cm.FileSelectModel;
+import com.dwarfeng.jier.mh4w.core.model.cm.JobModel;
 import com.dwarfeng.jier.mh4w.core.model.cm.LoggerModel;
 import com.dwarfeng.jier.mh4w.core.model.cm.MutilangModel;
 import com.dwarfeng.jier.mh4w.core.model.cm.ResourceModel;
@@ -57,6 +60,7 @@ import com.dwarfeng.jier.mh4w.core.model.eum.LoggerStringKey;
 import com.dwarfeng.jier.mh4w.core.model.eum.ResourceKey;
 import com.dwarfeng.jier.mh4w.core.model.io.XlsOriginalAttendanceDataLoader;
 import com.dwarfeng.jier.mh4w.core.model.io.XmlBlockLoader;
+import com.dwarfeng.jier.mh4w.core.model.io.XmlJobLoader;
 import com.dwarfeng.jier.mh4w.core.model.io.XmlLoggerLoader;
 import com.dwarfeng.jier.mh4w.core.model.io.XmlMutilangLoader;
 import com.dwarfeng.jier.mh4w.core.model.io.XmlResourceLoader;
@@ -67,9 +71,11 @@ import com.dwarfeng.jier.mh4w.core.model.obv.MutilangAdapter;
 import com.dwarfeng.jier.mh4w.core.model.obv.MutilangObverser;
 import com.dwarfeng.jier.mh4w.core.model.struct.AbstractFlow;
 import com.dwarfeng.jier.mh4w.core.model.struct.DefaultFinishedFlowTaker;
+import com.dwarfeng.jier.mh4w.core.model.struct.DefaultJob;
 import com.dwarfeng.jier.mh4w.core.model.struct.DefaultShift;
 import com.dwarfeng.jier.mh4w.core.model.struct.FinishedFlowTaker;
 import com.dwarfeng.jier.mh4w.core.model.struct.Flow;
+import com.dwarfeng.jier.mh4w.core.model.struct.Job;
 import com.dwarfeng.jier.mh4w.core.model.struct.Mutilang;
 import com.dwarfeng.jier.mh4w.core.model.struct.OriginalAttendanceData;
 import com.dwarfeng.jier.mh4w.core.model.struct.OriginalWorkticketData;
@@ -77,6 +83,7 @@ import com.dwarfeng.jier.mh4w.core.model.struct.ProcessException;
 import com.dwarfeng.jier.mh4w.core.model.struct.Resource;
 import com.dwarfeng.jier.mh4w.core.model.struct.Shift;
 import com.dwarfeng.jier.mh4w.core.model.struct.TimeSection;
+import com.dwarfeng.jier.mh4w.core.model.struct.UnsafeJob;
 import com.dwarfeng.jier.mh4w.core.model.struct.UnsafeShift;
 import com.dwarfeng.jier.mh4w.core.util.Constants;
 import com.dwarfeng.jier.mh4w.core.util.CountUtil;
@@ -206,6 +213,7 @@ public final class Mh4w {
 		private ShiftModel shiftModel = new DefaultShiftModel();
 		private DataListModel<OriginalAttendanceData> originalAttendanceDataModel = new DefaultDataListModel<>();
 		private DataListModel<OriginalWorkticketData> originalWorkticketDataModel = new DefaultDataListModel<>();
+		private JobModel jobModel = new DefaultJobModel();
 		//structs
 		private FinishedFlowTaker finishedFlowTaker = new DefaultFinishedFlowTaker(backgroundModel);
 		//obvs
@@ -323,7 +331,8 @@ public final class Mh4w {
 						mainFrame,
 						labelMutilangModel.getMutilang(),
 						coreConfigModel,
-						shiftModel
+						shiftModel,
+						jobModel
 				);
 				attrFrame.setLocationRelativeTo(mainFrame);
 				attrFrame.addObverser(attrFrameObverser);
@@ -569,6 +578,13 @@ public final class Mh4w {
 		 */
 		public DataListModel<OriginalWorkticketData> getOriginalWorkticketDataModel() {
 			return originalWorkticketDataModel;
+		}
+
+		/**
+		 * @return the jobModel
+		 */
+		public JobModel getJobModel() {
+			return jobModel;
 		}
 
 		/**
@@ -1029,13 +1045,49 @@ public final class Mh4w {
 					}
 					
 					for(UnsafeShift unsafeShift : unsafeShifts){
-						String name = unsafeShift.getName();
-						TimeSection[] shiftSections = unsafeShift.getShiftSections();
-						TimeSection[] restSections = unsafeShift.getRestSections();
-						TimeSection[] extraShiftSections = unsafeShift.getExtraShiftSections();
-						
-						Shift shift = new DefaultShift(name, shiftSections, restSections, extraShiftSections);
-						manager.getShiftModel().add(shift);
+						try{
+							String name = unsafeShift.getName();
+							TimeSection[] shiftSections = unsafeShift.getShiftSections();
+							TimeSection[] restSections = unsafeShift.getRestSections();
+							TimeSection[] extraShiftSections = unsafeShift.getExtraShiftSections();
+							
+							Shift shift = new DefaultShift(name, shiftSections, restSections, extraShiftSections);
+							manager.getShiftModel().add(shift);
+						}catch (ProcessException e) {
+							warn(LoggerStringKey.Mh4w_FlowProvider_44, e);
+						}
+					}
+					
+					//加载工作信息
+					info(LoggerStringKey.Mh4w_FlowProvider_43);
+					message(LoggerStringKey.Mh4w_FlowProvider_43);
+					Set<UnsafeJob> unsafeJobs = new LinkedHashSet<>();
+					XmlJobLoader jobLoader = null;
+					try{
+						jobLoader = new XmlJobLoader(getResource(ResourceKey.DEFINE_JOBS).openInputStream());
+						jobLoader.load(unsafeJobs);
+					}catch(IOException e){
+						warn(LoggerStringKey.Mh4w_FlowProvider_4, e);
+						getResource(ResourceKey.DEFINE_JOBS).reset();
+						jobLoader = new XmlJobLoader(getResource(ResourceKey.DEFINE_JOBS).openInputStream());
+						jobLoader.load(unsafeJobs);
+					}finally{
+						if(Objects.nonNull(jobLoader)){
+							jobLoader.close();
+						}
+					}
+					
+					for(UnsafeJob unsafeJob : unsafeJobs){
+						try{
+							String name = unsafeJob.getName();
+							double valuePerHour = unsafeJob.getValuePerHour();
+							int originalColumn = unsafeJob.getOriginalColumn();
+							
+							Job job = new DefaultJob(name, valuePerHour, originalColumn);
+							manager.getJobModel().add(job);
+						}catch (ProcessException e) {
+							warn(LoggerStringKey.Mh4w_FlowProvider_45, e);
+						}
 					}
 					
 					//生成视图，并使其可见。
@@ -1519,13 +1571,50 @@ public final class Mh4w {
 					}
 					
 					for(UnsafeShift unsafeShift : unsafeShifts){
-						String name = unsafeShift.getName();
-						TimeSection[] shiftSections = unsafeShift.getShiftSections();
-						TimeSection[] restSections = unsafeShift.getRestSections();
-						TimeSection[] extraShiftSections = unsafeShift.getExtraShiftSections();
-						
-						Shift shift = new DefaultShift(name, shiftSections, restSections, extraShiftSections);
-						manager.getShiftModel().add(shift);
+						try{
+							String name = unsafeShift.getName();
+							TimeSection[] shiftSections = unsafeShift.getShiftSections();
+							TimeSection[] restSections = unsafeShift.getRestSections();
+							TimeSection[] extraShiftSections = unsafeShift.getExtraShiftSections();
+							
+							Shift shift = new DefaultShift(name, shiftSections, restSections, extraShiftSections);
+							manager.getShiftModel().add(shift);
+						}catch (ProcessException e) {
+							warn(LoggerStringKey.Mh4w_FlowProvider_44, e);
+						}
+					}
+					
+					//加载工作信息
+					info(LoggerStringKey.Mh4w_FlowProvider_43);
+					message(LoggerStringKey.Mh4w_FlowProvider_43);
+					manager.getJobModel().clear();
+					Set<UnsafeJob> unsafeJobs = new LinkedHashSet<>();
+					XmlJobLoader jobLoader = null;
+					try{
+						jobLoader = new XmlJobLoader(getResource(ResourceKey.DEFINE_JOBS).openInputStream());
+						jobLoader.load(unsafeJobs);
+					}catch(IOException e){
+						warn(LoggerStringKey.Mh4w_FlowProvider_4, e);
+						getResource(ResourceKey.DEFINE_JOBS).reset();
+						jobLoader = new XmlJobLoader(getResource(ResourceKey.DEFINE_JOBS).openInputStream());
+						jobLoader.load(unsafeJobs);
+					}finally{
+						if(Objects.nonNull(jobLoader)){
+							jobLoader.close();
+						}
+					}
+					
+					for(UnsafeJob unsafeJob : unsafeJobs){
+						try{
+							String name = unsafeJob.getName();
+							double valuePerHour = unsafeJob.getValuePerHour();
+							int originalColumn = unsafeJob.getOriginalColumn();
+							
+							Job job = new DefaultJob(name, valuePerHour, originalColumn);
+							manager.getJobModel().add(job);
+						}catch (ProcessException e) {
+							warn(LoggerStringKey.Mh4w_FlowProvider_45, e);
+						}
 					}
 					
 					//可能会引起统计结果的过时

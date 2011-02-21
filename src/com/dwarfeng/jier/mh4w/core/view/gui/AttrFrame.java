@@ -3,6 +3,8 @@ package com.dwarfeng.jier.mh4w.core.view.gui;
 import java.awt.BorderLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.Collections;
@@ -18,14 +20,13 @@ import javax.swing.JTabbedPane;
 
 import com.dwarfeng.dutil.basic.prog.ObverserSet;
 import com.dwarfeng.jier.mh4w.core.model.cm.CoreConfigModel;
+import com.dwarfeng.jier.mh4w.core.model.cm.JobModel;
 import com.dwarfeng.jier.mh4w.core.model.cm.ShiftModel;
 import com.dwarfeng.jier.mh4w.core.model.eum.LabelStringKey;
 import com.dwarfeng.jier.mh4w.core.model.struct.Mutilang;
 import com.dwarfeng.jier.mh4w.core.model.struct.MutilangSupported;
 import com.dwarfeng.jier.mh4w.core.util.Constants;
 import com.dwarfeng.jier.mh4w.core.view.obv.AttrFrameObverser;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
 
 public class AttrFrame extends JDialog implements MutilangSupported, ObverserSet<AttrFrameObverser>{
 	
@@ -42,6 +43,7 @@ public class AttrFrame extends JDialog implements MutilangSupported, ObverserSet
 	private final JTabbedPane tabbedPane;
 	private final JShiftPanel shiftPanel;
 	private final JCoreConfigPanel coreConfigPanel;
+	private final JJobPanel jobPanel;
 	
 	/*
 	 * 非 final 域。
@@ -59,14 +61,15 @@ public class AttrFrame extends JDialog implements MutilangSupported, ObverserSet
 	 * 新实例。
 	 */
 	public AttrFrame() {
-		this(null, Constants.getDefaultLabelMutilang(), null, null);
+		this(null, Constants.getDefaultLabelMutilang(), null, null, null);
 	}
 	
 	/**
 	 * 
 	 * @param mutilang
 	 */
-	public AttrFrame(JFrame jframe, Mutilang mutilang, CoreConfigModel coreConfigModel, ShiftModel shiftModel) {
+	public AttrFrame(JFrame jframe, Mutilang mutilang, CoreConfigModel coreConfigModel, ShiftModel shiftModel,
+			JobModel jobModel) {
 		super(jframe, true);
 		
 		Objects.requireNonNull(mutilang, "入口参数 mutilang 不能为 null。");
@@ -120,6 +123,9 @@ public class AttrFrame extends JDialog implements MutilangSupported, ObverserSet
 		
 		shiftPanel = new JShiftPanel(mutilang, shiftModel);
 		tabbedPane.addTab(getLabel(LabelStringKey.AttrFrame_4), null, shiftPanel, null);
+		
+		jobPanel = new JJobPanel(mutilang, jobModel);
+		tabbedPane.addTab(getLabel(LabelStringKey.AttrFrame_5), null, jobPanel, null);
 	}
 
 	/*
@@ -144,6 +150,7 @@ public class AttrFrame extends JDialog implements MutilangSupported, ObverserSet
 		//更新子面板
 		shiftPanel.setMutilang(mutilang);
 		coreConfigPanel.setMutilang(mutilang);
+		jobPanel.setMutilang(mutilang);
 		
 		//更新各标签的文本。
 		setTitle(getLabel(LabelStringKey.AttrFrame_2));
@@ -152,6 +159,7 @@ public class AttrFrame extends JDialog implements MutilangSupported, ObverserSet
 		
 		tabbedPane.setTitleAt(0, getLabel(LabelStringKey.AttrFrame_3));
 		tabbedPane.setTitleAt(1, getLabel(LabelStringKey.AttrFrame_4));
+		tabbedPane.setTitleAt(2, getLabel(LabelStringKey.AttrFrame_5));
 
 		return true;
 	}
@@ -200,6 +208,8 @@ public class AttrFrame extends JDialog implements MutilangSupported, ObverserSet
 	public void dispose() {
 		coreConfigPanel.dispose();
 		shiftPanel.dispose();
+		jobPanel.dispose();
+		
 		super.dispose();
 	}
 

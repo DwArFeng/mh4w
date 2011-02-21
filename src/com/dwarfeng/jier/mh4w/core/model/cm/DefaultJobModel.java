@@ -1,8 +1,8 @@
 package com.dwarfeng.jier.mh4w.core.model.cm;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -12,7 +12,7 @@ import com.dwarfeng.jier.mh4w.core.model.struct.Job;
 
 public final class DefaultJobModel extends AbstractJobModel {
 	
-	private final Map<String, Job> jobMap = new HashMap<>();
+	private final Map<String, Job> jobMap = new LinkedHashMap<>();
 	
 	/**
 	 * ÐÂÊµÀý¡£
