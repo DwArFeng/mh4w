@@ -303,7 +303,8 @@ public final class Mh4w {
 			protected DetailFrame newDetailFrameImpl() {
 				DetailFrame detailFrame = new DetailFrame(
 						labelMutilangModel.getMutilang(),
-						originalAttendanceDataModel
+						originalAttendanceDataModel,
+						originalWorkticketDataModel
 				);
 				detailFrame.addObverser(detailFrameObverser);
 				return detailFrame;

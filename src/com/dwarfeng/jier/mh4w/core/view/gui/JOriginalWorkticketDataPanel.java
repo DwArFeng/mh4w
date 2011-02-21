@@ -15,13 +15,12 @@ import com.dwarfeng.jier.mh4w.core.model.obv.ListOperateAdapter;
 import com.dwarfeng.jier.mh4w.core.model.struct.Mutilang;
 import com.dwarfeng.jier.mh4w.core.model.struct.MutilangSupported;
 import com.dwarfeng.jier.mh4w.core.model.struct.OriginalAttendanceData;
+import com.dwarfeng.jier.mh4w.core.model.struct.OriginalWorkticketData;
 import com.dwarfeng.jier.mh4w.core.util.Constants;
 import com.dwarfeng.jier.mh4w.core.util.Mh4wUtil;
 
-public class JOriginalAttendanceDataPanel extends JPanel implements MutilangSupported{
+public class JOriginalWorkticketDataPanel extends JPanel implements MutilangSupported{
 	
-	private static final long serialVersionUID = 5220449504180055729L;
-
 	/**多语言接口*/
 	private Mutilang mutilang;
 	
@@ -33,14 +32,14 @@ public class JOriginalAttendanceDataPanel extends JPanel implements MutilangSupp
 	/*
 	 * 各模型。
 	 */
-	private DataListModel<OriginalAttendanceData> originalAttendanceDataModel;
+	private DataListModel<OriginalWorkticketData> originalWorkticketDataModel;
 	
 	/*
 	 * 视图模型以及渲染
 	 */
 	private DefaultTableModel tableModel = new DefaultTableModel(){
 
-		private static final long serialVersionUID = -5902936985460644574L;
+		private static final long serialVersionUID = -3674325199574695500L;
 
 		/*
 		 * (non-Javadoc)
@@ -48,7 +47,7 @@ public class JOriginalAttendanceDataPanel extends JPanel implements MutilangSupp
 		 */
 		@Override
 		public int getColumnCount() {
-			return 6;
+			return 5;
 		};
 		
 		/*
@@ -64,14 +63,14 @@ public class JOriginalAttendanceDataPanel extends JPanel implements MutilangSupp
 	/*
 	 * 各模型的观察器。
 	 */
-	private final ListOperateAdapter<OriginalAttendanceData> originalAttendanceDataObverser = new ListOperateAdapter<OriginalAttendanceData>() {
+	private final ListOperateAdapter<OriginalWorkticketData> originalWorkticketObverser = new ListOperateAdapter<OriginalWorkticketData>() {
 
 		/*
 		 * (non-Javadoc)
 		 * @see com.dwarfeng.jier.mh4w.core.model.obv.ListOperateAdapter#fireAdded(int, java.lang.Object)
 		 */
 		@Override
-		public void fireAdded(int index, OriginalAttendanceData value) {
+		public void fireAdded(int index, OriginalWorkticketData value) {
 			Mh4wUtil.invokeInEventQueue(new Runnable() {
 				@Override
 				public void run() {
@@ -79,9 +78,8 @@ public class JOriginalAttendanceDataPanel extends JPanel implements MutilangSupp
 						value.getDepartement(),
 						value.getWorkNumber(),
 						value.getName(),
-						value.getDate(),
-						value.getShift(),
-						value.getAttendanceRecord()
+						value.getJob().getName(),
+						value.getWorkticket()
 					});
 				}
 			});
@@ -92,7 +90,7 @@ public class JOriginalAttendanceDataPanel extends JPanel implements MutilangSupp
 		 * @see com.dwarfeng.jier.mh4w.core.model.obv.ListOperateAdapter#fireChanged(int, java.lang.Object, java.lang.Object)
 		 */
 		@Override
-		public void fireChanged(int index, OriginalAttendanceData oldValue, OriginalAttendanceData newValue) {
+		public void fireChanged(int index, OriginalWorkticketData oldValue, OriginalWorkticketData newValue) {
 			Mh4wUtil.invokeInEventQueue(new Runnable() {
 				@Override
 				public void run() {
@@ -101,9 +99,8 @@ public class JOriginalAttendanceDataPanel extends JPanel implements MutilangSupp
 						newValue.getDepartement(),
 						newValue.getWorkNumber(),
 						newValue.getName(),
-						newValue.getDate(),
-						newValue.getShift(),
-						newValue.getAttendanceRecord()
+						newValue.getJob().getName(),
+						newValue.getWorkticket()
 					});
 				}
 			});
@@ -145,7 +142,7 @@ public class JOriginalAttendanceDataPanel extends JPanel implements MutilangSupp
 	/**
 	 * 新实例。
 	 */
-	public JOriginalAttendanceDataPanel() {
+	public JOriginalWorkticketDataPanel() {
 		this(Constants.getDefaultLabelMutilang(), null);
 	}
 	
@@ -153,7 +150,7 @@ public class JOriginalAttendanceDataPanel extends JPanel implements MutilangSupp
 	 * 新实例。
 	 * @param mutilang
 	 */
-	public JOriginalAttendanceDataPanel(Mutilang mutilang, DataListModel<OriginalAttendanceData> originalAttendanceDataModel) {
+	public JOriginalWorkticketDataPanel(Mutilang mutilang, DataListModel<OriginalWorkticketData> originalWorkticketDataModel) {
 		Objects.requireNonNull(mutilang, "入口参数 mutilang 不能为 null。");
 		
 		this.mutilang = mutilang;
@@ -161,43 +158,40 @@ public class JOriginalAttendanceDataPanel extends JPanel implements MutilangSupp
 		setLayout(new BorderLayout(0, 0));
 		
 		JScrollPane scrollPane = new JScrollPane();
-		add(scrollPane, BorderLayout.CENTER);
+		add(scrollPane);
 		
 		table = new JTable();
-		table.setFillsViewportHeight(true);
 		table.setModel(tableModel);
-		table.getColumnModel().getColumn(0).setHeaderValue(getLabel(LabelStringKey.JOriginalAttendanceDataPanel_1));
-		table.getColumnModel().getColumn(1).setHeaderValue(getLabel(LabelStringKey.JOriginalAttendanceDataPanel_2));
-		table.getColumnModel().getColumn(2).setHeaderValue(getLabel(LabelStringKey.JOriginalAttendanceDataPanel_3));
-		table.getColumnModel().getColumn(3).setHeaderValue(getLabel(LabelStringKey.JOriginalAttendanceDataPanel_4));
-		table.getColumnModel().getColumn(4).setHeaderValue(getLabel(LabelStringKey.JOriginalAttendanceDataPanel_5));
-		table.getColumnModel().getColumn(5).setHeaderValue(getLabel(LabelStringKey.JOriginalAttendanceDataPanel_6));
+		table.getColumnModel().getColumn(0).setHeaderValue(getLabel(LabelStringKey.JOriginalWorkticketDataPanel_1));
+		table.getColumnModel().getColumn(1).setHeaderValue(getLabel(LabelStringKey.JOriginalWorkticketDataPanel_2));
+		table.getColumnModel().getColumn(2).setHeaderValue(getLabel(LabelStringKey.JOriginalWorkticketDataPanel_3));
+		table.getColumnModel().getColumn(3).setHeaderValue(getLabel(LabelStringKey.JOriginalWorkticketDataPanel_4));
+		table.getColumnModel().getColumn(4).setHeaderValue(getLabel(LabelStringKey.JOriginalWorkticketDataPanel_5));
 
 		((JLabel) table.getTableHeader().getDefaultRenderer()).setHorizontalAlignment(JLabel.CENTER);
-		
+		table.setFillsViewportHeight(true);
 		scrollPane.setViewportView(table);
-
-		if(Objects.nonNull(originalAttendanceDataModel)){
-			originalAttendanceDataModel.addObverser(originalAttendanceDataObverser);
-			originalAttendanceDataModel.getLock().readLock().lock();
+		
+		if(Objects.nonNull(originalWorkticketDataModel)){
+			originalWorkticketDataModel.addObverser(originalWorkticketObverser);
+			originalWorkticketDataModel.getLock().readLock().lock();
 			try{
-				for(OriginalAttendanceData originalAttendanceData : originalAttendanceDataModel){
+				for(OriginalWorkticketData originalWorkticketData : originalWorkticketDataModel){
 					tableModel.addRow(new Object[]{
-							originalAttendanceData.getDepartement(),
-							originalAttendanceData.getWorkNumber(),
-							originalAttendanceData.getName(),
-							originalAttendanceData.getDate(),
-							originalAttendanceData.getShift(),
-							originalAttendanceData.getAttendanceRecord()
-						});
+						originalWorkticketData.getDepartement(),
+						originalWorkticketData.getWorkNumber(),
+						originalWorkticketData.getName(),
+						originalWorkticketData.getJob().getName(),
+						originalWorkticketData.getWorkticket()
+					});
 				}
 			}finally {
-				originalAttendanceDataModel.getLock().readLock().unlock();
+				originalWorkticketDataModel.getLock().readLock().unlock();
 			}
 		}
 		
-		this.originalAttendanceDataModel = originalAttendanceDataModel;
-		
+		this.originalWorkticketDataModel = originalWorkticketDataModel;
+
 	}
 
 	/*
@@ -220,64 +214,62 @@ public class JOriginalAttendanceDataPanel extends JPanel implements MutilangSupp
 		this.mutilang = mutilang;
 		
 		//更新各标签的文本。
-		table.getColumnModel().getColumn(0).setHeaderValue(getLabel(LabelStringKey.JOriginalAttendanceDataPanel_1));
-		table.getColumnModel().getColumn(1).setHeaderValue(getLabel(LabelStringKey.JOriginalAttendanceDataPanel_2));
-		table.getColumnModel().getColumn(2).setHeaderValue(getLabel(LabelStringKey.JOriginalAttendanceDataPanel_3));
-		table.getColumnModel().getColumn(3).setHeaderValue(getLabel(LabelStringKey.JOriginalAttendanceDataPanel_4));
-		table.getColumnModel().getColumn(4).setHeaderValue(getLabel(LabelStringKey.JOriginalAttendanceDataPanel_5));
-		table.getColumnModel().getColumn(5).setHeaderValue(getLabel(LabelStringKey.JOriginalAttendanceDataPanel_6));
+		table.getColumnModel().getColumn(0).setHeaderValue(getLabel(LabelStringKey.JOriginalWorkticketDataPanel_1));
+		table.getColumnModel().getColumn(1).setHeaderValue(getLabel(LabelStringKey.JOriginalWorkticketDataPanel_2));
+		table.getColumnModel().getColumn(2).setHeaderValue(getLabel(LabelStringKey.JOriginalWorkticketDataPanel_3));
+		table.getColumnModel().getColumn(3).setHeaderValue(getLabel(LabelStringKey.JOriginalWorkticketDataPanel_4));
+		table.getColumnModel().getColumn(4).setHeaderValue(getLabel(LabelStringKey.JOriginalWorkticketDataPanel_5));
 		
 		return true;
 	}
 
 	/**
-	 * @return the originalAttendanceDataModel
+	 * @return the originalWorkticketDataModel
 	 */
-	public DataListModel<OriginalAttendanceData> getOriginalAttendanceDataModel() {
-		return originalAttendanceDataModel;
+	public DataListModel<OriginalWorkticketData> getOriginalWorkticketDataModel() {
+		return originalWorkticketDataModel;
 	}
 
 	/**
-	 * @param originalAttendanceDataModel the originalAttendanceDataModel to set
+	 * @param originalWorkticketDataModel the originalWorkticketDataModel to set
 	 */
-	public void setOriginalAttendanceDataModel(DataListModel<OriginalAttendanceData> originalAttendanceDataModel) {
+	public void setOriginalWorkticketDataModel(DataListModel<OriginalWorkticketData> originalWorkticketDataModel) {
 		int count = tableModel.getRowCount();
 		for(int i = 0 ; i < count ; i ++){
 			tableModel.removeRow(0);
 		}
 		
-		if(Objects.nonNull(this.originalAttendanceDataModel)){
-			this.originalAttendanceDataModel.removeObverser(originalAttendanceDataObverser);
+		if(Objects.nonNull(this.originalWorkticketDataModel)){
+			this.originalWorkticketDataModel.removeObverser(originalWorkticketObverser);
 		}
 		
-		if(Objects.nonNull(originalAttendanceDataModel)){
-			originalAttendanceDataModel.addObverser(originalAttendanceDataObverser);
-			originalAttendanceDataModel.getLock().readLock().lock();
+		if(Objects.nonNull(originalWorkticketDataModel)){
+			originalWorkticketDataModel.addObverser(originalWorkticketObverser);
+			originalWorkticketDataModel.getLock().readLock().lock();
 			try{
-				for(OriginalAttendanceData originalAttendanceData : originalAttendanceDataModel){
+				for(OriginalWorkticketData originalWorkticketData : originalWorkticketDataModel){
 					tableModel.addRow(new Object[]{
-							originalAttendanceData.getDepartement(),
-							originalAttendanceData.getWorkNumber(),
-							originalAttendanceData.getName(),
-							originalAttendanceData.getDate(),
-							originalAttendanceData.getShift(),
-							originalAttendanceData.getAttendanceRecord()
-						});
+						originalWorkticketData.getDepartement(),
+						originalWorkticketData.getWorkNumber(),
+						originalWorkticketData.getName(),
+						originalWorkticketData.getJob().getName(),
+						originalWorkticketData.getWorkticket()
+					});
 				}
 			}finally {
-				originalAttendanceDataModel.getLock().readLock().unlock();
+				originalWorkticketDataModel.getLock().readLock().unlock();
 			}
 		}
 		
-		this.originalAttendanceDataModel = originalAttendanceDataModel;
+		this.originalWorkticketDataModel = originalWorkticketDataModel;
 	}
 
 	/**
 	 * 释放资源。
 	 */
 	public void dispose() {
-		if(Objects.nonNull(originalAttendanceDataModel)){
-			originalAttendanceDataModel.removeObverser(originalAttendanceDataObverser);
+		if(Objects.nonNull(originalWorkticketDataModel)){
+			originalWorkticketDataModel.removeObverser(originalWorkticketObverser);
 		}
 	}
 

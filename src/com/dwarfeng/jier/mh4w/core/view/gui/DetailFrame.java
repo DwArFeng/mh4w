@@ -16,6 +16,7 @@ import com.dwarfeng.jier.mh4w.core.model.eum.LabelStringKey;
 import com.dwarfeng.jier.mh4w.core.model.struct.Mutilang;
 import com.dwarfeng.jier.mh4w.core.model.struct.MutilangSupported;
 import com.dwarfeng.jier.mh4w.core.model.struct.OriginalAttendanceData;
+import com.dwarfeng.jier.mh4w.core.model.struct.OriginalWorkticketData;
 import com.dwarfeng.jier.mh4w.core.util.Constants;
 import com.dwarfeng.jier.mh4w.core.view.obv.DetailFrameObverser;
 import java.awt.event.WindowAdapter;
@@ -34,13 +35,10 @@ public class DetailFrame extends JFrame implements MutilangSupported, ObverserSe
 	 */
 	private final JTabbedPane tabbedPane;
 	private final JOriginalAttendanceDataPanel originalAttendanceDataPanel;
+	private final JOriginalWorkticketDataPanel originalWorkticketDataPanel;
 	
 	/*
-	 * 非 final 域。
-	 */
-	
-	/*
-	 * 各模型。
+	 * 视图模型以及渲染
 	 */
 	
 	/*
@@ -51,16 +49,17 @@ public class DetailFrame extends JFrame implements MutilangSupported, ObverserSe
 	 * 新实例。
 	 */
 	public DetailFrame() {
-		this(Constants.getDefaultLabelMutilang(), null);
+		this(Constants.getDefaultLabelMutilang(), null, null);
 	}
 	
 	/**
 	 * 新实例。
 	 * @param mutilang
 	 */
-	public DetailFrame(Mutilang mutilang, DataListModel<OriginalAttendanceData> originalAttendanceDataModel) {
+	public DetailFrame(Mutilang mutilang, DataListModel<OriginalAttendanceData> originalAttendanceDataModel,
+			DataListModel<OriginalWorkticketData> originalWorkticketDataModel) {
 		Objects.requireNonNull(mutilang, "入口参数 mutilang 不能为 null。");
-		
+	
 		this.mutilang = mutilang;
 		
 		addWindowListener(new WindowAdapter() {
@@ -81,8 +80,8 @@ public class DetailFrame extends JFrame implements MutilangSupported, ObverserSe
 		originalAttendanceDataPanel = new JOriginalAttendanceDataPanel(mutilang, originalAttendanceDataModel);
 		tabbedPane.addTab(getLabel(LabelStringKey.DetailFrame_2) , null, originalAttendanceDataPanel, null);
 		
-		JPanel panel_3 = new JPanel();
-		tabbedPane.addTab("New tab", null, panel_3, null);
+		originalWorkticketDataPanel = new JOriginalWorkticketDataPanel(mutilang, originalWorkticketDataModel);
+		tabbedPane.addTab("New tab", null, originalWorkticketDataPanel, null);
 		
 		JPanel panel_4 = new JPanel();
 		tabbedPane.addTab("New tab", null, panel_4, null);

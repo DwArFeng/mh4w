@@ -7,10 +7,8 @@ import java.util.Objects;
 import com.dwarfeng.dutil.basic.io.LoadFailedException;
 import com.dwarfeng.dutil.basic.io.StreamLoader;
 import com.dwarfeng.jier.mh4w.core.model.cm.DataListModel;
-import com.dwarfeng.jier.mh4w.core.model.struct.DefaultOriginalAttendanceData;
 import com.dwarfeng.jier.mh4w.core.model.struct.DefaultOriginalWorkticketData;
 import com.dwarfeng.jier.mh4w.core.model.struct.Job;
-import com.dwarfeng.jier.mh4w.core.model.struct.OriginalAttendanceData;
 import com.dwarfeng.jier.mh4w.core.model.struct.OriginalWorkticketData;
 
 /**

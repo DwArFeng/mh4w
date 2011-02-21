@@ -8,7 +8,6 @@ import java.util.Set;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
-import com.dwarfeng.dutil.basic.io.CT;
 import com.dwarfeng.dutil.basic.io.LoadFailedException;
 import com.dwarfeng.dutil.basic.io.StreamLoader;
 import com.dwarfeng.jier.mh4w.core.model.struct.DefaultUnsafeJob;
