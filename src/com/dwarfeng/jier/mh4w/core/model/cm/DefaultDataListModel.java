@@ -91,7 +91,7 @@ public class DefaultDataListModel<E> extends AbstarctDataListModel<E> {
 		try{
 			return delegate.iterator();
 		}finally {
-			lock.writeLock().unlock();
+			lock.readLock().unlock();
 		}
 	}
 

@@ -30,13 +30,14 @@ import com.dwarfeng.dutil.develop.cfg.ConfigAdapter;
 import com.dwarfeng.dutil.develop.cfg.ConfigKey;
 import com.dwarfeng.dutil.develop.cfg.ConfigObverser;
 import com.dwarfeng.dutil.develop.cfg.io.PropConfigLoader;
-import com.dwarfeng.dutil.develop.cfg.io.PropConfigSaver;
 import com.dwarfeng.jier.mh4w.core.model.cm.BackgroundModel;
 import com.dwarfeng.jier.mh4w.core.model.cm.BlockModel;
 import com.dwarfeng.jier.mh4w.core.model.cm.CoreConfigModel;
+import com.dwarfeng.jier.mh4w.core.model.cm.DataListModel;
 import com.dwarfeng.jier.mh4w.core.model.cm.DefaultBackgroundModel;
 import com.dwarfeng.jier.mh4w.core.model.cm.DefaultBlockModel;
 import com.dwarfeng.jier.mh4w.core.model.cm.DefaultCoreConfigModel;
+import com.dwarfeng.jier.mh4w.core.model.cm.DefaultDataListModel;
 import com.dwarfeng.jier.mh4w.core.model.cm.DefaultFileSelectModel;
 import com.dwarfeng.jier.mh4w.core.model.cm.DefaultLoggerModel;
 import com.dwarfeng.jier.mh4w.core.model.cm.DefaultMutilangModel;
@@ -54,6 +55,7 @@ import com.dwarfeng.jier.mh4w.core.model.eum.CoreConfig;
 import com.dwarfeng.jier.mh4w.core.model.eum.CountState;
 import com.dwarfeng.jier.mh4w.core.model.eum.LoggerStringKey;
 import com.dwarfeng.jier.mh4w.core.model.eum.ResourceKey;
+import com.dwarfeng.jier.mh4w.core.model.io.XlsOriginalAttendanceDataLoader;
 import com.dwarfeng.jier.mh4w.core.model.io.XmlBlockLoader;
 import com.dwarfeng.jier.mh4w.core.model.io.XmlLoggerLoader;
 import com.dwarfeng.jier.mh4w.core.model.io.XmlMutilangLoader;
@@ -69,12 +71,15 @@ import com.dwarfeng.jier.mh4w.core.model.struct.DefaultShift;
 import com.dwarfeng.jier.mh4w.core.model.struct.FinishedFlowTaker;
 import com.dwarfeng.jier.mh4w.core.model.struct.Flow;
 import com.dwarfeng.jier.mh4w.core.model.struct.Mutilang;
+import com.dwarfeng.jier.mh4w.core.model.struct.OriginalAttendanceData;
+import com.dwarfeng.jier.mh4w.core.model.struct.OriginalWorkticketData;
 import com.dwarfeng.jier.mh4w.core.model.struct.ProcessException;
 import com.dwarfeng.jier.mh4w.core.model.struct.Resource;
 import com.dwarfeng.jier.mh4w.core.model.struct.Shift;
 import com.dwarfeng.jier.mh4w.core.model.struct.TimeSection;
 import com.dwarfeng.jier.mh4w.core.model.struct.UnsafeShift;
 import com.dwarfeng.jier.mh4w.core.util.Constants;
+import com.dwarfeng.jier.mh4w.core.util.CountUtil;
 import com.dwarfeng.jier.mh4w.core.util.Mh4wUtil;
 import com.dwarfeng.jier.mh4w.core.view.ctrl.AbstractGuiController;
 import com.dwarfeng.jier.mh4w.core.view.ctrl.GuiController;
@@ -199,6 +204,8 @@ public final class Mh4w {
 		private FileSelectModel fileSelectModel = new DefaultFileSelectModel();
 		private StateModel stateModel = new DefaultStateModel();
 		private ShiftModel shiftModel = new DefaultShiftModel();
+		private DataListModel<OriginalAttendanceData> originalAttendanceDataModel = new DefaultDataListModel<>();
+		private DataListModel<OriginalWorkticketData> originalWorkticketDataModel = new DefaultDataListModel<>();
 		//structs
 		private FinishedFlowTaker finishedFlowTaker = new DefaultFinishedFlowTaker(backgroundModel);
 		//obvs
@@ -280,7 +287,10 @@ public final class Mh4w {
 			 */
 			@Override
 			protected DetailFrame newDetailFrameImpl() {
-				DetailFrame detailFrame = new DetailFrame();
+				DetailFrame detailFrame = new DetailFrame(
+						labelMutilangModel.getMutilang(),
+						originalAttendanceDataModel
+				);
 				detailFrame.addObverser(detailFrameObverser);
 				return detailFrame;
 			}
@@ -403,6 +413,16 @@ public final class Mh4w {
 			
 		};
 		private final DetailFrameObverser detailFrameObverser = new DetailFrameAdapter() {
+			
+			/*
+			 * (non-Javadoc)
+			 * @see com.dwarfeng.jier.mh4w.core.view.obv.DetailFrameAdapter#fireHideDetailFrame()
+			 */
+			@Override
+			public void fireHideDetailFrame() {
+				manager.getBackgroundModel().submit(flowProvider.newHideDetailFrameFlow());
+			};
+			
 		};
 		private final AttrFrameObverser attrFrameObverser = new AttrFrameAdapter() {
 			
@@ -523,8 +543,25 @@ public final class Mh4w {
 			return stateModel;
 		}
 
+		/**
+		 * @return the shiftModel
+		 */
 		public ShiftModel getShiftModel() {
 			return shiftModel;
+		}
+
+		/**
+		 * @return the originalAttendanceDataModel
+		 */
+		public DataListModel<OriginalAttendanceData> getOriginalAttendanceDataModel() {
+			return originalAttendanceDataModel;
+		}
+
+		/**
+		 * @return the originalWorkticketDataModel
+		 */
+		public DataListModel<OriginalWorkticketData> getOriginalWorkticketDataModel() {
+			return originalWorkticketDataModel;
 		}
 
 		/**
@@ -1247,6 +1284,7 @@ public final class Mh4w {
 						@Override
 						public void run() {
 							manager.guiController.setDetailFrameVisible(true);
+							manager.guiController.setDetailButtonSelect(true, true);
 						}
 					});
 					
@@ -1281,6 +1319,7 @@ public final class Mh4w {
 						@Override
 						public void run() {
 							manager.guiController.setDetailFrameVisible(false);
+							manager.guiController.setDetailButtonSelect(false, true);
 						}
 					});
 					
@@ -1296,7 +1335,7 @@ public final class Mh4w {
 		private final class CountFlow extends AbstractMayChangeStateFlow{
 		
 			public CountFlow() {
-				super(BlockKey.SELECT_ATTENDANCE_FILE);
+				super(BlockKey.COUNT);
 			}
 		
 			/*
@@ -1308,6 +1347,31 @@ public final class Mh4w {
 				try{
 					if(getState() != RuntimeState.RUNNING){
 						throw new IllegalStateException("程序还未启动或已经结束");
+					}
+					
+					/*
+					 * -------------------------- 统计算法 -------------------------
+					 * 1、读取原始考勤数据
+					 * 2、读取原始工票数据
+					 * 
+					 * 
+					 * 
+					 */
+					
+					info(LoggerStringKey.Mh4w_FlowProvider_41);
+					
+					//读取原始考勤数据
+					info(LoggerStringKey.Mh4w_FlowProvider_42);
+					message(LoggerStringKey.Mh4w_FlowProvider_42);
+					XlsOriginalAttendanceDataLoader originalAttendanceDataLoader = null;
+					try{
+						originalAttendanceDataLoader = CountUtil.newXlsOriginalAttendanceDataLoader(
+								manager.getFileSelectModel(), manager.getCoreConfigModel());
+						originalAttendanceDataLoader.load(manager.getOriginalAttendanceDataModel());
+					}finally {
+						if(Objects.nonNull(originalAttendanceDataLoader)){
+							originalAttendanceDataLoader.close();
+						}
 					}
 					
 					//TODO 实现统计算法

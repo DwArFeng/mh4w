@@ -201,7 +201,7 @@ public class JShiftPanel extends JPanel implements MutilangSupported{
 	@Override
 	public boolean setMutilang(Mutilang mutilang) {
 		if(Objects.isNull(mutilang)) return false;
-		if(Objects.equals(mutilang, this.mutilang)) return false;
+		if(Objects.equals(this.mutilang, mutilang)) return false;
 		this.mutilang = mutilang;
 		
 		//更新各标签的文本。

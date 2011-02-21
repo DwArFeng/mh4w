@@ -17,6 +17,9 @@ public enum LabelStringKey implements Name{
 	MainFrame_4(new DefaultName("MainFrame.4")),
 	MainFrame_5(new DefaultName("MainFrame.5")),
 	MainFrame_6(new DefaultName("MainFrame.6")),
+	
+	DetailFrame_1(new DefaultName("DetailFrame.1")),
+	DetailFrame_2(new DefaultName("DetailFrame.2")),
 
 	AttrFrame_1(new DefaultName("AttrFrame.1")),
 	AttrFrame_2(new DefaultName("AttrFrame.2")),
@@ -38,6 +41,13 @@ public enum LabelStringKey implements Name{
 	CoreConfig_7(new DefaultName("CoreConfig.7")),
 	CoreConfig_8(new DefaultName("CoreConfig.8")),
 	CoreConfig_9(new DefaultName("CoreConfig.9")),
+
+	JOriginalAttendanceDataPanel_1(new DefaultName("JOriginalAttendanceDataPanel.1")),
+	JOriginalAttendanceDataPanel_2(new DefaultName("JOriginalAttendanceDataPanel.2")),
+	JOriginalAttendanceDataPanel_3(new DefaultName("JOriginalAttendanceDataPanel.3")),
+	JOriginalAttendanceDataPanel_4(new DefaultName("JOriginalAttendanceDataPanel.4")),
+	JOriginalAttendanceDataPanel_5(new DefaultName("JOriginalAttendanceDataPanel.5")),
+	JOriginalAttendanceDataPanel_6(new DefaultName("JOriginalAttendanceDataPanel.6")),
 
 	;
 

@@ -1,6 +1,13 @@
 package com.dwarfeng.jier.mh4w.core.util;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.Objects;
+
+import com.dwarfeng.jier.mh4w.core.model.cm.CoreConfigModel;
+import com.dwarfeng.jier.mh4w.core.model.cm.FileSelectModel;
+import com.dwarfeng.jier.mh4w.core.model.io.XlsOriginalAttendanceDataLoader;
 
 /**
  *与统计有关工具方法。
@@ -31,6 +38,33 @@ public final class CountUtil {
 		}
 		
 		return sum - 1;
+	}
+	
+	/**
+	 * 返回一个新的 xls 原始出勤数据读取器。
+	 * @param fileSelectModel 指定的文件选择模型。
+	 * @param coreConfigModel 指定的核心配置模型。
+	 * @return 由指定的模型组成的 xls 原始出勤数据读取器。
+	 * @throws FileNotFoundException 文件未找到异常。
+	 * @throws NullPointerException 入口参数为 <code>null</code>。
+	 */
+	public static XlsOriginalAttendanceDataLoader newXlsOriginalAttendanceDataLoader(
+			FileSelectModel fileSelectModel, CoreConfigModel coreConfigModel) throws FileNotFoundException{
+		Objects.requireNonNull(fileSelectModel, "入口参数 fileSelectModel 不能为 null。");
+		Objects.requireNonNull(coreConfigModel, "入口参数 coreConfigModel 不能为 null。");
+
+		InputStream in = new FileInputStream(fileSelectModel.getAttendanceFile());
+		String fileName = fileSelectModel.getAttendanceFile().getName();
+		int row_start = coreConfigModel.getAttendanceStartRow();
+		int column_department = coreConfigModel.getAttendanceDepartmentColumn();
+		int column_workNumber = coreConfigModel.getAttendanceWorkNumberColumn();
+		int column_name = coreConfigModel.getAttendacneNameColumn();
+		int column_date = coreConfigModel.getAttendanceDateColumn();
+		int column_shift = coreConfigModel.getAttendanceShiftColumn();
+		int column_record = coreConfigModel.getAttendanceRecordColumn();
+		
+		return new XlsOriginalAttendanceDataLoader(in, fileName, row_start, column_department, 
+				column_workNumber, column_name, column_date, column_shift, column_record);
 	}
 	
 	//禁止外部实例化。

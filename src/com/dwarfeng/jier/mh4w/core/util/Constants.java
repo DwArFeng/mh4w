@@ -13,7 +13,6 @@ import java.util.ResourceBundle;
 import java.util.Set;
 
 import com.dwarfeng.dutil.basic.str.Name;
-import com.dwarfeng.dutil.develop.cfg.ConfigKey;
 import com.dwarfeng.jier.mh4w.core.model.eum.CoreConfig;
 import com.dwarfeng.jier.mh4w.core.model.eum.LabelStringKey;
 import com.dwarfeng.jier.mh4w.core.model.eum.LoggerStringKey;
@@ -162,7 +161,7 @@ public final class Constants {
 	 * @return ∫À–ƒ≈‰÷√µƒœ‘ æÀ≥–Ú°£
 	 */
 	public static List<CoreConfig> getCoreConfigOrder(){
-		return coreConfigOrder;
+		return Collections.unmodifiableList(coreConfigOrder);
 	}
 
 	/**

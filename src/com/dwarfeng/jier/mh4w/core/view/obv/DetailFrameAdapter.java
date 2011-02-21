@@ -7,4 +7,7 @@ package com.dwarfeng.jier.mh4w.core.view.obv;
  */
 public abstract class DetailFrameAdapter implements DetailFrameObverser {
 
+	@Override
+	public void fireHideDetailFrame() {}
+	
 }

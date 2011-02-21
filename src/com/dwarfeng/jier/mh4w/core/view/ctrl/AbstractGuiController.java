@@ -10,6 +10,7 @@ import javax.swing.JFileChooser;
 import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileFilter;
 
+import com.dwarfeng.dutil.basic.io.CT;
 import com.dwarfeng.jier.mh4w.core.model.struct.Mutilang;
 import com.dwarfeng.jier.mh4w.core.view.gui.AttrFrame;
 import com.dwarfeng.jier.mh4w.core.view.gui.DetailFrame;
@@ -514,7 +515,9 @@ public abstract class AbstractGuiController implements GuiController {
 		lock.writeLock().lock();
 		try{
 			if(Objects.isNull(attrFrame)) return false;
-			return attrFrame.setMutilang(mutilang);
+			boolean aFlag = attrFrame.setMutilang(mutilang);
+			CT.trace(aFlag);
+			return aFlag;
 		}finally {
 			lock.writeLock().unlock();
 		}

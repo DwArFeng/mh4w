@@ -138,7 +138,7 @@ public class AttrFrame extends JDialog implements MutilangSupported, ObverserSet
 	@Override
 	public boolean setMutilang(Mutilang mutilang) {
 		if(Objects.isNull(mutilang)) return false;
-		if(Objects.equals(mutilang, this.mutilang)) return false;
+		if(Objects.equals(this.mutilang, mutilang)) return false;
 		this.mutilang = mutilang;
 		
 		//更新子面板

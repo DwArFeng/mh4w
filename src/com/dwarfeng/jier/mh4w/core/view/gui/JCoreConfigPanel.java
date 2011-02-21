@@ -11,9 +11,9 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 
-import com.dwarfeng.dutil.basic.io.CT;
 import com.dwarfeng.dutil.develop.cfg.ConfigAdapter;
 import com.dwarfeng.dutil.develop.cfg.ConfigKey;
 import com.dwarfeng.dutil.develop.cfg.ConfigObverser;
@@ -52,7 +52,28 @@ public class JCoreConfigPanel extends JPanel implements MutilangSupported{
 	/*
 	 * 视图模型以及渲染
 	 */
-	private final InnerTableModel tableModel = new InnerTableModel();
+	private final DefaultTableModel tableModel = new DefaultTableModel(){
+		
+		private static final long serialVersionUID = 889100337992501921L;
+
+		/*
+		 * (non-Javadoc)
+		 * @see javax.swing.table.DefaultTableModel#getColumnCount()
+		 */
+		@Override
+		public int getColumnCount() {
+			return 2;
+		};
+		
+		/*
+		 * (non-Javadoc)
+		 * @see javax.swing.table.DefaultTableModel#isCellEditable(int, int)
+		 */
+		@Override
+		public boolean isCellEditable(int row, int column) {
+			return false;
+		};
+	};
 	private final TableCellRenderer tableCellRenderer = new DefaultTableCellRenderer(){
 		
 		private static final long serialVersionUID = 3649911097672285093L;
@@ -86,9 +107,21 @@ public class JCoreConfigPanel extends JPanel implements MutilangSupported{
 			Mh4wUtil.invokeInEventQueue(new Runnable() {
 				@Override
 				public void run() {
-					tableModel.changeValue(configKey, validValue);
+					int rowIndex = findConfigKey(configKey);
+					tableModel.removeRow(rowIndex);
+					tableModel.insertRow(rowIndex, new Object[]{
+							Constants.getCoreConfigOrder().get(rowIndex),
+							validValue
+					});
 				}
 			});
+		}
+
+		private int findConfigKey(ConfigKey configKey) {
+			for(int i = 0 ; i < Constants.getCoreConfigOrder().size() ; i ++){
+				if(Constants.getCoreConfigOrder().get(i).getConfigKey().equals(configKey)) return i;
+			}
+			throw new IllegalArgumentException("核心配置面板_内部表格模型 - 未能找到指定的配置键：" + configKey.getName());
 		};
 	};
 
@@ -118,6 +151,8 @@ public class JCoreConfigPanel extends JPanel implements MutilangSupported{
 		table.setModel(tableModel);
 		table.getColumnModel().getColumn(0).setCellRenderer(tableCellRenderer);
 		table.getColumnModel().getColumn(1).setCellRenderer(tableCellRenderer);
+		table.getColumnModel().getColumn(0).setHeaderValue(getLabel(LabelStringKey.JCoreConfigPanel_1));
+		table.getColumnModel().getColumn(1).setHeaderValue(getLabel(LabelStringKey.JCoreConfigPanel_2));
 		table.setFillsViewportHeight(true);
 		scrollPane.setViewportView(table);
 		
@@ -125,7 +160,12 @@ public class JCoreConfigPanel extends JPanel implements MutilangSupported{
 			coreConfigModel.addObverser(configObverser);
 			coreConfigModel.getLock().readLock().lock();
 			try{
-				tableModel.addAll(Constants.getCoreConfigOrder(), coreConfigModel);
+				for(int i = 0 ; i < Constants.getCoreConfigOrder().size() ; i ++){
+					tableModel.addRow(new Object[]{
+							Constants.getCoreConfigOrder().get(i),
+							coreConfigModel.getValidValue(Constants.getCoreConfigOrder().get(i).getConfigKey())
+					});
+				}
 			}finally {
 				coreConfigModel.getLock().readLock().unlock();
 			}
@@ -151,11 +191,13 @@ public class JCoreConfigPanel extends JPanel implements MutilangSupported{
 	@Override
 	public boolean setMutilang(Mutilang mutilang) {
 		if(Objects.isNull(mutilang)) return false;
-		if(Objects.equals(mutilang, this.mutilang)) return false;
+		if(Objects.equals(this.mutilang, mutilang)) return false;
 		this.mutilang = mutilang;
 		
 		//更新各标签的文本。
-		table.getTableHeader().repaint();
+		table.getColumnModel().getColumn(0).setHeaderValue(getLabel(LabelStringKey.JCoreConfigPanel_1));
+		table.getColumnModel().getColumn(1).setHeaderValue(getLabel(LabelStringKey.JCoreConfigPanel_2));
+
 		table.repaint();
 		
 		return true;
@@ -172,7 +214,10 @@ public class JCoreConfigPanel extends JPanel implements MutilangSupported{
 	 * @param coreConfigModel the coreConfigModel to set
 	 */
 	public void setCoreConfigModel(CoreConfigModel coreConfigModel) {
-		tableModel.clear();
+		int count = tableModel.getRowCount();
+		for(int i = 0 ; i < count ; i ++){
+			tableModel.removeRow(0);
+		}
 		
 		if(Objects.nonNull(this.coreConfigModel)){
 			this.coreConfigModel.removeObverser(configObverser);
@@ -182,7 +227,12 @@ public class JCoreConfigPanel extends JPanel implements MutilangSupported{
 			coreConfigModel.addObverser(configObverser);
 			coreConfigModel.getLock().readLock().lock();
 			try{
-				tableModel.addAll(Constants.getCoreConfigOrder(), coreConfigModel);
+				for(int i = 0 ; i < Constants.getCoreConfigOrder().size() ; i ++){
+					tableModel.addRow(new Object[]{
+							Constants.getCoreConfigOrder().get(i),
+							coreConfigModel.getValidValue(Constants.getCoreConfigOrder().get(i).getConfigKey())
+					});
+				}
 			}finally {
 				coreConfigModel.getLock().readLock().unlock();
 			}
@@ -202,103 +252,6 @@ public class JCoreConfigPanel extends JPanel implements MutilangSupported{
 
 	private String getLabel(LabelStringKey labelStringKey){
 		return mutilang.getString(labelStringKey.getName());
-	}
-
-	private final class InnerTableModel extends AbstractTableModel{
-		
-		private static final long serialVersionUID = -5897635629451066698L;
-		
-		private final List<CoreConfig> keyList = new ArrayList<>();
-		private final List<String> valueList = new ArrayList<>();
-
-		public void clear(){
-			int size = keyList.size();
-			keyList.clear();
-			valueList.clear();
-			if(size > 0){
-				fireTableRowsDeleted(0, size - 1);
-			}
-		}
-		
-		public void addAll(Collection<? extends CoreConfig> c, CoreConfigModel referance){
-			Objects.requireNonNull(referance, "入口参数 referance 不能为 null。");
-			
-			int beginIndex = keyList.size();
-			keyList.addAll(c);
-			int endIndex = keyList.size();
-			
-			for(int i = beginIndex ; i < endIndex ; i ++){
-				valueList.add(i, referance.getValidValue(keyList.get(i).getConfigKey()));
-			}
-			
-			if(endIndex > beginIndex){
-				fireTableRowsInserted(beginIndex, endIndex - 1);
-			}
-		}
-		
-		public void changeValue(ConfigKey configKey, String newValue){
-			int index = findConfigKey(configKey);
-			valueList.set(index, newValue);
-			fireTableCellUpdated(index, 1);
-		}
-		
-		private int findConfigKey(ConfigKey configKey) {
-			for(int i = 0 ; i < keyList.size() ; i ++){
-				if(keyList.get(i).getConfigKey().equals(configKey)) return i;
-			}
-			throw new IllegalArgumentException("核心配置面板_内部表格模型 - 未能找到指定的配置键：" + configKey.getName());
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * @see javax.swing.table.AbstractTableModel#getColumnName(int)
-		 */
-		@Override
-		public String getColumnName(int column) {
-			if(column == 0){
-				return getLabel(LabelStringKey.JCoreConfigPanel_1);
-			}
-			if(column == 1){
-				return getLabel(LabelStringKey.JCoreConfigPanel_2);
-			}
-			
-			throw new IllegalArgumentException("核心配置面板_内部表格模型 - 指定的列只能为 0 或 1");
-		}
-		
-		/*
-		 * (non-Javadoc)
-		 * @see javax.swing.table.TableModel#getRowCount()
-		 */
-		@Override
-		public int getRowCount() {
-			return keyList.size();
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * @see javax.swing.table.TableModel#getColumnCount()
-		 */
-		@Override
-		public int getColumnCount() {
-			return 2;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * @see javax.swing.table.TableModel#getValueAt(int, int)
-		 */
-		@Override
-		public Object getValueAt(int rowIndex, int columnIndex) {
-			if(columnIndex == 0){
-				return keyList.get(rowIndex);
-			}
-			if(columnIndex == 1){
-				return valueList.get(rowIndex);
-			}
-			
-			throw new IllegalArgumentException("核心配置面板_内部表格模型 - 指定的列只能为 0 或 1");
-		}
-		
 	}
 
 }

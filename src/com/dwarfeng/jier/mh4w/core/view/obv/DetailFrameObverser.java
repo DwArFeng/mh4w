@@ -9,4 +9,9 @@ import com.dwarfeng.dutil.basic.prog.Obverser;
  */
 public interface DetailFrameObverser extends Obverser{
 
+	/**
+	 * 通知隐藏详细界面。
+	 */
+	public void fireHideDetailFrame();
+
 }
