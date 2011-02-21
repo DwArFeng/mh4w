@@ -13,4 +13,10 @@ public interface OriginalWorkticketData extends OriginalDataWithStaff, DataFromX
 	 */
 	public String getWorkticket();
 	
+	/**
+	 * 工具数据的工作类型。
+	 * @return 数据的工作类型。
+	 */
+	public Job getJob();
+	
 }

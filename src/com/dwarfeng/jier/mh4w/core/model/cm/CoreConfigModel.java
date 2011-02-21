@@ -53,6 +53,30 @@ public interface CoreConfigModel extends SyncConfigModel {
 	public int getAttendanceRecordColumn();
 	
 	/**
+	 * 获取工票表的起始列。
+	 * @return 工票表的起始列。
+	 */
+	public int getWorkticketStartRow();
+	
+	/**
+	 * 获取工票表中部门所在的列。
+	 * @return 工票表中部门所在的列。
+	 */
+	public int getWorkticketDepartmentColumn();
+	
+	/**
+	 * 获取工票表中工号所在的列。
+	 * @return 工票表中工号所在的列。
+	 */
+	public int getWorkticketWorkNumberColumn();
+	
+	/**
+	 * 获取工票表中姓名所在的列。
+	 * @return 工票表中姓名所在的列。
+	 */
+	public int getWorkticketNameColumn();
+	
+	/**
 	 * 获取记录器多语言接口的当前语言。
 	 * @return 记录器多语言接口当前的语言。
 	 */

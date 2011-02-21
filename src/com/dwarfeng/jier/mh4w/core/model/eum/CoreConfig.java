@@ -19,28 +19,28 @@ public enum CoreConfig implements ConfigEntry{
 	
 	/**考勤表的第一行数据行*/
 	ATTENDANCE_ROW_START("attendance.row.start", "2", new IntegerConfigChecker(1, Integer.MAX_VALUE), LabelStringKey.CoreConfig_3),
-	
 	/**考勤表中部门所在的列*/
 	ATTENDANCE_COLUMN_DEPARTMENT("attendance.column.department", "A", new MatchConfigChecker("[A-Z]+"), LabelStringKey.CoreConfig_4),
-	
 	/**考勤表中工号所在的列*/
 	ATTENDANCE_COLUMN_WORKNUMBER("attendance.column.worknumber", "B", new MatchConfigChecker("[A-Z]+"), LabelStringKey.CoreConfig_5),
-	
 	/**考勤表中姓名所在的列*/
 	ATTENDANCE_COLUMN_NAME("attendance.column.name", "C", new MatchConfigChecker("[A-Z]+"), LabelStringKey.CoreConfig_6),
-
 	/**考勤表中日期所在的列*/
 	ATTENDANCE_COLUMN_DATE("attendance.column.date", "D", new MatchConfigChecker("[A-Z]+"), LabelStringKey.CoreConfig_7),
-	
 	/**考勤表中班次所在的列*/
 	ATTENDANCE_COLUMN_SHIFT("attendance.column.shift", "E", new MatchConfigChecker("[A-Z]+"), LabelStringKey.CoreConfig_8),
-
 	/**考勤表中记录所在的列*/
 	ATTENDANCE_COLUMN_RECORD("attendance.column.record", "F", new MatchConfigChecker("[A-Z]+"), LabelStringKey.CoreConfig_9),
-	
+	/**工票表的第一行数据行*/
+	WORKTICKET_ROW_START("workticket.row.start", "2", new IntegerConfigChecker(1, Integer.MAX_VALUE), LabelStringKey.CoreConfig_10),
+	/**工票表中部门所在的列*/
+	WORKTICKET_COLUMN_DEPARTMENT("workticket.column.department", "A", new MatchConfigChecker("[A-Z]+"), LabelStringKey.CoreConfig_11),
+	/**工票表中工号所在的列*/
+	WORKTICKET_COLUMN_WORKNUMBER("workticket.column.worknumber", "B", new MatchConfigChecker("[A-Z]+"), LabelStringKey.CoreConfig_12),
+	/**工票表中姓名所在的列*/
+	WORKTICKET_COLUMN_NAME("workticket.column.name", "C", new MatchConfigChecker("[A-Z]+"), LabelStringKey.CoreConfig_13),
 	/**标签的使用语言*/
 	MUTILANG_LABEL("mutilang.label", "", new NonNullConfigChecker(), LabelStringKey.CoreConfig_1),
-	
 	/**记录器的使用语言*/
 	MUTILANG_LOGGER("mutilang.logger", "", new NonNullConfigChecker(), LabelStringKey.CoreConfig_2),
 	

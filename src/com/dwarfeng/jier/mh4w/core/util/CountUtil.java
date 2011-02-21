@@ -9,7 +9,10 @@ import com.dwarfeng.dutil.basic.num.NumberUtil;
 import com.dwarfeng.dutil.basic.num.unit.Time;
 import com.dwarfeng.jier.mh4w.core.model.cm.CoreConfigModel;
 import com.dwarfeng.jier.mh4w.core.model.cm.FileSelectModel;
+import com.dwarfeng.jier.mh4w.core.model.cm.JobModel;
 import com.dwarfeng.jier.mh4w.core.model.io.XlsOriginalAttendanceDataLoader;
+import com.dwarfeng.jier.mh4w.core.model.io.XlsOriginalWorkticketDataLoader;
+import com.dwarfeng.jier.mh4w.core.model.struct.Job;
 
 /**
  *与统计有关工具方法。
@@ -67,6 +70,37 @@ public final class CountUtil {
 		
 		return new XlsOriginalAttendanceDataLoader(in, fileName, row_start, column_department, 
 				column_workNumber, column_name, column_date, column_shift, column_record);
+	}
+	
+	/**
+	 * 返回一个新的 xls 原始出工票据读取器。
+	 * @param fileSelectModel 指定的文件选择模型。
+	 * @param coreConfigModel 指定的核心配置模型。
+	 * @param jobModel 工作模型。
+	 * @return 由指定的模型组成的 xls 原始出勤数据读取器。
+	 * @throws FileNotFoundException 文件未找到异常。
+	 * @throws NullPointerException 入口参数为 <code>null</code>。
+	 */
+	public static XlsOriginalWorkticketDataLoader newXlsOriginalWorkticketDataLoader(FileSelectModel fileSelectModel,
+			CoreConfigModel coreConfigModel, JobModel jobModel) throws FileNotFoundException {
+		Objects.requireNonNull(fileSelectModel, "入口参数 fileSelectModel 不能为 null。");
+		Objects.requireNonNull(coreConfigModel, "入口参数 coreConfigModel 不能为 null。");
+		Objects.requireNonNull(jobModel, "入口参数 jobModel 不能为 null。");
+
+		InputStream in = new FileInputStream(fileSelectModel.getWorkticketFile());
+		String fileName = fileSelectModel.getWorkticketFile().getName();
+		int row_start = coreConfigModel.getWorkticketStartRow();
+		int column_department = coreConfigModel.getWorkticketDepartmentColumn();
+		int column_workNumber = coreConfigModel.getWorkticketWorkNumberColumn();
+		int column_name = coreConfigModel.getAttendacneNameColumn();
+		Job[] jobs = new Job[jobModel.size()];
+		int i = 0;
+		for(Job job : jobModel){
+			jobs[i++] = job;
+		}
+
+		return new XlsOriginalWorkticketDataLoader(in, fileName, row_start, column_department, column_workNumber,
+				column_name, jobs);
 	}
 	
 	/**

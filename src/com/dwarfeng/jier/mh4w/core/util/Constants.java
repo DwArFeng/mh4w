@@ -70,7 +70,10 @@ public final class Constants {
 		coreConfigOrder.add(CoreConfig.ATTENDANCE_COLUMN_DATE);
 		coreConfigOrder.add(CoreConfig.ATTENDANCE_COLUMN_SHIFT);
 		coreConfigOrder.add(CoreConfig.ATTENDANCE_COLUMN_RECORD);
-		//TODO 需要继续添加
+		coreConfigOrder.add(CoreConfig.WORKTICKET_ROW_START);
+		coreConfigOrder.add(CoreConfig.WORKTICKET_COLUMN_DEPARTMENT);
+		coreConfigOrder.add(CoreConfig.WORKTICKET_COLUMN_WORKNUMBER);
+		coreConfigOrder.add(CoreConfig.WORKTICKET_COLUMN_NAME);
 		coreConfigOrder.add(CoreConfig.MUTILANG_LABEL);
 		coreConfigOrder.add(CoreConfig.MUTILANG_LOGGER);
 	}

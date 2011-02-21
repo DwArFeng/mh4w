@@ -59,6 +59,7 @@ import com.dwarfeng.jier.mh4w.core.model.eum.CountState;
 import com.dwarfeng.jier.mh4w.core.model.eum.LoggerStringKey;
 import com.dwarfeng.jier.mh4w.core.model.eum.ResourceKey;
 import com.dwarfeng.jier.mh4w.core.model.io.XlsOriginalAttendanceDataLoader;
+import com.dwarfeng.jier.mh4w.core.model.io.XlsOriginalWorkticketDataLoader;
 import com.dwarfeng.jier.mh4w.core.model.io.XmlBlockLoader;
 import com.dwarfeng.jier.mh4w.core.model.io.XmlJobLoader;
 import com.dwarfeng.jier.mh4w.core.model.io.XmlLoggerLoader;
@@ -1135,6 +1136,7 @@ public final class Mh4w {
 					exit();
 					
 				}catch (Exception e) {
+					setThrowable(e);
 					message(LoggerStringKey.Mh4w_FlowProvider_12);
 				}
 			}
@@ -1202,6 +1204,7 @@ public final class Mh4w {
 					message(LoggerStringKey.Mh4w_FlowProvider_16);
 					
 				}catch (Exception e) {
+					setThrowable(e);
 					message(LoggerStringKey.Mh4w_FlowProvider_14);
 				}finally {
 					Mh4wUtil.invokeInEventQueue(new Runnable() {
@@ -1276,6 +1279,7 @@ public final class Mh4w {
 					message(LoggerStringKey.Mh4w_FlowProvider_20);
 					
 				}catch (Exception e) {
+					setThrowable(e);
 					message(LoggerStringKey.Mh4w_FlowProvider_21);
 				}finally {
 					Mh4wUtil.invokeInEventQueue(new Runnable() {
@@ -1315,6 +1319,7 @@ public final class Mh4w {
 					message(LoggerStringKey.Mh4w_FlowProvider_23);
 					
 				}catch (Exception e) {
+					setThrowable(e);
 					message(LoggerStringKey.Mh4w_FlowProvider_24);
 				}
 			}
@@ -1350,6 +1355,7 @@ public final class Mh4w {
 					message(LoggerStringKey.Mh4w_FlowProvider_29);
 					
 				}catch (Exception e) {
+					setThrowable(e);
 					message(LoggerStringKey.Mh4w_FlowProvider_26);
 				}
 			}
@@ -1385,6 +1391,7 @@ public final class Mh4w {
 					message(LoggerStringKey.Mh4w_FlowProvider_30);
 					
 				}catch (Exception e) {
+					setThrowable(e);
 					message(LoggerStringKey.Mh4w_FlowProvider_28);
 				}
 			}
@@ -1410,11 +1417,19 @@ public final class Mh4w {
 					
 					/*
 					 * -------------------------- 统计算法 -------------------------
-					 * 1、读取原始考勤数据
-					 * 2、读取原始工票数据
+					 * start：
+					 * 清除错误模型
+					 * 读取原始考勤数据
+					 * 读取原始工票数据
+					 * 转换原始数据，并将发生的问题记录在错误模型中
+					 * 错误模型.size() > 0 ? goto end_err : next_1
+					 * 
+					 * next_1:
 					 * 
 					 * 
-					 * 
+					 *  end_err:
+					 *  设置状态模型为 统计_错误，并显示错误面板。
+					 *  退出
 					 */
 					
 					info(LoggerStringKey.Mh4w_FlowProvider_41);
@@ -1433,11 +1448,27 @@ public final class Mh4w {
 						}
 					}
 					
+					//读取原始工票数据
+					info(LoggerStringKey.Mh4w_FlowProvider_42);
+					message(LoggerStringKey.Mh4w_FlowProvider_42);
+					XlsOriginalWorkticketDataLoader originalWorkticketDataLoader = null;
+					try{
+						originalWorkticketDataLoader = CountUtil.newXlsOriginalWorkticketDataLoader(
+								manager.getFileSelectModel(), manager.getCoreConfigModel(), manager.getJobModel());
+						originalWorkticketDataLoader.load(manager.getOriginalWorkticketDataModel());
+					}finally {
+						if(Objects.nonNull(originalWorkticketDataLoader)){
+							originalWorkticketDataLoader.close();
+						}
+					}
+					
+					CT.trace(manager.getOriginalWorkticketDataModel().size());
 					//TODO 实现统计算法
 					
 					message(LoggerStringKey.Mh4w_FlowProvider_16);
 					
 				}catch (Exception e) {
+					setThrowable(e);
 					message(LoggerStringKey.Mh4w_FlowProvider_14);
 				}
 			}
@@ -1473,6 +1504,7 @@ public final class Mh4w {
 					message(LoggerStringKey.Mh4w_FlowProvider_33);
 					
 				}catch (Exception e) {
+					setThrowable(e);
 					message(LoggerStringKey.Mh4w_FlowProvider_34);
 				}
 			}
@@ -1507,6 +1539,7 @@ public final class Mh4w {
 					message(LoggerStringKey.Mh4w_FlowProvider_36);
 					
 				}catch (Exception e) {
+					setThrowable(e);
 					message(LoggerStringKey.Mh4w_FlowProvider_37);
 				}
 			}
@@ -1623,6 +1656,7 @@ public final class Mh4w {
 					message(LoggerStringKey.Mh4w_FlowProvider_39);
 					
 				}catch (Exception e) {
+					setThrowable(e);
 					message(LoggerStringKey.Mh4w_FlowProvider_40);
 				}
 			}

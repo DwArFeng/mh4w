@@ -42,6 +42,10 @@ public enum LabelStringKey implements Name{
 	CoreConfig_7(new DefaultName("CoreConfig.7")),
 	CoreConfig_8(new DefaultName("CoreConfig.8")),
 	CoreConfig_9(new DefaultName("CoreConfig.9")),
+	CoreConfig_10(new DefaultName("CoreConfig.10")),
+	CoreConfig_11(new DefaultName("CoreConfig.11")),
+	CoreConfig_12(new DefaultName("CoreConfig.12")),
+	CoreConfig_13(new DefaultName("CoreConfig.13")),
 
 	JOriginalAttendanceDataPanel_1(new DefaultName("JOriginalAttendanceDataPanel.1")),
 	JOriginalAttendanceDataPanel_2(new DefaultName("JOriginalAttendanceDataPanel.2")),

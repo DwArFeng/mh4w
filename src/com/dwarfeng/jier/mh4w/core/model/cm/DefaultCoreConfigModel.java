@@ -118,7 +118,63 @@ public class DefaultCoreConfigModel extends DefaultSyncConfigModel implements Co
 			lock.readLock().unlock();
 		}
 	}
-	
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.dwarfeng.jier.mh4w.core.model.cm.CoreConfigModel#getWorkticketStartRow()
+	 */
+	@Override
+	public int getWorkticketStartRow() {
+		lock.readLock().lock();
+		try{
+			return Integer.parseInt(getValidValue(CoreConfig.WORKTICKET_ROW_START.getConfigKey()));
+		}finally {
+			lock.readLock().unlock();
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.dwarfeng.jier.mh4w.core.model.cm.CoreConfigModel#getWorkticketDepartmentColumn()
+	 */
+	@Override
+	public int getWorkticketDepartmentColumn() {
+		lock.readLock().lock();
+		try{
+			return CountUtil.columnString2Int(getValidValue(CoreConfig.WORKTICKET_COLUMN_DEPARTMENT.getConfigKey()));
+		}finally {
+			lock.readLock().unlock();
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.dwarfeng.jier.mh4w.core.model.cm.CoreConfigModel#getWorkticketWorkNumberColumn()
+	 */
+	@Override
+	public int getWorkticketWorkNumberColumn() {
+		lock.readLock().lock();
+		try{
+			return CountUtil.columnString2Int(getValidValue(CoreConfig.WORKTICKET_COLUMN_WORKNUMBER.getConfigKey()));
+		}finally {
+			lock.readLock().unlock();
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.dwarfeng.jier.mh4w.core.model.cm.CoreConfigModel#getWorkticketNameColumn()
+	 */
+	@Override
+	public int getWorkticketNameColumn() {
+		lock.readLock().lock();
+		try{
+			return CountUtil.columnString2Int(getValidValue(CoreConfig.WORKTICKET_COLUMN_NAME.getConfigKey()));
+		}finally {
+			lock.readLock().unlock();
+		}
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * @see com.dwarfeng.jier.mh4w.core.model.cm.CoreConfigModel#getLoggerMutilangLocale()
