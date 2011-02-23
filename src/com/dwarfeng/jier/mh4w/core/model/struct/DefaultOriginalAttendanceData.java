@@ -77,7 +77,7 @@ public final class DefaultOriginalAttendanceData implements OriginalAttendanceDa
 	 * @see com.dwarfeng.jier.mh4w.core.model.struct.OriginalDataWithStaff#getDepartement()
 	 */
 	@Override
-	public String getDepartement() {
+	public String getDepartment() {
 		return department;
 	}
 

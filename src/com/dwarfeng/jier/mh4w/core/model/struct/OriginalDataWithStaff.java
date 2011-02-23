@@ -17,7 +17,7 @@ public interface OriginalDataWithStaff {
 	 * 获取员工部门。
 	 * @return 员工部门。
 	 */
-	public String getDepartement();
+	public String getDepartment();
 
 	/**
 	 * 获取员工姓名。

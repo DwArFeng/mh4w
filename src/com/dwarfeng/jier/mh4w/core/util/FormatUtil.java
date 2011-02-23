@@ -21,7 +21,7 @@ public final class FormatUtil {
 	 */
 	public static String formatStaff(Staff staff){
 		Objects.requireNonNull(staff, "入口参数 staff 不能为 null。");
-		return String.format("%s - %s - %s", staff.getName(), staff.getWorkNumber(), staff.getDepartement());
+		return String.format("%s - %s - %s", staff.getName(), staff.getWorkNumber(), staff.getDepartment());
 	}
 	
 	/**

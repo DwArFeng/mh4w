@@ -80,7 +80,7 @@ public final class DefaultOriginalWorkticketData implements OriginalWorkticketDa
 	 * @see com.dwarfeng.jier.mh4w.core.model.struct.OriginalDataWithStaff#getDepartement()
 	 */
 	@Override
-	public String getDepartement() {
+	public String getDepartment() {
 		return department;
 	}
 

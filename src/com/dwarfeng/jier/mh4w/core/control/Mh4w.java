@@ -57,6 +57,7 @@ import com.dwarfeng.jier.mh4w.core.model.cm.StateModel;
 import com.dwarfeng.jier.mh4w.core.model.eum.BlockKey;
 import com.dwarfeng.jier.mh4w.core.model.eum.CoreConfig;
 import com.dwarfeng.jier.mh4w.core.model.eum.CountState;
+import com.dwarfeng.jier.mh4w.core.model.eum.FailType;
 import com.dwarfeng.jier.mh4w.core.model.eum.LoggerStringKey;
 import com.dwarfeng.jier.mh4w.core.model.eum.ResourceKey;
 import com.dwarfeng.jier.mh4w.core.model.io.XlsOriginalAttendanceDataLoader;
@@ -72,6 +73,8 @@ import com.dwarfeng.jier.mh4w.core.model.obv.LoggerObverser;
 import com.dwarfeng.jier.mh4w.core.model.obv.MutilangAdapter;
 import com.dwarfeng.jier.mh4w.core.model.obv.MutilangObverser;
 import com.dwarfeng.jier.mh4w.core.model.struct.AbstractFlow;
+import com.dwarfeng.jier.mh4w.core.model.struct.AttendanceData;
+import com.dwarfeng.jier.mh4w.core.model.struct.DefaultFail;
 import com.dwarfeng.jier.mh4w.core.model.struct.DefaultFinishedFlowTaker;
 import com.dwarfeng.jier.mh4w.core.model.struct.DefaultJob;
 import com.dwarfeng.jier.mh4w.core.model.struct.DefaultShift;
@@ -86,8 +89,10 @@ import com.dwarfeng.jier.mh4w.core.model.struct.ProcessException;
 import com.dwarfeng.jier.mh4w.core.model.struct.Resource;
 import com.dwarfeng.jier.mh4w.core.model.struct.Shift;
 import com.dwarfeng.jier.mh4w.core.model.struct.TimeSection;
+import com.dwarfeng.jier.mh4w.core.model.struct.TransException;
 import com.dwarfeng.jier.mh4w.core.model.struct.UnsafeJob;
 import com.dwarfeng.jier.mh4w.core.model.struct.UnsafeShift;
+import com.dwarfeng.jier.mh4w.core.model.struct.WorkticketData;
 import com.dwarfeng.jier.mh4w.core.util.Constants;
 import com.dwarfeng.jier.mh4w.core.util.CountUtil;
 import com.dwarfeng.jier.mh4w.core.util.Mh4wUtil;
@@ -220,7 +225,9 @@ public final class Mh4w {
 		private DataListModel<OriginalAttendanceData> originalAttendanceDataModel = new DefaultDataListModel<>();
 		private DataListModel<OriginalWorkticketData> originalWorkticketDataModel = new DefaultDataListModel<>();
 		private JobModel jobModel = new DefaultJobModel();
-		private DataListModel<Fail> failsModel = new DefaultDataListModel<>();
+		private DataListModel<Fail> failModel = new DefaultDataListModel<>();
+		private DataListModel<AttendanceData> attendanceDataModel = new DefaultDataListModel<>();
+		private DataListModel<WorkticketData> workticketDataModel = new DefaultDataListModel<>();
 		//structs
 		private FinishedFlowTaker finishedFlowTaker = new DefaultFinishedFlowTaker(backgroundModel);
 		//obvs
@@ -366,7 +373,7 @@ public final class Mh4w {
 			protected FailFrame newFailFrameImpl() {
 				FailFrame failFrame = new FailFrame(
 						labelMutilangModel.getMutilang(),
-						failsModel
+						failModel
 				);
 				failFrame.addObverser(failFrameObverser);
 				return failFrame;
@@ -428,7 +435,7 @@ public final class Mh4w {
 			 */
 			@Override
 			public void fireHideDetail() {
-				manager.getBackgroundModel().submit(flowProvider.newHideDetailFrameFlow());
+				manager.getBackgroundModel().submit(flowProvider.newHideDetailFlow());
 			}
 
 			/*
@@ -437,7 +444,7 @@ public final class Mh4w {
 			 */
 			@Override
 			public void fireShowDetail() {
-				manager.getBackgroundModel().submit(flowProvider.newShowDetailFrameFlow());
+				manager.getBackgroundModel().submit(flowProvider.newShowDetailFlow());
 			}
 			
 			/*
@@ -467,7 +474,7 @@ public final class Mh4w {
 			 */
 			@Override
 			public void fireHideDetailFrame() {
-				manager.getBackgroundModel().submit(flowProvider.newHideDetailFrameFlow());
+				manager.getBackgroundModel().submit(flowProvider.newHideDetailFlow());
 			};
 			
 		};
@@ -635,8 +642,22 @@ public final class Mh4w {
 		/**
 		 * @return the failsModel
 		 */
-		public DataListModel<Fail> getFailsModel() {
-			return failsModel;
+		public DataListModel<Fail> getFailModel() {
+			return failModel;
+		}
+
+		/**
+		 * @return the attendanceDataModel
+		 */
+		public DataListModel<AttendanceData> getAttendanceDataModel() {
+			return attendanceDataModel;
+		}
+
+		/**
+		 * @return the workticketDataModel
+		 */
+		public DataListModel<WorkticketData> getWorkticketDataModel() {
+			return workticketDataModel;
 		}
 
 		/**
@@ -706,7 +727,7 @@ public final class Mh4w {
 		 * 获取一个新的显示详细面板流。
 		 * @return 新的显示详细面板流。
 		 */
-		public Flow newShowDetailFrameFlow() {
+		public Flow newShowDetailFlow() {
 			return new ShowDetailFlow();
 		}
 
@@ -714,7 +735,7 @@ public final class Mh4w {
 		 * 获取一个新的隐藏详细面板流。
 		 * @return 新的隐藏详细面板流。
 		 */
-		public Flow newHideDetailFrameFlow() {
+		public Flow newHideDetailFlow() {
 			return new HideDetailFlow();
 		}
 
@@ -1160,6 +1181,7 @@ public final class Mh4w {
 							manager.getGuiController().setMainFrameVisible(true);
 							manager.getGuiController().newDetailFrame();
 							manager.getGuiController().newAttrFrame();
+							manager.getGuiController().newFailFrame();
 						}
 					});
 					
@@ -1372,8 +1394,12 @@ public final class Mh4w {
 					
 					manager.getFileSelectModel().setAttendanceFile(null);
 					manager.getFileSelectModel().setWorkticketFile(null);
+					
 					manager.getOriginalAttendanceDataModel().clear();
 					manager.getOriginalWorkticketDataModel().clear();
+					manager.getAttendanceDataModel().clear();
+					manager.getWorkticketDataModel().clear();
+					
 					manager.getStateModel().setCountResultOutdated(false);
 					manager.getStateModel().setCountState(CountState.NOT_START);
 					manager.getStateModel().setReadyForCount(false);
@@ -1411,7 +1437,7 @@ public final class Mh4w {
 						@Override
 						public void run() {
 							manager.getGuiController().setDetailFrameVisible(true);
-							if(manager.getFailsModel().size() > 0) 
+							if(manager.getFailModel().size() > 0) 
 								manager.getGuiController().setFailFrameVisible(true);
 							manager.getGuiController().setDetailButtonSelect(true, true);
 						}
@@ -1509,6 +1535,8 @@ public final class Mh4w {
 					message(LoggerStringKey.Mh4w_FlowProvider_47);
 					manager.getOriginalAttendanceDataModel().clear();
 					manager.getOriginalWorkticketDataModel().clear();
+					manager.getAttendanceDataModel().clear();
+					manager.getWorkticketDataModel().clear();
 					
 					//读取原始考勤数据
 					info(LoggerStringKey.Mh4w_FlowProvider_42);
@@ -1539,7 +1567,51 @@ public final class Mh4w {
 					}
 					
 					//转换原始数据，并将发生的问题记录在错误模型中
+					info(LoggerStringKey.Mh4w_FlowProvider_52);
+					message(LoggerStringKey.Mh4w_FlowProvider_52);
+					manager.getOriginalAttendanceDataModel().getLock().readLock().lock();
+					try{
+						for(OriginalAttendanceData rawData : manager.getOriginalAttendanceDataModel()){
+							try{
+								AttendanceData attendanceData = CountUtil.transAttendanceData(rawData, manager.getShiftModel());
+								manager.getAttendanceDataModel().add(attendanceData);
+							}catch (TransException e) {
+								manager.getFailModel().add(new DefaultFail(rawData, FailType.DATA_STRUCT_FAIL));
+								warn(LoggerStringKey.Mh4w_FlowProvider_54, e);
+							}
+						}
+					}finally {
+						manager.getOriginalAttendanceDataModel().getLock().readLock().unlock();
+					}
+					manager.getOriginalWorkticketDataModel().getLock().readLock().lock();
+					try{
+						for(OriginalWorkticketData rawData : manager.getOriginalWorkticketDataModel()){
+							try{
+								WorkticketData workticketData = CountUtil.transWorkticketData(rawData);
+								manager.getWorkticketDataModel().add(workticketData);
+							}catch (TransException e) {
+								manager.getFailModel().add(new DefaultFail(rawData, FailType.DATA_STRUCT_FAIL));
+								warn(LoggerStringKey.Mh4w_FlowProvider_54, e);
+							}
+						}
+					}finally {
+						manager.getOriginalWorkticketDataModel().getLock().readLock().unlock();
+					}
 					
+					//错误模型.size() > 0 ? goto err_1 : goto next_1
+					if(manager.getFailModel().size() > 0){
+						message(LoggerStringKey.Mh4w_FlowProvider_53);
+						manager.getStateModel().setCountState(CountState.STARTED_ERROR);
+						Mh4wUtil.invokeInEventQueue(new Runnable() {
+							@Override
+							public void run() {
+								manager.getGuiController().setDetailFrameVisible(true);
+								manager.getGuiController().setFailFrameVisible(true);
+								manager.getGuiController().setDetailButtonSelect(true, true);
+							}
+						});
+						return;
+					}
 					
 					//TODO 实现统计算法
 					
@@ -1760,7 +1832,7 @@ public final class Mh4w {
 						throw new IllegalStateException("程序还未启动或已经结束");
 					}
 					
-					info(LoggerStringKey.Mh4w_FlowProvider_48);
+					info(LoggerStringKey.Mh4w_FlowProvider_49);
 					Mh4wUtil.invokeInEventQueue(new Runnable() {
 						@Override
 						public void run() {
@@ -1768,11 +1840,11 @@ public final class Mh4w {
 						}
 					});
 					
-					message(LoggerStringKey.Mh4w_FlowProvider_49);
+					message(LoggerStringKey.Mh4w_FlowProvider_50);
 					
 				}catch (Exception e) {
 					setThrowable(e);
-					message(LoggerStringKey.Mh4w_FlowProvider_50);
+					message(LoggerStringKey.Mh4w_FlowProvider_51);
 				}
 			}
 			

@@ -31,13 +31,13 @@ public final class Staff {
 	/**
 	 * 新实例。
 	 * @param workNumber 指定的工号。
-	 * @param departement 指定的部门。
+	 * @param department 指定的部门。
 	 * @param name 指定的名称。
 	 */
-	public Staff(String workNumber, String departement, String name) {
+	public Staff(String workNumber, String department, String name) {
 		super();
 		this.workNumber = workNumber;
-		this.departement = departement;
+		this.departement = department;
 		this.name = name;
 	}
 
@@ -49,9 +49,9 @@ public final class Staff {
 	}
 
 	/**
-	 * @return the departement
+	 * @return the department
 	 */
-	public String getDepartement() {
+	public String getDepartment() {
 		return departement;
 	}
 

@@ -76,7 +76,7 @@ public class JOriginalAttendanceDataPanel extends JPanel implements MutilangSupp
 				@Override
 				public void run() {
 					tableModel.insertRow(index, new Object[]{
-						value.getDepartement(),
+						value.getDepartment(),
 						value.getWorkNumber(),
 						value.getName(),
 						value.getDate(),
@@ -98,7 +98,7 @@ public class JOriginalAttendanceDataPanel extends JPanel implements MutilangSupp
 				public void run() {
 					tableModel.removeRow(index);
 					tableModel.insertRow(index, new Object[]{
-						newValue.getDepartement(),
+						newValue.getDepartment(),
 						newValue.getWorkNumber(),
 						newValue.getName(),
 						newValue.getDate(),
@@ -183,7 +183,7 @@ public class JOriginalAttendanceDataPanel extends JPanel implements MutilangSupp
 			try{
 				for(OriginalAttendanceData originalAttendanceData : originalAttendanceDataModel){
 					tableModel.addRow(new Object[]{
-							originalAttendanceData.getDepartement(),
+							originalAttendanceData.getDepartment(),
 							originalAttendanceData.getWorkNumber(),
 							originalAttendanceData.getName(),
 							originalAttendanceData.getDate(),
@@ -256,7 +256,7 @@ public class JOriginalAttendanceDataPanel extends JPanel implements MutilangSupp
 			try{
 				for(OriginalAttendanceData originalAttendanceData : originalAttendanceDataModel){
 					tableModel.addRow(new Object[]{
-							originalAttendanceData.getDepartement(),
+							originalAttendanceData.getDepartment(),
 							originalAttendanceData.getWorkNumber(),
 							originalAttendanceData.getName(),
 							originalAttendanceData.getDate(),

@@ -74,7 +74,7 @@ public class JOriginalWorkticketDataPanel extends JPanel implements MutilangSupp
 				@Override
 				public void run() {
 					tableModel.insertRow(index, new Object[]{
-						value.getDepartement(),
+						value.getDepartment(),
 						value.getWorkNumber(),
 						value.getName(),
 						value.getJob().getName(),
@@ -95,7 +95,7 @@ public class JOriginalWorkticketDataPanel extends JPanel implements MutilangSupp
 				public void run() {
 					tableModel.removeRow(index);
 					tableModel.insertRow(index, new Object[]{
-						newValue.getDepartement(),
+						newValue.getDepartment(),
 						newValue.getWorkNumber(),
 						newValue.getName(),
 						newValue.getJob().getName(),
@@ -177,7 +177,7 @@ public class JOriginalWorkticketDataPanel extends JPanel implements MutilangSupp
 			try{
 				for(OriginalWorkticketData originalWorkticketData : originalWorkticketDataModel){
 					tableModel.addRow(new Object[]{
-						originalWorkticketData.getDepartement(),
+						originalWorkticketData.getDepartment(),
 						originalWorkticketData.getWorkNumber(),
 						originalWorkticketData.getName(),
 						originalWorkticketData.getJob().getName(),
@@ -248,7 +248,7 @@ public class JOriginalWorkticketDataPanel extends JPanel implements MutilangSupp
 			try{
 				for(OriginalWorkticketData originalWorkticketData : originalWorkticketDataModel){
 					tableModel.addRow(new Object[]{
-						originalWorkticketData.getDepartement(),
+						originalWorkticketData.getDepartment(),
 						originalWorkticketData.getWorkNumber(),
 						originalWorkticketData.getName(),
 						originalWorkticketData.getJob().getName(),
