@@ -176,6 +176,7 @@ public class JJobPanel extends JPanel implements MutilangSupported{
 		table = new JTable();
 		table.setFillsViewportHeight(true);
 		table.setModel(tableModel);
+		table.getTableHeader().setReorderingAllowed(false);
 		table.getColumnModel().getColumn(0).setCellRenderer(tableRenderer);
 		table.getColumnModel().getColumn(1).setCellRenderer(tableRenderer);
 		table.getColumnModel().getColumn(2).setCellRenderer(tableRenderer);

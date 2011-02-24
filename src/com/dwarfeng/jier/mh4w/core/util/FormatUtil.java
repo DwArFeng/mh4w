@@ -2,6 +2,7 @@ package com.dwarfeng.jier.mh4w.core.util;
 
 import java.util.Objects;
 
+import com.dwarfeng.jier.mh4w.core.model.struct.DataFromXls;
 import com.dwarfeng.jier.mh4w.core.model.struct.Staff;
 import com.dwarfeng.jier.mh4w.core.model.struct.TimeSection;
 
@@ -41,4 +42,14 @@ public final class FormatUtil {
 		return String.format("%02d:%02d - %02d:%02d", a1, a2, a3, a4);
 	}
 	
+	/**
+	 * 格式化 DataFromXls 对象。
+	 * @param dataFromXls 指定的 DataFromXls 对象。
+	 * @return DataFromXls 对象的格式化输出。
+	 * @throws NullPointerException 入口参数为 <code>null</code>。
+	 */
+	public static String formatDataFromXls(DataFromXls dataFromXls){
+		Objects.requireNonNull(dataFromXls, "入口参数 dataFromXls 不能为 null。");
+		return String.format("%s:%d", dataFromXls.getFileName(), dataFromXls.getRow());
+	}
 }

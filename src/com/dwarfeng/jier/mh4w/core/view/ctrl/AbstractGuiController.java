@@ -355,6 +355,8 @@ public abstract class AbstractGuiController implements GuiController {
 		lock.writeLock().lock();
 		try{
 			if(Objects.isNull(detailFrame)) return false;
+			if(Objects.isNull(mainFrame)) return false;
+
 			if(aFlag){
 				Point dest = new Point(0,0);
 				SwingUtilities.convertPointToScreen(dest, mainFrame);
@@ -629,6 +631,13 @@ public abstract class AbstractGuiController implements GuiController {
 		lock.writeLock().lock();
 		try{
 			if(Objects.isNull(failFrame)) return false;
+			if(Objects.isNull(mainFrame)) return false;
+
+			if(aFlag){
+				Point dest = new Point(0,0);
+				SwingUtilities.convertPointToScreen(dest, mainFrame);
+				failFrame.setBounds(dest.x, dest.y + mainFrame.getHeight(), 427, 505);
+			}
 			failFrame.setVisible(aFlag);
 			return true;
 		}finally {

@@ -161,6 +161,7 @@ public class JOriginalWorkticketDataPanel extends JPanel implements MutilangSupp
 		
 		table = new JTable();
 		table.setModel(tableModel);
+		table.getTableHeader().setReorderingAllowed(false);
 		table.getColumnModel().getColumn(0).setHeaderValue(getLabel(LabelStringKey.JOriginalWorkticketDataPanel_1));
 		table.getColumnModel().getColumn(1).setHeaderValue(getLabel(LabelStringKey.JOriginalWorkticketDataPanel_2));
 		table.getColumnModel().getColumn(2).setHeaderValue(getLabel(LabelStringKey.JOriginalWorkticketDataPanel_3));

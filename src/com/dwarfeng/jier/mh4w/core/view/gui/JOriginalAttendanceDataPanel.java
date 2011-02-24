@@ -166,6 +166,7 @@ public class JOriginalAttendanceDataPanel extends JPanel implements MutilangSupp
 		table = new JTable();
 		table.setFillsViewportHeight(true);
 		table.setModel(tableModel);
+		table.getTableHeader().setReorderingAllowed(false);
 		table.getColumnModel().getColumn(0).setHeaderValue(getLabel(LabelStringKey.JOriginalAttendanceDataPanel_1));
 		table.getColumnModel().getColumn(1).setHeaderValue(getLabel(LabelStringKey.JOriginalAttendanceDataPanel_2));
 		table.getColumnModel().getColumn(2).setHeaderValue(getLabel(LabelStringKey.JOriginalAttendanceDataPanel_3));

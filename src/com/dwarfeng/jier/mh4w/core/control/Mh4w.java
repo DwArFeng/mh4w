@@ -1516,12 +1516,18 @@ public final class Mh4w {
 					 * 读取原始考勤数据
 					 * 读取原始工票数据
 					 * 转换原始数据，并将发生的问题记录在错误模型中
-					 * 错误模型.size() > 0 ? goto err_1 : goto next_1
+					 * 错误模型.size() > 0 then goto err_1
 					 * 
-					 * next_1:
+					 * 检测数据匹配性，并将发生的问题记录在错误模型中
+					 * 错误模型.size() > 0 then goto err_2
 					 * 
+					 * exit
 					 * 
 					 *  err_1:
+					 *  设置状态模型为 统计_错误，并显示错误面板。
+					 *  exit
+					 *  
+					 *  err_2:
 					 *  设置状态模型为 统计_错误，并显示错误面板。
 					 *  exit
 					 */
@@ -1537,6 +1543,7 @@ public final class Mh4w {
 					manager.getOriginalWorkticketDataModel().clear();
 					manager.getAttendanceDataModel().clear();
 					manager.getWorkticketDataModel().clear();
+					manager.getFailModel().clear();
 					
 					//读取原始考勤数据
 					info(LoggerStringKey.Mh4w_FlowProvider_42);
@@ -1602,16 +1609,14 @@ public final class Mh4w {
 					if(manager.getFailModel().size() > 0){
 						message(LoggerStringKey.Mh4w_FlowProvider_53);
 						manager.getStateModel().setCountState(CountState.STARTED_ERROR);
-						Mh4wUtil.invokeInEventQueue(new Runnable() {
-							@Override
-							public void run() {
-								manager.getGuiController().setDetailFrameVisible(true);
-								manager.getGuiController().setFailFrameVisible(true);
-								manager.getGuiController().setDetailButtonSelect(true, true);
-							}
-						});
 						return;
 					}
+					
+					//检测数据匹配性，并将发生的问题记录在错误模型中
+					//员工是否匹配。
+					info(LoggerStringKey.Mh4w_FlowProvider_55);
+					message(LoggerStringKey.Mh4w_FlowProvider_55);
+					
 					
 					//TODO 实现统计算法
 					
@@ -1623,6 +1628,15 @@ public final class Mh4w {
 				}catch (Exception e) {
 					setThrowable(e);
 					message(LoggerStringKey.Mh4w_FlowProvider_14);
+				}finally {
+					Mh4wUtil.invokeInEventQueue(new Runnable() {
+						@Override
+						public void run() {
+							manager.getGuiController().setDetailFrameVisible(true);
+							manager.getGuiController().setFailFrameVisible(true);
+							manager.getGuiController().setDetailButtonSelect(true, true);
+						}
+					});
 				}
 			}
 			

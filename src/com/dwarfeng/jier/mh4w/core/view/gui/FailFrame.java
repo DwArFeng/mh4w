@@ -19,13 +19,16 @@ import javax.swing.table.TableCellRenderer;
 
 import com.dwarfeng.dutil.basic.prog.ObverserSet;
 import com.dwarfeng.jier.mh4w.core.model.cm.DataListModel;
+import com.dwarfeng.jier.mh4w.core.model.eum.FailType;
 import com.dwarfeng.jier.mh4w.core.model.eum.LabelStringKey;
 import com.dwarfeng.jier.mh4w.core.model.obv.ListOperateAdapter;
 import com.dwarfeng.jier.mh4w.core.model.obv.ListOperateObverser;
+import com.dwarfeng.jier.mh4w.core.model.struct.DataFromXls;
 import com.dwarfeng.jier.mh4w.core.model.struct.Fail;
 import com.dwarfeng.jier.mh4w.core.model.struct.Mutilang;
 import com.dwarfeng.jier.mh4w.core.model.struct.MutilangSupported;
 import com.dwarfeng.jier.mh4w.core.util.Constants;
+import com.dwarfeng.jier.mh4w.core.util.FormatUtil;
 import com.dwarfeng.jier.mh4w.core.util.Mh4wUtil;
 import com.dwarfeng.jier.mh4w.core.view.obv.FailFrameObverser;
 
@@ -82,6 +85,20 @@ public final class FailFrame extends JFrame implements MutilangSupported, Obvers
 		@Override
 		public java.awt.Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
 			super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+			if(column == 0){
+				if(value instanceof DataFromXls){
+					DataFromXls dataFromXls = (DataFromXls) value;
+					setText(FormatUtil.formatDataFromXls(dataFromXls));
+				}
+			}
+			if(column == 1){
+				FailType failType = (FailType) value;
+				switch(failType){
+				case DATA_STRUCT_FAIL:
+					setText(getLabel(LabelStringKey.FailFrame_4));
+					break;
+				}
+			}
 			return this;
 		};
 		
@@ -184,7 +201,7 @@ public final class FailFrame extends JFrame implements MutilangSupported, Obvers
 		});
 		
 		setTitle(getLabel(LabelStringKey.FailFrame_3));
-		setBounds(new Rectangle(100, 100, 427, 300));
+		setBounds(new Rectangle(100, 100, 427, 505));
 		setAlwaysOnTop(true);
 		setType(Type.UTILITY);
 		getContentPane().setLayout(new BorderLayout(0, 0));
@@ -195,6 +212,7 @@ public final class FailFrame extends JFrame implements MutilangSupported, Obvers
 		table = new JTable();
 		table.setFillsViewportHeight(true);
 		table.setModel(tableModel);
+		table.getTableHeader().setReorderingAllowed(false);
 		table.getColumnModel().getColumn(0).setHeaderValue(getLabel(LabelStringKey.FailFrame_1));
 		table.getColumnModel().getColumn(1).setHeaderValue(getLabel(LabelStringKey.FailFrame_2));
 		table.getColumnModel().getColumn(0).setCellRenderer(tableRenderer);
@@ -282,6 +300,8 @@ public final class FailFrame extends JFrame implements MutilangSupported, Obvers
 		//更新各标签的文本。
 		setTitle(getLabel(LabelStringKey.FailFrame_3));
 
+		table.repaint();
+		
 		table.getColumnModel().getColumn(0).setHeaderValue(getLabel(LabelStringKey.FailFrame_1));
 		table.getColumnModel().getColumn(1).setHeaderValue(getLabel(LabelStringKey.FailFrame_2));
 		

@@ -145,6 +145,7 @@ public class JCoreConfigPanel extends JPanel implements MutilangSupported{
 		
 		table = new JTable();
 		table.getTableHeader().setReorderingAllowed(false);
+		table.getTableHeader().setReorderingAllowed(false);
 		table.setModel(tableModel);
 		table.getColumnModel().getColumn(0).setCellRenderer(tableCellRenderer);
 		table.getColumnModel().getColumn(1).setCellRenderer(tableCellRenderer);
