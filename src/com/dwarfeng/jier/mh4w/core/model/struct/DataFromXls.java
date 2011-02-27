@@ -14,8 +14,8 @@ public interface DataFromXls {
 	public String getFileName();
 	
 	/**
-	 * 获取原数据的行号。
-	 * @return 原数据的行号。
+	 * 获取数据的行号。
+	 * @return 数据的行号。
 	 */
 	public int getRow();
 	

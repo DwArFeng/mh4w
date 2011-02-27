@@ -4,12 +4,17 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.Set;
 
 import com.dwarfeng.dutil.basic.num.NumberUtil;
 import com.dwarfeng.dutil.basic.num.unit.Time;
 import com.dwarfeng.jier.mh4w.core.model.cm.CoreConfigModel;
+import com.dwarfeng.jier.mh4w.core.model.cm.DataListModel;
 import com.dwarfeng.jier.mh4w.core.model.cm.DateTypeModel;
 import com.dwarfeng.jier.mh4w.core.model.cm.FileSelectModel;
 import com.dwarfeng.jier.mh4w.core.model.cm.JobModel;
@@ -19,13 +24,16 @@ import com.dwarfeng.jier.mh4w.core.model.io.XlsOriginalAttendanceDataLoader;
 import com.dwarfeng.jier.mh4w.core.model.io.XlsOriginalWorkticketDataLoader;
 import com.dwarfeng.jier.mh4w.core.model.struct.AttendanceData;
 import com.dwarfeng.jier.mh4w.core.model.struct.CountDate;
+import com.dwarfeng.jier.mh4w.core.model.struct.Counter;
+import com.dwarfeng.jier.mh4w.core.model.struct.DataFromXls;
+import com.dwarfeng.jier.mh4w.core.model.struct.DataWithPerson;
 import com.dwarfeng.jier.mh4w.core.model.struct.DefaultAttendanceData;
 import com.dwarfeng.jier.mh4w.core.model.struct.DefaultWorkticketData;
 import com.dwarfeng.jier.mh4w.core.model.struct.Job;
 import com.dwarfeng.jier.mh4w.core.model.struct.OriginalAttendanceData;
 import com.dwarfeng.jier.mh4w.core.model.struct.OriginalWorkticketData;
 import com.dwarfeng.jier.mh4w.core.model.struct.Shift;
-import com.dwarfeng.jier.mh4w.core.model.struct.Staff;
+import com.dwarfeng.jier.mh4w.core.model.struct.Person;
 import com.dwarfeng.jier.mh4w.core.model.struct.TimeSection;
 import com.dwarfeng.jier.mh4w.core.model.struct.TransException;
 import com.dwarfeng.jier.mh4w.core.model.struct.WorkticketData;
@@ -160,7 +168,9 @@ public final class CountUtil {
 			double coefficient_weekend = coreConfigModel.getWeekendCoefficientCount();
 			double coefficient_holiday = coreConfigModel.getHolidayCoefficientCount();
 			
-			Staff staff = transStaff(rawData.getWorkNumber(), rawData.getDepartment(), rawData.getName());
+			String fileName = rawData.getFileName();
+			int row = rawData.getRow();
+			Person person = transPerson(rawData.getWorkNumber(), rawData.getDepartment(), rawData.getName());
 			CountDate countDate = transCountDate(rawData.getDate());
 			Shift shift = transShift(rawData.getShift(), shiftModel);
 			TimeSection attendanceRecord = transTimeSection(rawData.getAttendanceRecord());
@@ -185,17 +195,17 @@ public final class CountUtil {
 			//根据指定的日期类型计算等效工作时间。
 			switch (dateType) {
 			case HOLIDAY:
-				extraShiftTime = (shiftTime + extraShiftTime) * coefficient_holiday;
+				equivalentWorkTime = (shiftTime + extraShiftTime) * coefficient_holiday;
 				break;
 			case NORMAL:
-				extraShiftTime = shiftTime * coefficient_shift + extraShiftTime * coefficient_extra;
+				equivalentWorkTime = shiftTime * coefficient_shift + extraShiftTime * coefficient_extra;
 				break;
 			case WEEKEND:
-				extraShiftTime = (shiftTime + extraShiftTime) * coefficient_weekend;
+				equivalentWorkTime = (shiftTime + extraShiftTime) * coefficient_weekend;
 				break;
 			}
 			
-			AttendanceData data = new DefaultAttendanceData(staff, countDate, shift, attendanceRecord, dateType,
+			AttendanceData data = new DefaultAttendanceData(fileName, row, person, countDate, shift, attendanceRecord, dateType,
 					equivalentWorkTime, originalWorkTime);
 			
 			return data;
@@ -239,7 +249,9 @@ public final class CountUtil {
 	public static WorkticketData transWorkticketData(OriginalWorkticketData rawData) throws TransException{
 		Objects.requireNonNull(rawData, "入口参数 rawData 不能为 null。");
 		try{
-			Staff staff = transStaff(rawData.getWorkNumber(), rawData.getDepartment(), rawData.getName());
+			String fileName = rawData.getFileName();
+			int row = rawData.getRow();
+			Person person = transPerson(rawData.getWorkNumber(), rawData.getDepartment(), rawData.getName());
 			Job job = rawData.getJob();
 			double workticket;
 			if(rawData.getWorkticket().equals("")){
@@ -248,7 +260,7 @@ public final class CountUtil {
 				workticket = Double.parseDouble(rawData.getWorkticket());
 			}
 			
-			return new DefaultWorkticketData(staff, job, workticket);
+			return new DefaultWorkticketData(fileName, row, person, job, workticket);
 		}catch (Exception e) {
 			throw new TransException("无法将指定的原始工票数据转化为工票数据", e);
 		}
@@ -263,12 +275,12 @@ public final class CountUtil {
 	 * @throws TransException 转换异常。
 	 * @throws NullPointerException 入口参数为 <code>null</code>。
 	 */
-	public static Staff transStaff(String workNumber, String department, String name) throws TransException{
+	public static Person transPerson(String workNumber, String department, String name) throws TransException{
 		Objects.requireNonNull(workNumber, "入口参数 workNumber 不能为 null。");
 		Objects.requireNonNull(department, "入口参数 department 不能为 null。");
 		Objects.requireNonNull(name, "入口参数 name 不能为 null。");
 
-		return new Staff(workNumber, department, name);
+		return new Person(workNumber, department, name);
 	}
 	
 	/**
@@ -339,7 +351,162 @@ public final class CountUtil {
 		}
 	}
 	
+	/**
+	 * 人员一致性监测。
+	 * @param attendanceDataModel 指定的考勤数据模型。
+	 * @param workticketDataModel 指定的工票数据模型。
+	 * @return 不一致的员工信息。
+	 * @throws NullPointerException 入口参数为 <code>null</code>。
+	 */
+	public static Set<DataFromXls> personConsistentCheck(DataListModel<AttendanceData> attendanceDataModel,
+			DataListModel<WorkticketData> workticketDataModel){
+		Objects.requireNonNull(attendanceDataModel, "入口参数 attendanceDataModel 不能为 null。");
+		Objects.requireNonNull(workticketDataModel, "入口参数 workticketDataModel 不能为 null。");
+
+		Map<String, Map<Person, PersonConsistentElement>> struct = new HashMap<>();
+		//开辟新的集合持有数据，以防对模型的锁造成频繁的占用。
+		Set<PersonConsistentComplex> datas = new HashSet<>();
+		
+		//读取数据
+		attendanceDataModel.getLock().readLock().lock();
+		try{
+			for(AttendanceData data : attendanceDataModel){
+				datas.add(new PersonConsistentComplex(data, data));
+			}
+		}finally {
+			attendanceDataModel.getLock().readLock().unlock();
+		}
+		workticketDataModel.getLock().readLock().lock();
+		try{
+			for(WorkticketData data : workticketDataModel){
+				datas.add(new PersonConsistentComplex(data, data));
+			}
+		}finally{
+			workticketDataModel.getLock().readLock().unlock();
+		}
+		
+		//循环检测每个数据
+		for(PersonConsistentComplex data : datas){
+			//根据工号获取 struct 中的值
+			String workNumber = data.dataWithPerson.getPerson().getWorkNumber();
+			if(! struct.containsKey(workNumber)){
+				struct.put(workNumber, new HashMap<>());
+			}
+			Map<Person, PersonConsistentElement> personInfo = struct.get(workNumber);
+			
+			//向值映射中添加员工信息。
+			Person person = data.dataWithPerson.getPerson();
+			if(! personInfo.containsKey(person)){
+				personInfo.put(person, new PersonConsistentElement());
+			}
+			PersonConsistentElement element = personInfo.get(person);
+			element.datas.add(data.dataFromXls);
+			element.counter.count();
+		}
+		
+		//定义不一致集合。
+		Set<DataFromXls> unconsistents = new HashSet<>();
+		
+		//循环检查每个工号，观察其是否含有多个对应的员工。
+		for(Map<Person, PersonConsistentElement> personMap : struct.values()){
+			//如果personMap的数量大于1，则代表产生了不一致现象。
+			if(personMap.size() > 1){
+				PersonConsistentElement max = null;
+				
+				next:
+				//遍历personMap的所有值集合，将不是最大的计数归入不一致集合
+				for(PersonConsistentElement value : personMap.values()){
+					if(max == null){
+						max = value;
+						continue next;
+					}
+					
+					//如果当前新的值的计数要大于最大值，则该值变为最大值，同时
+					//把上一个最大值中的元素归入不一致集合
+					//否则把该值的元素归入不一致集合。
+					if(value.counter.getCounts() > max.counter.getCounts()){
+						unconsistents.addAll(max.datas);
+						max = value;
+					}else{
+						unconsistents.addAll(value.datas);
+					}
+				}
+			}
+		}
+		
+		return unconsistents;
+	}
 	
+	private final static class PersonConsistentComplex{
+		
+		public final DataFromXls dataFromXls;
+		public final DataWithPerson dataWithPerson;
+		
+		public PersonConsistentComplex(DataFromXls dataFromXls, DataWithPerson dataWithPerson) {
+			super();
+			this.dataFromXls = dataFromXls;
+			this.dataWithPerson = dataWithPerson;
+		}
+		
+	}
+	
+	private final static class PersonConsistentElement{
+		public final Set<DataFromXls> datas = new HashSet<>();
+		public final Counter counter = new Counter();
+	}
+	
+	/**
+	 * 人员匹配性检测。
+	 * @param attendanceDataModel 指定的考勤数据模型。
+	 * @param workticketDataModel 指定的工票数据模型。
+	 * @return 不匹配的员工信息。
+	 * @throws NullPointerException 入口参数为 <code>null</code>。
+	 */
+	public static Set<DataFromXls> personMatchCheck(DataListModel<AttendanceData> attendanceDataModel,
+			DataListModel<WorkticketData> workticketDataModel){
+		Objects.requireNonNull(attendanceDataModel, "入口参数 attendanceDataModel 不能为 null。");
+		Objects.requireNonNull(workticketDataModel, "入口参数 workticketDataModel 不能为 null。");
+		
+		//开辟映射空间。
+		Map<Person, DataFromXls> attendanceMap = new HashMap<>();
+		Map<Person, DataFromXls> workticketMap = new HashMap<>();
+		
+		//将出勤信息和工票信息添加到映射空间中
+		attendanceDataModel.getLock().readLock().lock();
+		try{
+			for(AttendanceData data : attendanceDataModel){
+				attendanceMap.put(data.getPerson(), data);
+			}
+		}finally {
+			attendanceDataModel.getLock().readLock().unlock();
+		}
+		workticketDataModel.getLock().readLock().lock();
+		try{
+			for(WorkticketData data : workticketDataModel){
+				workticketMap.put(data.getPerson(), data);
+			}
+		}finally{
+			workticketDataModel.getLock().readLock().unlock();
+		}
+		
+		//开辟不匹配集合
+		Set<DataFromXls> unmatches = new HashSet<>();
+		
+		//对比映射工件的键，并把不匹配的键对应的值添加到不匹配集合中
+		for(Person person : attendanceMap.keySet()){
+			if(! workticketMap.containsKey(person)){
+				unmatches.add(attendanceMap.get(person));
+			}
+		}
+		for(Person person : workticketMap.keySet()){
+			if(! attendanceMap.containsKey(person)){
+				unmatches.add(workticketMap.get(person));
+			}
+		}
+		
+		return unmatches;
+		
+	}
 	
 	//禁止外部实例化。
 	private CountUtil(){}

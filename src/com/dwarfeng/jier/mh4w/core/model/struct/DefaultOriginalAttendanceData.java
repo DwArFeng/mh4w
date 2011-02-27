@@ -65,7 +65,7 @@ public final class DefaultOriginalAttendanceData implements OriginalAttendanceDa
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.dwarfeng.jier.mh4w.core.model.struct.OriginalDataWithStaff#getWorkNumber()
+	 * @see com.dwarfeng.jier.mh4w.core.model.struct.OriginalDataWithPerson#getWorkNumber()
 	 */
 	@Override
 	public String getWorkNumber() {
@@ -74,7 +74,7 @@ public final class DefaultOriginalAttendanceData implements OriginalAttendanceDa
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.dwarfeng.jier.mh4w.core.model.struct.OriginalDataWithStaff#getDepartement()
+	 * @see com.dwarfeng.jier.mh4w.core.model.struct.OriginalDataWithPerson#getDepartment()
 	 */
 	@Override
 	public String getDepartment() {
@@ -83,7 +83,7 @@ public final class DefaultOriginalAttendanceData implements OriginalAttendanceDa
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.dwarfeng.jier.mh4w.core.model.struct.OriginalDataWithStaff#getName()
+	 * @see com.dwarfeng.jier.mh4w.core.model.struct.OriginalDataWithPerson#getName()
 	 */
 	@Override
 	public String getName() {

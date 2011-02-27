@@ -5,12 +5,12 @@ package com.dwarfeng.jier.mh4w.core.model.struct;
  * @author DwArFeng
  * @since 0.0.0-alpha
  */
-public interface DataWithStaff {
+public interface DataWithPerson {
 	
 	/**
 	 * 获取数据中的员工。
 	 * @return 数据中的员工。
 	 */
-	public Staff getStaff();
+	public Person getPerson();
 
 }

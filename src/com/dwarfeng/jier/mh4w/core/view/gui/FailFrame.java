@@ -93,11 +93,7 @@ public final class FailFrame extends JFrame implements MutilangSupported, Obvers
 			}
 			if(column == 1){
 				FailType failType = (FailType) value;
-				switch(failType){
-				case DATA_STRUCT_FAIL:
-					setText(getLabel(LabelStringKey.FailFrame_4));
-					break;
-				}
+				setText(getLabel(failType.getLabelStringKey()));
 			}
 			return this;
 		};

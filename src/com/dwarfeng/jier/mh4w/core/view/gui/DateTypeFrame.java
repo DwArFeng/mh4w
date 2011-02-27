@@ -96,19 +96,7 @@ public class DateTypeFrame extends JDialog implements MutilangSupported, Obverse
 		public java.awt.Component getListCellRendererComponent(javax.swing.JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
 			super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
 			ListEntry entry = (ListEntry) value;
-			String dateType = null;
-			switch (entry.value) {
-			case HOLIDAY:
-				dateType = DateTypeFrame.this.getLabel(LabelStringKey.DateTypeFrame_6);
-				break;
-			case WEEKEND:
-				dateType = DateTypeFrame.this.getLabel(LabelStringKey.DateTypeFrame_5);
-				break;
-			default:
-				dateType = null;
-				break;
-			}
-			setText(dateType + " : " + FormatUtil.formatCountDate(entry.key));
+			setText(getLabel(entry.value.getLabelStringKey()) + " : " + FormatUtil.formatCountDate(entry.key));
 			return this;
 		};
 	};
@@ -119,12 +107,9 @@ public class DateTypeFrame extends JDialog implements MutilangSupported, Obverse
 		@Override
 		public java.awt.Component getListCellRendererComponent(javax.swing.JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
 			super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-			if(value.equals(DateType.WEEKEND)){
-				setText(DateTypeFrame.this.getLabel(LabelStringKey.DateTypeFrame_5));
-			}
-			if(value.equals(DateType.HOLIDAY)){
-				setText(DateTypeFrame.this.getLabel(LabelStringKey.DateTypeFrame_6));
-			}
+			//此处转换是安全的
+			DateType dateType = (DateType) value;
+			setText(getLabel(dateType.getLabelStringKey()));
 			return this;
 		};
 	};
@@ -325,7 +310,7 @@ public class DateTypeFrame extends JDialog implements MutilangSupported, Obverse
 		southPanel.add(dayLabel, gbc_dayLabel);
 		
 		submitButton = new JButton();
-		submitButton.setText(getLabel(LabelStringKey.DateTypeFrame_7));
+		submitButton.setText(getLabel(LabelStringKey.DateTypeFrame_5));
 		submitButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -366,7 +351,7 @@ public class DateTypeFrame extends JDialog implements MutilangSupported, Obverse
 				fireClearDateTypeEntry();
 			}
 		});
-		clearButton.setText(getLabel(LabelStringKey.DateTypeFrame_8));
+		clearButton.setText(getLabel(LabelStringKey.DateTypeFrame_6));
 		GridBagConstraints gbc_clearButton = new GridBagConstraints();
 		gbc_clearButton.fill = GridBagConstraints.BOTH;
 		gbc_clearButton.insets = new Insets(0, 0, 5, 0);
@@ -375,7 +360,7 @@ public class DateTypeFrame extends JDialog implements MutilangSupported, Obverse
 		eastPanel.add(clearButton, gbc_clearButton);
 		
 		saveButton = new JButton();
-		saveButton.setText(getLabel(LabelStringKey.DateTypeFrame_9));
+		saveButton.setText(getLabel(LabelStringKey.DateTypeFrame_7));
 		saveButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -390,7 +375,7 @@ public class DateTypeFrame extends JDialog implements MutilangSupported, Obverse
 		eastPanel.add(saveButton, gbc_btnNewButton_2);
 		
 		loadButton = new JButton();
-		loadButton.setText(getLabel(LabelStringKey.DateTypeFrame_10));
+		loadButton.setText(getLabel(LabelStringKey.DateTypeFrame_8));
 		loadButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -487,10 +472,10 @@ public class DateTypeFrame extends JDialog implements MutilangSupported, Obverse
 		comboBox.repaint();
 		list.repaint();
 		
-		submitButton.setText(getLabel(LabelStringKey.DateTypeFrame_7));
-		clearButton.setText(getLabel(LabelStringKey.DateTypeFrame_8));
-		saveButton.setText(getLabel(LabelStringKey.DateTypeFrame_9));
-		loadButton.setText(getLabel(LabelStringKey.DateTypeFrame_10));
+		submitButton.setText(getLabel(LabelStringKey.DateTypeFrame_5));
+		clearButton.setText(getLabel(LabelStringKey.DateTypeFrame_6));
+		saveButton.setText(getLabel(LabelStringKey.DateTypeFrame_7));
+		loadButton.setText(getLabel(LabelStringKey.DateTypeFrame_8));
 	}
 
 	/**

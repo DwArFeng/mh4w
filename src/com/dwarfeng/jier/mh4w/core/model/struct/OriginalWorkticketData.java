@@ -5,7 +5,7 @@ package com.dwarfeng.jier.mh4w.core.model.struct;
  * @author DwArFeng
  * @since 0.0.0-alpha
  */
-public interface OriginalWorkticketData extends OriginalDataWithStaff, DataFromXls{
+public interface OriginalWorkticketData extends OriginalDataWithPerson, DataFromXls{
 
 	/**
 	 * 获取工票总时间。

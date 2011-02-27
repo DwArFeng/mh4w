@@ -17,10 +17,13 @@ public enum LabelStringKey implements Name{
 	MainFrame_4(new DefaultName("MainFrame.4")),
 	MainFrame_5(new DefaultName("MainFrame.5")),
 	MainFrame_6(new DefaultName("MainFrame.6")),
-	
+	MainFrame_7(new DefaultName("MainFrame.7")),
+
 	DetailFrame_1(new DefaultName("DetailFrame.1")),
 	DetailFrame_2(new DefaultName("DetailFrame.2")),
 	DetailFrame_3(new DefaultName("DetailFrame.3")),
+	DetailFrame_4(new DefaultName("DetailFrame.4")),
+	DetailFrame_5(new DefaultName("DetailFrame.5")),
 
 	AttrFrame_1(new DefaultName("AttrFrame.1")),
 	AttrFrame_2(new DefaultName("AttrFrame.2")),
@@ -72,7 +75,6 @@ public enum LabelStringKey implements Name{
 	FailFrame_1(new DefaultName("FailFrame.1")),
 	FailFrame_2(new DefaultName("FailFrame.2")),
 	FailFrame_3(new DefaultName("FailFrame.3")),
-	FailFrame_4(new DefaultName("FailFrame.4")),
 
 	DateTypeFrame_1(new DefaultName("DateTypeFrame.1")),
 	DateTypeFrame_2(new DefaultName("DateTypeFrame.2")),
@@ -82,8 +84,31 @@ public enum LabelStringKey implements Name{
 	DateTypeFrame_6(new DefaultName("DateTypeFrame.6")),
 	DateTypeFrame_7(new DefaultName("DateTypeFrame.7")),
 	DateTypeFrame_8(new DefaultName("DateTypeFrame.8")),
-	DateTypeFrame_9(new DefaultName("DateTypeFrame.9")),
-	DateTypeFrame_10(new DefaultName("DateTypeFrame.10")),
+
+	FailType_1(new DefaultName("FailType.1")),
+	FailType_2(new DefaultName("FailType.2")),
+	FailType_3(new DefaultName("FailType.3")),
+
+	JAttendanceDataPanel_1(new DefaultName("JAttendanceDataPanel.1")),
+	JAttendanceDataPanel_2(new DefaultName("JAttendanceDataPanel.2")),
+	JAttendanceDataPanel_3(new DefaultName("JAttendanceDataPanel.3")),
+	JAttendanceDataPanel_4(new DefaultName("JAttendanceDataPanel.4")),
+	JAttendanceDataPanel_5(new DefaultName("JAttendanceDataPanel.5")),
+	JAttendanceDataPanel_6(new DefaultName("JAttendanceDataPanel.6")),
+	JAttendanceDataPanel_7(new DefaultName("JAttendanceDataPanel.7")),
+	JAttendanceDataPanel_8(new DefaultName("JAttendanceDataPanel.8")),
+	JAttendanceDataPanel_9(new DefaultName("JAttendanceDataPanel.9")),
+	
+	DateType_1(new DefaultName("DateType.1")),
+	DateType_2(new DefaultName("DateType.2")),
+	DateType_3(new DefaultName("DateType.3")),
+	
+	JWorkticketDataPanel_1(new DefaultName("JWorkticketDataPanel.1")),
+	JWorkticketDataPanel_2(new DefaultName("JWorkticketDataPanel.2")),
+	JWorkticketDataPanel_3(new DefaultName("JWorkticketDataPanel.3")),
+	JWorkticketDataPanel_4(new DefaultName("JWorkticketDataPanel.4")),
+	JWorkticketDataPanel_5(new DefaultName("JWorkticketDataPanel.5")),
+	JWorkticketDataPanel_6(new DefaultName("JWorkticketDataPanel.6")),
 
 	;
 

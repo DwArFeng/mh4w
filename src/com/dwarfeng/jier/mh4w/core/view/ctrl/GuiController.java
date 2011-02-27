@@ -71,7 +71,6 @@ public interface GuiController extends ExternalReadWriteThreadSafe{
 	public File[] askFile(File directory, FileFilter[] fileFilters, boolean acceptAllFileFilter, boolean mutiSelectionEnabled,
 			int fileSelectionMode);
 	
-	
 	/**
 	 * 解除考勤文件面板的点击锁定。
 	 * @return 是否成功执行。
@@ -84,6 +83,12 @@ public interface GuiController extends ExternalReadWriteThreadSafe{
 	 */
 	public boolean workticketClickUnlock();
 	
+	/**
+	 *通知视图统计过程已经结束。
+	 * @return 是否成功通知。
+	 */
+	public boolean knockCountFinished();
+
 	/**
 	 * 设置详细按钮的选择状态。
 	 * @param value 指定的选择状态。

@@ -250,6 +250,22 @@ public abstract class AbstractGuiController implements GuiController {
 	
 	/*
 	 * (non-Javadoc)
+	 * @see com.dwarfeng.jier.mh4w.core.view.ctrl.GuiController#knockCountFinished()
+	 */
+	@Override
+	public boolean knockCountFinished() {
+		lock.writeLock().lock();
+		try{
+			if(Objects.isNull(mainFrame)) return false;
+			mainFrame.knockCountFinished();
+			return true;
+		}finally {
+			lock.writeLock().unlock();
+		}
+	}
+	
+	/*
+	 * (non-Javadoc)
 	 * @see com.dwarfeng.jier.mh4w.core.view.ctrl.GuiController#setDetailButtonSelect(boolean, boolean)
 	 */
 	@Override
@@ -363,7 +379,7 @@ public abstract class AbstractGuiController implements GuiController {
 			if(aFlag){
 				Point dest = new Point(0,0);
 				SwingUtilities.convertPointToScreen(dest, mainFrame);
-				detailFrame.setBounds(dest.x + mainFrame.getWidth(), dest.y, 700, 800);
+				detailFrame.setBounds(dest.x + mainFrame.getWidth(), dest.y, 1000, 800);
 			}
 			detailFrame.setVisible(aFlag);
 			return true;

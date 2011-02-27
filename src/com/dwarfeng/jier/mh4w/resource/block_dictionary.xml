@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <root>
 	<key value="initialize">
+		<dictionary value="initialize"/>
 	</key>
 	<key value="closing">
 		<dictionary value="initialize"/>
@@ -15,6 +16,13 @@
 		<dictionary value="initialize"/>
 		<dictionary value="select_attendance_file"/>
 		<dictionary value="select_workticket_file"/>
+		<dictionary value="count"/>
+		<dictionary value="submit_date_type_entry"/>
+		<dictionary value="remove_date_type_entry"/>
+		<dictionary value="clear_date_type_entry"/>
+		<dictionary value="save_date_type_entry"/>
+		<dictionary value="load_date_type_entry"/>
+		<dictionary value="reset_count"/>
 	</key>
 	<key value="show_detail">
 		<dictionary value="initialize"/>
@@ -42,6 +50,7 @@
 		<dictionary value="clear_date_type_entry"/>
 		<dictionary value="save_date_type_entry"/>
 		<dictionary value="load_date_type_entry"/>
+		<dictionary value="count"/>
 	</key>
 	<key value="show_attr_frame">
 		<dictionary value="initialize"/>
@@ -67,6 +76,7 @@
 	</key>
 	<key value="submit_date_type_entry">
 		<dictionary value="initialize"/>
+		<dictionary value="submit_date_type_entry"/>
 		<dictionary value="remove_date_type_entry"/>
 		<dictionary value="clear_date_type_entry"/>
 		<dictionary value="save_date_type_entry"/>
@@ -76,6 +86,7 @@
 	<key value="remove_date_type_entry">
 		<dictionary value="initialize"/>
 		<dictionary value="submit_date_type_entry"/>
+		<dictionary value="remove_date_type_entry"/>
 		<dictionary value="clear_date_type_entry"/>
 		<dictionary value="save_date_type_entry"/>
 		<dictionary value="load_date_type_entry"/>
@@ -85,6 +96,7 @@
 		<dictionary value="initialize"/>
 		<dictionary value="submit_date_type_entry"/>
 		<dictionary value="remove_date_type_entry"/>
+		<dictionary value="clear_date_type_entry"/>
 		<dictionary value="save_date_type_entry"/>
 		<dictionary value="load_date_type_entry"/>
 		<dictionary value="count"/>
@@ -94,6 +106,7 @@
 		<dictionary value="submit_date_type_entry"/>
 		<dictionary value="remove_date_type_entry"/>
 		<dictionary value="clear_date_type_entry"/>
+		<dictionary value="save_date_type_entry"/>
 		<dictionary value="load_date_type_entry"/>
 		<dictionary value="count"/>
 	</key>
@@ -103,6 +116,7 @@
 		<dictionary value="remove_date_type_entry"/>
 		<dictionary value="clear_date_type_entry"/>
 		<dictionary value="save_date_type_entry"/>
+		<dictionary value="load_date_type_entry"/>
 		<dictionary value="count"/>
 	</key>
 </root>

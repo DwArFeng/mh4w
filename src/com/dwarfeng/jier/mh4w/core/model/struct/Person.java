@@ -7,7 +7,7 @@ import java.util.Objects;
  * @author DwArFeng
  * @since 0.0.0-alpha
  */
-public final class Staff {
+public final class Person {
 	
 	/**
 	 * 检测两个员工是否冲突。
@@ -16,7 +16,7 @@ public final class Staff {
 	 * @param p2 员工2.
 	 * @return 员工1 和 员工2 是否冲突。
 	 */
-	public static boolean isConflict(Staff p1, Staff p2){
+	public static boolean isConflict(Person p1, Person p2){
 		Objects.requireNonNull(p1, "入口参数 p1 不能为 null。");
 		Objects.requireNonNull(p2, "入口参数 p2 不能为 null。");
 
@@ -34,7 +34,7 @@ public final class Staff {
 	 * @param department 指定的部门。
 	 * @param name 指定的名称。
 	 */
-	public Staff(String workNumber, String department, String name) {
+	public Person(String workNumber, String department, String name) {
 		super();
 		this.workNumber = workNumber;
 		this.departement = department;
@@ -77,8 +77,8 @@ public final class Staff {
 	public boolean equals(Object obj) {
 		if(Objects.isNull(obj)) return false;
 		if(obj == this) return true;
-		if(! (obj instanceof Staff)) return false;
-		Staff that = (Staff) obj;
+		if(! (obj instanceof Person)) return false;
+		Person that = (Person) obj;
 		return this.workNumber.equals(that.workNumber) && this.name.equals(that.name) && this.departement.equals(that.departement);
 	}
 	

@@ -20,7 +20,7 @@ import com.dwarfeng.jier.mh4w.core.util.Mh4wUtil;
 
 public class JOriginalAttendanceDataPanel extends JPanel implements MutilangSupported{
 	
-	private static final long serialVersionUID = -1863168148608059318L;
+	private static final long serialVersionUID = -527487999134281092L;
 
 	/**多语言接口*/
 	private final Mutilang mutilang;
@@ -38,7 +38,7 @@ public class JOriginalAttendanceDataPanel extends JPanel implements MutilangSupp
 	/*
 	 * 视图模型以及渲染
 	 */
-	private DefaultTableModel tableModel = new DefaultTableModel(){
+	private final DefaultTableModel tableModel = new DefaultTableModel(){
 
 		private static final long serialVersionUID = -5902936985460644574L;
 

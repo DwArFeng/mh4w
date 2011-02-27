@@ -80,6 +80,7 @@ import com.dwarfeng.jier.mh4w.core.model.obv.MutilangObverser;
 import com.dwarfeng.jier.mh4w.core.model.struct.AbstractFlow;
 import com.dwarfeng.jier.mh4w.core.model.struct.AttendanceData;
 import com.dwarfeng.jier.mh4w.core.model.struct.CountDate;
+import com.dwarfeng.jier.mh4w.core.model.struct.DataFromXls;
 import com.dwarfeng.jier.mh4w.core.model.struct.DefaultFail;
 import com.dwarfeng.jier.mh4w.core.model.struct.DefaultFinishedFlowTaker;
 import com.dwarfeng.jier.mh4w.core.model.struct.DefaultJob;
@@ -330,7 +331,9 @@ public final class Mh4w {
 						labelMutilangModel.getMutilang(),
 						stateModel,
 						originalAttendanceDataModel,
-						originalWorkticketDataModel
+						originalWorkticketDataModel,
+						attendanceDataModel,
+						workticketDataModel
 				);
 				detailFrame.addObverser(detailFrameObverser);
 				return detailFrame;
@@ -1714,13 +1717,20 @@ public final class Mh4w {
 					 * 清除错误模型
 					 * 清除原始考勤数据模型
 					 * 清除原始工票数据模型
+					 * 
 					 * 读取原始考勤数据
 					 * 读取原始工票数据
-					 * 转换原始数据，并将发生的问题记录在错误模型中
-					 * 错误模型.size() > 0 then goto err_1
 					 * 
-					 * 检测数据匹配性，并将发生的问题记录在错误模型中
-					 * 错误模型.size() > 0 then goto err_2
+					 * 转换原始数据，并将发生的问题记录在错误模型中
+					 * if 错误模型.size() > 0 then goto err_1
+					 * 
+					 * 检测人员一致性，并将发生的问题记录在错误模型中
+					 * 检测人员匹配性，并将发生的问题记录在错误模型中
+					 * if 错误模型.size() > 0 then goto err_2
+					 * 
+					 * 统计数据，并把统计结果放在统计结果模型中
+					 * 
+					 * 设置状态模型为 统计_等待导出，显示详细信息面板
 					 * 
 					 * exit
 					 * 
@@ -1732,8 +1742,6 @@ public final class Mh4w {
 					 *  设置状态模型为 统计_错误，并显示错误面板。
 					 *  exit
 					 */
-					TimeMeasurer tm = new TimeMeasurer();
-					tm.start();
 					
 					//读取原始考勤数据
 					info(LoggerStringKey.Mh4w_FlowProvider_47);
@@ -1758,7 +1766,6 @@ public final class Mh4w {
 							originalAttendanceDataLoader.close();
 						}
 					}
-					
 					//读取原始工票数据
 					info(LoggerStringKey.Mh4w_FlowProvider_46);
 					message(LoggerStringKey.Mh4w_FlowProvider_46);
@@ -1805,26 +1812,40 @@ public final class Mh4w {
 					}finally {
 						manager.getOriginalWorkticketDataModel().getLock().readLock().unlock();
 					}
-					
-					//错误模型.size() > 0 ? goto err_1 : goto next_1
+					//if 错误模型.size() > 0 then goto err_1
 					if(manager.getFailModel().size() > 0){
 						message(LoggerStringKey.Mh4w_FlowProvider_53);
 						manager.getStateModel().setCountState(CountState.STARTED_ERROR);
 						return;
 					}
 					
-					//检测数据匹配性，并将发生的问题记录在错误模型中
-					//员工是否匹配。
+					//检测人员一致性，并将发生的问题记录在错误模型中
 					info(LoggerStringKey.Mh4w_FlowProvider_55);
-					message(LoggerStringKey.Mh4w_FlowProvider_55);
+					for(DataFromXls dataFromXls : CountUtil.personConsistentCheck(manager.getAttendanceDataModel(),
+							manager.getWorkticketDataModel())){
+						manager.getFailModel().add(new DefaultFail(dataFromXls, FailType.PERSON_UNCONSISTENT));
+					}
+					//检测人员匹配性，并将发生的问题记录在错误模型中
+					info(LoggerStringKey.Mh4w_FlowProvider_78);
+					for(DataFromXls dataFromXls : CountUtil.personMatchCheck(manager.getAttendanceDataModel(),
+							manager.getWorkticketDataModel())){
+						manager.getFailModel().add(new DefaultFail(dataFromXls, FailType.PERSON_UNMATCH));
+					}
+					//if 错误模型.size() > 0 then goto err_2
+					if(manager.getFailModel().size() > 0){
+						message(LoggerStringKey.Mh4w_FlowProvider_53);
+						manager.getStateModel().setCountState(CountState.STARTED_ERROR);
+						return;
+					}
 					
+					//统计数据，并把统计结果放在统计结果模型中
 					
 					//TODO 实现统计算法
 					
-					message(LoggerStringKey.Mh4w_FlowProvider_16);
+					//更新状态
+					manager.getStateModel().setCountState(CountState.STARTED_WAITING);
 					
-					tm.stop();
-					CT.trace(tm.formatStringMs());
+					message(LoggerStringKey.Mh4w_FlowProvider_16);
 					
 				}catch (Exception e) {
 					setThrowable(e);
@@ -1836,8 +1857,11 @@ public final class Mh4w {
 							manager.getGuiController().setDetailFrameVisible(true);
 							if(manager.getFailModel().size() > 0){
 								manager.getGuiController().setFailFrameVisible(true);
+							}else{
+								manager.getGuiController().setFailFrameVisible(false);
 							}
 							manager.getGuiController().setDetailButtonSelect(true, true);
+							manager.getGuiController().knockCountFinished();
 						}
 					});
 				}

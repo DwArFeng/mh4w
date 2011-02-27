@@ -52,7 +52,7 @@ import com.dwarfeng.jier.mh4w.core.view.obv.MainFrameObverser;
  */
 public final class MainFrame extends JFrame implements MutilangSupported, ObverserSet<MainFrameObverser>{
 
-	private static final long serialVersionUID = 9174331728124630738L;
+	private static final long serialVersionUID = -2422775159586791544L;
 
 	/**观察器集合*/
 	private final Set<MainFrameObverser> obversers = Collections.newSetFromMap(new WeakHashMap<>());
@@ -92,6 +92,8 @@ public final class MainFrame extends JFrame implements MutilangSupported, Obvers
 	private boolean detailButtonAdjusting = false;
 	private boolean outdateFlag = false;
 	private CountState countState;
+	private boolean isCounting = false;
+	private boolean countReadyFlag = false;
 	/*
 	 * 各模型。
 	 */
@@ -156,7 +158,8 @@ public final class MainFrame extends JFrame implements MutilangSupported, Obvers
 			Mh4wUtil.invokeInEventQueue(new Runnable() {
 				@Override
 				public void run() {
-					countButton.setEnabled(newValue);
+					countReadyFlag = newValue;
+					checkCountButton();
 				}
 			});
 		};
@@ -284,6 +287,8 @@ public final class MainFrame extends JFrame implements MutilangSupported, Obvers
 		countButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				isCounting = true;
+				checkCountButton();
 				fireCount();
 			}
 		});
@@ -387,10 +392,12 @@ public final class MainFrame extends JFrame implements MutilangSupported, Obvers
 			try{
 				outdateFlag = stateModel.isCountResultOutdated();
 				countState = stateModel.getCountState();
-				countButton.setEnabled(stateModel.isReadyForCount());
+				countReadyFlag = stateModel.isReadyForCount();
 			}finally {
 				stateModel.getLock().readLock().unlock();
 			}
+			checkDetailButton();
+			checkCountButton();
 		}
 		
 		this.stateModel = stateModel;
@@ -424,7 +431,11 @@ public final class MainFrame extends JFrame implements MutilangSupported, Obvers
 			workticketFilePanel.setToolTipText(getLabel(LabelStringKey.MainFrame_3));
 		}
 		
-		countButton.setText(getLabel(LabelStringKey.MainFrame_4));
+		if(isCounting){
+			countButton.setText(getLabel(LabelStringKey.MainFrame_7));
+		}else{
+			countButton.setText(getLabel(LabelStringKey.MainFrame_4));
+		}
 		attrButton.setToolTipText(getLabel(LabelStringKey.MainFrame_6));
 	}
 
@@ -530,10 +541,11 @@ public final class MainFrame extends JFrame implements MutilangSupported, Obvers
 	 * @param stateModel the stateModel to set
 	 */
 	public void setStateModel(StateModel stateModel) {
-		countButton.setEnabled(false);
 		countState = CountState.NOT_START;
 		outdateFlag = false;
+		countReadyFlag = false;
 		checkDetailButton();
+		checkCountButton();
 		
 		if(Objects.nonNull(this.stateModel)){
 			this.stateModel.removeObverser(stateObverser);
@@ -545,10 +557,12 @@ public final class MainFrame extends JFrame implements MutilangSupported, Obvers
 			try{
 				outdateFlag = stateModel.isCountResultOutdated();
 				countState = stateModel.getCountState();
-				countButton.setEnabled(stateModel.isReadyForCount());
+				countReadyFlag = stateModel.isReadyForCount();
 			}finally {
 				stateModel.getLock().readLock().unlock();
 			}
+			checkDetailButton();
+			checkCountButton();
 		}
 		
 		this.stateModel = stateModel;
@@ -566,6 +580,14 @@ public final class MainFrame extends JFrame implements MutilangSupported, Obvers
 	 */
 	public void workticketClickUnlock(){
 		workticketClickLock = false;
+	}
+
+	/**
+	 * 通知主面板统计过程已经结束。
+	 */
+	public void knockCountFinished() {
+		isCounting = false;
+		checkCountButton();
 	}
 
 	/**
@@ -656,6 +678,20 @@ public final class MainFrame extends JFrame implements MutilangSupported, Obvers
 				detailButton.setIcon(new ImageIcon(detail_yellow));
 				break;
 			}
+		}
+	}
+	
+	private void checkCountButton(){
+		if(! isCounting && countReadyFlag){
+			countButton.setEnabled(true);
+		}else{
+			countButton.setEnabled(false);
+		}
+		
+		if(isCounting){
+			countButton.setText(getLabel(LabelStringKey.MainFrame_7));
+		}else{
+			countButton.setText(getLabel(LabelStringKey.MainFrame_4));
 		}
 	}
 

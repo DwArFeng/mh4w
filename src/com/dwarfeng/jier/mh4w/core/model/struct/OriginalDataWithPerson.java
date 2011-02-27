@@ -5,7 +5,7 @@ package com.dwarfeng.jier.mh4w.core.model.struct;
  * @author DwArFeng
  * @since 0.0.0-alpha
  */
-public interface OriginalDataWithStaff {
+public interface OriginalDataWithPerson {
 
 	/**
 	 * 获取员工工号。

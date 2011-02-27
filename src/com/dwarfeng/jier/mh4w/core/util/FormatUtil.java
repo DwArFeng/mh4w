@@ -4,7 +4,7 @@ import java.util.Objects;
 
 import com.dwarfeng.jier.mh4w.core.model.struct.CountDate;
 import com.dwarfeng.jier.mh4w.core.model.struct.DataFromXls;
-import com.dwarfeng.jier.mh4w.core.model.struct.Staff;
+import com.dwarfeng.jier.mh4w.core.model.struct.Person;
 import com.dwarfeng.jier.mh4w.core.model.struct.TimeSection;
 
 /**
@@ -17,13 +17,13 @@ public final class FormatUtil {
 
 	/**
 	 * 格式化输出员工。
-	 * @param staff 指定的员工。
+	 * @param person 指定的员工。
 	 * @return 员工的格式化输出。
 	 * @throws NullPointerException 入口参数为 <code>null</code>。
 	 */
-	public static String formatStaff(Staff staff){
-		Objects.requireNonNull(staff, "入口参数 staff 不能为 null。");
-		return String.format("%s - %s - %s", staff.getName(), staff.getWorkNumber(), staff.getDepartment());
+	public static String formatPerson(Person person){
+		Objects.requireNonNull(person, "入口参数 person 不能为 null。");
+		return String.format("%s - %s - %s", person.getName(), person.getWorkNumber(), person.getDepartment());
 	}
 	
 	/**
