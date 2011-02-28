@@ -149,7 +149,9 @@ public class JOriginalWorkticketDataPanel extends JPanel implements MutilangSupp
 	
 	/**
 	 * 新实例。
-	 * @param mutilang
+	 * @param mutilang 指定的多语言接口，不能为 <code>null</code>。
+	 * @param originalWorkticketDataModel 指定的原始工票数据模型。
+	 * @throws NullPointerException 入口参数为 <code>null</code>。
 	 */
 	public JOriginalWorkticketDataPanel(Mutilang mutilang, DataListModel<OriginalWorkticketData> originalWorkticketDataModel) {
 		Objects.requireNonNull(mutilang, "入口参数 mutilang 不能为 null。");

@@ -182,7 +182,9 @@ public final class FailFrame extends JFrame implements MutilangSupported, Obvers
 
 	/**
 	 * 新实例。
-	 * @param mutilang
+	 * @param mutilang 指定的多语言接口，不能为 <code>null</code>。
+	 * @param failModel 指定的失败模型。
+	 * @throws NullPointerException 入口参数为 <code>null</code>。
 	 */
 	public FailFrame(Mutilang mutilang, DataListModel<Fail> failModel) {
 		Objects.requireNonNull(mutilang, "入口参数 mutilang 不能为 null。");

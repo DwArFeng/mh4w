@@ -167,8 +167,10 @@ public class JShiftPanel extends JPanel implements MutilangSupported{
 	}
 	
 	/**
-	 * 
-	 * @param mutilang
+	 * 新实例。
+	 * @param mutilang 指定的多语言接口，不能为 <code>null</code>。
+	 * @param shiftModel 指定的班次模型。
+	 * @throws NullPointerException 入口参数为 <code>null</code>。
 	 */
 	public JShiftPanel(Mutilang mutilang, ShiftModel shiftModel) {
 		Objects.requireNonNull(mutilang, "入口参数 mutilang 不能为 null。");

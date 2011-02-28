@@ -73,6 +73,7 @@ public final class MainFrame extends JFrame implements MutilangSupported, Obvers
 	private final Image reset_blue;
 	private final Image calendar_blue;
 	private final Image attr_blue;
+	private final Image program_icon;
 
 	private final JImagePanel attendanceFilePanel;
 	private final JImagePanel workticketFilePanel;
@@ -204,14 +205,13 @@ public final class MainFrame extends JFrame implements MutilangSupported, Obvers
 	
 	/**
 	 * 新实例。
-	 * @param mutilang
+	 * @param mutilang 指定的多语言接口，不能为 <code>null</code>。
+	 * @param version 指定的版本，不能为 <code>null</code>。
+	 * @param fileSelectModel 指定的文件选择模型。
+	 * @param stateModel 指定的状态模型。
+	 * @throws NullPointerException 入口参数为 <code>null</code>。
 	 */
-	public MainFrame(
-			Mutilang mutilang, 
-			Version version,
-			FileSelectModel fileSelectModel,
-			StateModel stateModel
-			) {
+	public MainFrame(Mutilang mutilang, Version version, FileSelectModel fileSelectModel, StateModel stateModel) {
 		Objects.requireNonNull(mutilang, "入口参数 mutilang 不能为 null。");
 		Objects.requireNonNull(version, "入口参数 version 不能为 null。");
 
@@ -227,10 +227,7 @@ public final class MainFrame extends JFrame implements MutilangSupported, Obvers
 		reset_blue =  ImageUtil.getImage(ImageKey.RESET_BLUE, ImageSize.CONTROL_AREA_ICON);
 		calendar_blue =  ImageUtil.getImage(ImageKey.CALENDAR_BLUE, ImageSize.CONTROL_AREA_ICON);
 		attr_blue =  ImageUtil.getImage(ImageKey.ATTR_BLUE, ImageSize.CONTROL_AREA_ICON);
-
-		setTitle(getLabel(LabelStringKey.MainFrame_5) + " - 丰沛_211618");
-		
-		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		program_icon = ImageUtil.getImage(ImageKey.PROGRAM_ICON, ImageSize.ICON_SUPER_LARGE);
 		
 		addWindowListener(new WindowAdapter() {
 			@Override
@@ -241,6 +238,9 @@ public final class MainFrame extends JFrame implements MutilangSupported, Obvers
 		
 		setResizable(false);
 		setBounds(100, 100, 427, 295);
+		setTitle(getLabel(LabelStringKey.MainFrame_5) + " - 丰沛_211618");
+		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		setIconImage(program_icon);
 		
 		getContentPane().setLayout(null);
 		
@@ -299,6 +299,7 @@ public final class MainFrame extends JFrame implements MutilangSupported, Obvers
 		getContentPane().add(countButton);
 		
 		detailButton = new JToggleButton();
+		detailButton.setToolTipText(getLabel(LabelStringKey.MainFrame_10));
 		detailButton.addItemListener(new ItemListener() {
 			@Override
 			public void itemStateChanged(ItemEvent e) {
@@ -324,6 +325,7 @@ public final class MainFrame extends JFrame implements MutilangSupported, Obvers
 		getContentPane().add(attendanceLabel);
 		
 		calendarButton = new JButton();
+		calendarButton.setToolTipText(getLabel(LabelStringKey.MainFrame_8));
 		calendarButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -354,6 +356,7 @@ public final class MainFrame extends JFrame implements MutilangSupported, Obvers
 		getContentPane().add(versionLabel);
 		
 		resetButton = new JButton();
+		resetButton.setToolTipText(getLabel(LabelStringKey.MainFrame_9));
 		resetButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -437,6 +440,10 @@ public final class MainFrame extends JFrame implements MutilangSupported, Obvers
 			countButton.setText(getLabel(LabelStringKey.MainFrame_4));
 		}
 		attrButton.setToolTipText(getLabel(LabelStringKey.MainFrame_6));
+		calendarButton.setToolTipText(getLabel(LabelStringKey.MainFrame_8));
+		resetButton.setToolTipText(getLabel(LabelStringKey.MainFrame_9));
+		detailButton.setToolTipText(getLabel(LabelStringKey.MainFrame_10));
+
 	}
 
 	/*

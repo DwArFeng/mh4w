@@ -12,12 +12,12 @@
 	</job>
 	<job>
 		<name value="刨床"/>
-		<value-per-hour value="6.3"/>
+		<value-per-hour value="12.0"/>
 		<column value="F"/>
 	</job>
 	<job>
 		<name value="其它定额"/>
-		<value-per-hour value="6.3"/>
+		<value-per-hour value="6.8"/>
 		<column value="G"/>
 	</job>
 </root>

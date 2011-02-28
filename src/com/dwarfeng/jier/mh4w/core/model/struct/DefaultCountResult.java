@@ -24,6 +24,7 @@ public final class DefaultCountResult implements CountResult {
 	 * @param person 指定的人员。
 	 * @param equivalentWorkTime 指定的等效工时。
 	 * @param originalWorkTime 指定的原始工时。
+	 * @param workticket 工票总时间。
 	 * @param workticketMap 指定的工票工时映射。
 	 * @param workticketPercentMap 指定的工票工时百分比映射。
 	 * @param value 指定的应得金额。

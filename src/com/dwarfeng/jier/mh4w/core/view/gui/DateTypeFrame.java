@@ -195,7 +195,10 @@ public class DateTypeFrame extends JDialog implements MutilangSupported, Obverse
 	}
 	
 	/**
-	 * Create the dialog.
+	 * 新实例。
+	 * @param mutilang 指定的多语言模型，不能为 <code>null</code>。
+	 * @param dateTypeModel 指定的日期类型模型。
+	 * @throws NullPointerException  入口参数为 <code>null</code>。
 	 */
 	public DateTypeFrame(Mutilang mutilang, DateTypeModel dateTypeModel) {
 		Objects.requireNonNull(mutilang, "入口参数 mutilang 不能为 null。");

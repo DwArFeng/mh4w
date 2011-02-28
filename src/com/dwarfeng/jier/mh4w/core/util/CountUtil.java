@@ -175,7 +175,10 @@ public final class CountUtil {
 			Person person = transPerson(rawData.getWorkNumber(), rawData.getDepartment(), rawData.getName());
 			CountDate countDate = transCountDate(rawData.getDate());
 			Shift shift = transShift(rawData.getShift(), shiftModel);
-			TimeSection attendanceRecord = transTimeSection(rawData.getAttendanceRecord());
+			TimeSection attendanceRecord = new TimeSection(0, 0);
+			if(! rawData.getAttendanceRecord().equals("")){
+				attendanceRecord = transTimeSection(rawData.getAttendanceRecord());
+			}
 			DateType dateType = dateTypeModel.getOrDefault(countDate, DateType.NORMAL);
 			double equivalentWorkTime = 0;
 			double originalWorkTime = 0;
@@ -593,12 +596,14 @@ public final class CountUtil {
 			
 			//计算 较复杂的统计量  -  value
 			double value = 0;
-			double b = workticket / originalWorkTime;
-			double c = b * equivalentWorkTime;
-			for(Map.Entry<Job, Double> entry : workticketPercentMap.entrySet()){
-				value += c * entry.getValue() * entry.getKey().getValuePerHour();
+			if(originalWorkTime > 0){
+				double b = workticket / originalWorkTime;
+				double c = b * equivalentWorkTime;
+				for(Map.Entry<Job, Double> entry : workticketPercentMap.entrySet()){
+					value += c * entry.getValue() * entry.getKey().getValuePerHour();
+				}
 			}
-			
+
 			countResults.add(new DefaultCountResult(person, equivalentWorkTime, originalWorkTime, workticket, workticketMap, workticketPercentMap, value));
 		}
 		

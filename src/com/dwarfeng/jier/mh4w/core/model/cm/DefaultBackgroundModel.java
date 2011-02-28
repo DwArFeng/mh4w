@@ -165,8 +165,6 @@ public final class DefaultBackgroundModel extends AbstractBackgroundModel {
 	
 	/**
 	 * 新实例。
-	 * @param es 指定的执行器服务。
-	 * @throws NullPointerException 入口参数为 <code>null</code>。
 	 */
 	public DefaultBackgroundModel() {
 		super(Executors.newCachedThreadPool(THREAD_FACTORY));

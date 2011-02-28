@@ -24,12 +24,15 @@ public final class DefaultAttendanceData implements AttendanceData{
 	
 	/**
 	 * 新实例。
-	 * @param 文件的名称。
-	 * @param row 数据行号。
-	 * @param person 员工。
-	 * @param countDate 统计日期。
-	 * @param shift 班次。
-	 * @param attendanceRecord 出勤记录。
+	 * @param fileName 文件的名称。
+	 * @param row 数据所在的行号。
+	 * @param person 指定的员工。
+	 * @param countDate 指定的统计日期。
+	 * @param shift 指定的班次。
+	 * @param attendanceRecord 指定的考勤记录。
+	 * @param dateType 指定的日期类型。
+	 * @param equivalentWorkTime 指定的等效工时。
+	 * @param originalWorkTime 指定的原始工时。
 	 * @throws NullPointerException 入口参数为 <code>null</code>。
 	 */
 	public DefaultAttendanceData(String fileName, int row, Person person, CountDate countDate, Shift shift, 

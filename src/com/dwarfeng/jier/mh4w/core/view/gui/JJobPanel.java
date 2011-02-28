@@ -165,6 +165,9 @@ public class JJobPanel extends JPanel implements MutilangSupported{
 	
 	/**
 	 * 新实例。
+	 * @param mutilang 指定的多语言接口，不能为 <code>null</code>。
+	 * @param jobModel 指定的工作模型。
+	 * @throws NullPointerException 入口参数为 <code>null</code>。
 	 */
 	public JJobPanel(Mutilang mutilang, JobModel jobModel) {
 		Objects.requireNonNull(mutilang, "入口参数 mutilang 不能为 null。");

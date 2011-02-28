@@ -3,6 +3,7 @@ package com.dwarfeng.jier.mh4w.core.view.ctrl;
 import java.awt.Component;
 import java.awt.Point;
 import java.io.File;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -11,6 +12,7 @@ import javax.swing.JFileChooser;
 import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileFilter;
 
+import com.dwarfeng.dutil.basic.gui.swing.SwingUtil;
 import com.dwarfeng.jier.mh4w.core.model.struct.Mutilang;
 import com.dwarfeng.jier.mh4w.core.view.gui.AttrFrame;
 import com.dwarfeng.jier.mh4w.core.view.gui.DateTypeFrame;
@@ -186,12 +188,13 @@ public abstract class AbstractGuiController implements GuiController {
 	 * @see com.dwarfeng.jier.mh4w.core.view.ctrl.GuiController#askFile4Open(java.io.File, javax.swing.filechooser.FileFilter[], boolean, boolean, int)
 	 */
 	@Override
-	public File[] askFile4Open(File directory, FileFilter[] fileFilters, boolean acceptAllFileFilter, boolean mutiSelectionEnabled,
-			int fileSelectionMode) {
+	public File[] askFile4Open(File directory, FileFilter[] fileFilters, boolean acceptAllFileFilter, 
+			boolean mutiSelectionEnabled,int fileSelectionMode, Locale locale) {
 		lock.writeLock().lock();
 		try{
 			if(Objects.isNull(mainFrame)) return null;
 			JFileChooser chooser = new JFileChooser();
+			SwingUtil.setJFileChooserLocal(chooser, locale == null ? Locale.getDefault() : locale);
 			chooser.setCurrentDirectory(directory);
 			chooser.setAcceptAllFileFilterUsed(acceptAllFileFilter);
 			chooser.setMultiSelectionEnabled(mutiSelectionEnabled);
@@ -222,7 +225,8 @@ public abstract class AbstractGuiController implements GuiController {
 	 * @see com.dwarfeng.jier.mh4w.core.view.ctrl.GuiController#askFile4Save(java.io.File, javax.swing.filechooser.FileFilter[], boolean)
 	 */
 	@Override
-	public File askFile4Save(File directory, FileFilter[] fileFilters, boolean acceptAllFileFilter, String defaultFileExtension) {
+	public File askFile4Save(File directory, FileFilter[] fileFilters, boolean acceptAllFileFilter, 
+			String defaultFileExtension, Locale locale) {
 		lock.writeLock().lock();
 		try{
 			Component component = null;
@@ -234,6 +238,7 @@ public abstract class AbstractGuiController implements GuiController {
 			}
 			
 			JFileChooser chooser = new JFileChooser();
+			SwingUtil.setJFileChooserLocal(chooser, locale == null ? Locale.getDefault() : locale);
 			chooser.setCurrentDirectory(directory);
 			chooser.setAcceptAllFileFilterUsed(acceptAllFileFilter);
 			chooser.setMultiSelectionEnabled(false);
@@ -873,7 +878,5 @@ public abstract class AbstractGuiController implements GuiController {
 			lock.writeLock().unlock();
 		}
 	}
-	
-	
 	
 }

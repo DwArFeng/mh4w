@@ -10,9 +10,10 @@ public final class DefaultJob implements Job {
 	
 	/**
 	 * 新实例。 
-	 * @param name
-	 * @param valuePerHour
-	 * @param originalColumn
+	 * @param name 指定的名称。
+	 * @param valuePerHour 每小时的工资。
+	 * @param originalColumn 原始数据所在的列号。
+	 * @throws NullPointerException 入口参数为 <code>null</code>。
 	 */
 	public DefaultJob(String name, double valuePerHour, int originalColumn) {
 		Objects.requireNonNull(name, "入口参数 name 不能为 null");

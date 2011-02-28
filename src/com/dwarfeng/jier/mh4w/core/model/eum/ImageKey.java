@@ -6,26 +6,6 @@ import com.dwarfeng.jier.mh4w.core.model.struct.DefaultName;
 public enum ImageKey implements Name {
 	
 	IMG_LOAD_FAILED(new DefaultName("/com/dwarfeng/jier/mh4w/resource/image/img_load_failed.png")),
-	MAINFRAME_ICON(new DefaultName("/com/dwarfeng/jier/mh4w/resource/image/icon.png")),
-	CONSOLE(new DefaultName("/com/dwarfeng/jier/mh4w/resource/image/console.png")),
-	SELECT_ALL(new DefaultName("/com/dwarfeng/jier/mh4w/resource/image/select_all.png")),
-	CLEAR_SCREEN(new DefaultName("/com/dwarfeng/jier/mh4w/resource/image/clear_screen.png")),
-	LINEWRAP(new DefaultName("/com/dwarfeng/jier/mh4w/resource/image/line_wrap.png")),
-	CANCELED(new DefaultName("/com/dwarfeng/jier/mh4w/resource/image/canceled.png")),
-	PROCESSING(new DefaultName("/com/dwarfeng/jier/mh4w/resource/image/processing.png")),
-	DONE(new DefaultName("/com/dwarfeng/jier/mh4w/resource/image/done.png")),
-	PROGRESS(new DefaultName("/com/dwarfeng/jier/mh4w/resource/image/progress.png")),
-	LIBRARY(new DefaultName("/com/dwarfeng/jier/mh4w/resource/image/library.png")),
-	TOOL(new DefaultName("/com/dwarfeng/jier/mh4w/resource/image/tool.png")),
-	RUNTIME(new DefaultName("/com/dwarfeng/jier/mh4w/resource/image/runtime.png")),
-	LIBRARY_ICON(new DefaultName("/com/dwarfeng/jier/mh4w/resource/image/library_icon.png")),
-	RUNNING(new DefaultName("/com/dwarfeng/jier/mh4w/resource/image/running.png")),
-	NOT_START(new DefaultName("/com/dwarfeng/jier/mh4w/resource/image/not_start.png")),
-	EXITED(new DefaultName("/com/dwarfeng/jier/mh4w/resource/image/exited.png")),
-	HISTORY(new DefaultName("/com/dwarfeng/jier/mh4w/resource/image/history.png")),
-	UNKNOWN(new DefaultName("/com/dwarfeng/jier/mh4w/resource/image/unknown.png")),
-	REMOVE(new DefaultName("/com/dwarfeng/jier/mh4w/resource/image/remove.png")),
-	CLEAR(new DefaultName("/com/dwarfeng/jier/mh4w/resource/image/clear.png")),
 	XLS_GREEN(new DefaultName("/com/dwarfeng/jier/mh4w/resource/image/xls_green.png")),
 	XLS_RED(new DefaultName("/com/dwarfeng/jier/mh4w/resource/image/xls_red.png")),
 	DETAIL_GREEN(new DefaultName("/com/dwarfeng/jier/mh4w/resource/image/detail_green.png")),
@@ -39,6 +19,7 @@ public enum ImageKey implements Name {
 	SHIFT_SECTION(new DefaultName("/com/dwarfeng/jier/mh4w/resource/image/shift_section.png")),
 	EXTRA_SHIFT_SECTION(new DefaultName("/com/dwarfeng/jier/mh4w/resource/image/extra_shift_section.png")),
 	REST_SECTION(new DefaultName("/com/dwarfeng/jier/mh4w/resource/image/rest_section.png")),
+	PROGRAM_ICON(new DefaultName("/com/dwarfeng/jier/mh4w/resource/image/program_icon.png")),
 
 	;
 

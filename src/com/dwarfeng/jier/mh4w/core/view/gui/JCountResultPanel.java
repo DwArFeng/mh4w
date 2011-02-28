@@ -190,7 +190,9 @@ public class JCountResultPanel extends JPanel implements MutilangSupported, Obve
 	
 	/**
 	 * 新实例。
-	 * @param mutilang
+	 * @param mutilang 指定的多语言接口，不能为 <code>null</code>。
+	 * @param countResultModel 指定的统计结果模型。
+	 * @throws NullPointerException 入口参数为 <code>null</code>。
 	 */
 	public JCountResultPanel(Mutilang mutilang, DataListModel<CountResult> countResultModel) {
 		Objects.requireNonNull(mutilang, "入口参数 mutilang 不能为 null。");

@@ -34,6 +34,7 @@ public final class XlsOriginalWorkticketDataLoader extends StreamLoader<DataList
 	 * @param row_start 数据开始的行。
 	 * @param column_department 部门所在的列。
 	 * @param column_workNumber 工号所在的列。
+	 * @param column_name 姓名所在的列。
 	 * @param jobs 工作数组。
 	 */
 	public XlsOriginalWorkticketDataLoader(InputStream in, String fileName, int row_start, int column_department, int column_workNumber,

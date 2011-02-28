@@ -33,6 +33,8 @@ import com.dwarfeng.jier.mh4w.core.view.obv.DetailFrameObverser;
 
 public class DetailFrame extends JFrame implements MutilangSupported, ObverserSet<DetailFrameObverser>{
 
+	private static final long serialVersionUID = 138508987670165964L;
+
 	/**观察器集合*/
 	private final Set<DetailFrameObverser> obversers = Collections.newSetFromMap(new WeakHashMap<>());
 	
@@ -114,7 +116,14 @@ public class DetailFrame extends JFrame implements MutilangSupported, ObverserSe
 	
 	/**
 	 * 新实例。
-	 * @param mutilang
+	 * @param mutilang 指定的多语言接口，不能为 <code>null</code>。
+	 * @param stateModel 指定的状态模型。
+	 * @param originalAttendanceDataModel 指定的原始出勤数据模型。
+	 * @param originalWorkticketDataModel 指定的原始工票数据模型。
+	 * @param attendanceDataModel 指定的出勤数据模型。
+	 * @param workticketDataModel 指定的工票数据模型。
+	 * @param countResultModel 指定的共计结果模型。
+	 * @throws NullPointerException 入口参数为 <code>null</code>。
 	 */
 	public DetailFrame(Mutilang mutilang, StateModel stateModel, DataListModel<OriginalAttendanceData> originalAttendanceDataModel,
 			DataListModel<OriginalWorkticketData> originalWorkticketDataModel, DataListModel<AttendanceData> attendanceDataModel,

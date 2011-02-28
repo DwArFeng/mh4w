@@ -87,7 +87,7 @@ public abstract class AbstractFlow implements Flow{
 
 	/**
 	 * 设置过程的进度。
-	 * <p> 进度应该遵循如下规范： <code> 0 &lt= progress &lt= totleProgress </code>
+	 * <p> 进度应该遵循如下规范： <code> 0 &lt;= progress &lt;= totleProgress </code>
 	 * <p> 该过程将自动的将不符合规范的入口参数转换为最接近的合理值。
 	 * @param progress 指定的进度。
 	 * @return 该操作是否改变了过程本身。
@@ -129,7 +129,7 @@ public abstract class AbstractFlow implements Flow{
 
 	/**
 	 * 设置过程总的进度。
-	 * <p> 进度应该遵循如下规范： <code> 0 &lt= progress &lt= totleProgress </code>
+	 * <p> 进度应该遵循如下规范： <code> 0 &lt;= progress &lt;= totleProgress </code>
 	 * <p> 该过程将自动的将不符合规范的入口参数转换为最接近的合理值。
 	 * @param totleProgress 指定的总进度。
 	 * @return 该操作是否该变了过程本身。

@@ -187,7 +187,9 @@ public class JAttendanceDataPanel extends JPanel implements MutilangSupported{
 	
 	/**
 	 * 新实例。
-	 * @param mutilang
+	 * @param mutilang 指定的多语言接口，不能为 <code>null</code>。
+	 * @param attendanceDataModel 指定的考勤数据模型。
+	 * @throws NullPointerException 入口参数为 <code>null</code>。
 	 */
 	public JAttendanceDataPanel(Mutilang mutilang, DataListModel<AttendanceData> attendanceDataModel) {
 		Objects.requireNonNull(mutilang, "入口参数 mutilang 不能为 null。");

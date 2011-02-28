@@ -54,8 +54,12 @@ public class AttrFrame extends JDialog implements MutilangSupported, ObverserSet
 	}
 	
 	/**
-	 * 
-	 * @param mutilang
+	 * 新实例。
+	 * @param mutilang 指定的多语言接口，不能为 <code>null</code>。
+	 * @param coreConfigModel 指定的核心配置模型。
+	 * @param shiftModel 指定的班次模型。
+	 * @param jobModel 指定的工作模型。
+	 * @throws NullPointerException 入口参数为 <code>null</code>。
 	 */
 	public AttrFrame(Mutilang mutilang, CoreConfigModel coreConfigModel, ShiftModel shiftModel,
 			JobModel jobModel) {

@@ -6,10 +6,8 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ThreadFactory;
@@ -130,14 +128,31 @@ import com.dwarfeng.jier.mh4w.core.view.obv.MainFrameObverser;
  */
 public final class Mh4w {
 	
-	
 	/**
-	 * 调试用的启动方法。
-	 * @throws UnsupportedLookAndFeelException 
+	 * 启动程序的方法。 
+	 * @param args 入口参数。
 	 */
-	public static void main(String[] args) throws ProcessException, UnsupportedLookAndFeelException {
-		UIManager.setLookAndFeel(new NimbusLookAndFeel());
-		new Mh4w().start();
+	public static void main(String[] args) {
+		//CT.trace(VERSION);
+		
+		try {
+			UIManager.setLookAndFeel(new NimbusLookAndFeel());
+		} catch (UnsupportedLookAndFeelException ignore) {
+			//界面中的所有元素均支持这一外观，因此不可能出现异常。
+		}
+		
+		Mh4w mh4w = null;
+		try {
+			mh4w = new Mh4w();
+			mh4w.start();
+		} catch (ProcessException e) {
+			if(Objects.nonNull(mh4w)){
+				mh4w.manager.getLoggerModel().getLogger().error("程序未能正确启动", e);
+				System.exit(12450);
+			}else{
+				System.exit(12451);
+			}
+		}
 	}
 	
 	/**程序的版本*/
@@ -145,10 +160,10 @@ public final class Mh4w {
 			.type(VersionType.RELEASE)
 			.firstVersion((byte) 0)
 			.secondVersion((byte) 0)
-			.thirdVersion((byte) 0)
-			.buildDate("20170215")
+			.thirdVersion((byte) 1)
+			.buildDate("20170228")
 			.buildVersion('A')
-			.type(VersionType.ALPHA)
+			.type(VersionType.BETA)
 			.build();
 	
 	/**程序的实例列表，用于持有引用*/
@@ -158,9 +173,6 @@ public final class Mh4w {
 	
 	/**程序的过程提供器*/
 	private final FlowProvider flowProvider = new FlowProvider();
-	/**程序被中止时的钩子*/
-	private final Map<String, Thread> shutdownHooks = Collections.synchronizedMap(new HashMap<>());
-
 	/**程序管理器*/
 	private final Manager manager;
 	/**程序的状态*/
@@ -1105,14 +1117,14 @@ public final class Mh4w {
 				setMessage(getLabel(loggerStringKey));
 			}
 			
-			/**
-			 * 格式化设置信息。
-			 * @param loggerStringKey 指定的记录器键。
-			 * @param args format 参数。
-			 */
-			protected void formatMessage(LoggerStringKey loggerStringKey, Object... args){
-				setMessage(formatLabel(loggerStringKey, args));	
-			}
+//			/**
+//			 * 格式化设置信息。
+//			 * @param loggerStringKey 指定的记录器键。
+//			 * @param args format 参数。
+//			 */
+//			protected void formatMessage(LoggerStringKey loggerStringKey, Object... args){
+//				setMessage(formatLabel(loggerStringKey, args));	
+//			}
 			
 		}
 
@@ -1487,7 +1499,8 @@ public final class Mh4w {
 					int fileSelectionMode = JFileChooser.FILES_ONLY;
 					
 					//获得文件
-					File[] files = manager.getGuiController().askFile4Open(directory, fileFilters, acceptAllFileFilter, mutiSelectionEnabled, fileSelectionMode);
+					File[] files = manager.getGuiController().askFile4Open(directory, fileFilters, acceptAllFileFilter, 
+							mutiSelectionEnabled, fileSelectionMode, manager.getCoreConfigModel().getLabelMutilangLocale());
 					
 					//将获取的文件设置在模型中并输出记录
 					if(files.length == 0){
@@ -1564,7 +1577,8 @@ public final class Mh4w {
 					int fileSelectionMode = JFileChooser.FILES_ONLY;
 					
 					//获得文件
-					File[] files = manager.getGuiController().askFile4Open(directory, fileFilters, acceptAllFileFilter, mutiSelectionEnabled, fileSelectionMode);
+					File[] files = manager.getGuiController().askFile4Open(directory, fileFilters, acceptAllFileFilter, 
+							mutiSelectionEnabled, fileSelectionMode, manager.getCoreConfigModel().getLabelMutilangLocale());
 					
 					//将获取的文件设置在模型中并输出记录
 					if(files.length == 0){
@@ -2495,14 +2509,14 @@ public final class Mh4w {
 					boolean acceptAllFileFilter = false;
 					
 					//获得文件
-					File file = manager.getGuiController().askFile4Save(directory, fileFilters, acceptAllFileFilter, "xls");
+					File file = manager.getGuiController().askFile4Save(directory, fileFilters, acceptAllFileFilter, "xls",
+							manager.getCoreConfigModel().getLabelMutilangLocale());
 					
 					//将获取的文件设置在模型中并输出记录
 					if(Objects.isNull(file)){
 						info(LoggerStringKey.Mh4w_FlowProvider_17);
 						return;
 					}else{
-						manager.getFileSelectModel().setAttendanceFile(file);
 						formatInfo(LoggerStringKey.Mh4w_FlowProvider_18, file.getAbsolutePath());
 					}
 					
@@ -2617,22 +2631,17 @@ public final class Mh4w {
 			manager.getLoggerModel().getLogger().warn(getLabel(loggerStringKey));
 		}
 		
-		private void warn(LoggerStringKey loggerStringKey, Throwable e){
-			manager.getLoggerModel().getLogger().warn(getLabel(loggerStringKey), e);
-		}
+//		private void warn(LoggerStringKey loggerStringKey, Throwable e){
+//			manager.getLoggerModel().getLogger().warn(getLabel(loggerStringKey), e);
+//		}
 	
 		private String getLabel(LoggerStringKey loggerStringKey){
 			return manager.getLoggerMutilangModel().getMutilang().getString(loggerStringKey.getName());
 		}
 	
-		/**
-		 * 获取指定键对应的资源。
-		 * @param resourceKey 指定的键。
-		 * @return 指定的键对应的资源。
-		 */
-		private Resource getResource(ResourceKey resourceKey){
-			return manager.getResourceModel().get(resourceKey.getName());
-		}
+//		private Resource getResource(ResourceKey resourceKey){
+//			return manager.getResourceModel().get(resourceKey.getName());
+//		}
 		
 	}
 

@@ -1,6 +1,7 @@
 package com.dwarfeng.jier.mh4w.core.view.ctrl;
 
 import java.io.File;
+import java.util.Locale;
 
 import javax.swing.filechooser.FileFilter;
 
@@ -66,10 +67,11 @@ public interface GuiController extends ExternalReadWriteThreadSafe{
 	 * @param acceptAllFileFilter 是否允许选择全部文件。
 	 * @param  mutiSelectionEnabled 是否允许选择多个文件。
 	 * @param fileSelectionMode 文件选择模式。
+	 * @param locale 文件选择器显示的语言。
 	 * @return 用户选择的文件。
 	 */
-	public File[] askFile4Open(File directory, FileFilter[] fileFilters, boolean acceptAllFileFilter, boolean mutiSelectionEnabled,
-			int fileSelectionMode);
+	public File[] askFile4Open(File directory, FileFilter[] fileFilters, boolean acceptAllFileFilter,
+			boolean mutiSelectionEnabled, int fileSelectionMode, Locale locale);
 	
 	/**
 	 * 向用户询问一个文件用于保存
@@ -79,9 +81,11 @@ public interface GuiController extends ExternalReadWriteThreadSafe{
 	 * @param fileFilters 指定的文件筛选器。
 	 * @param acceptAllFileFilter 是否允许选择全部文件。
 	 * @param defaultFileExtension 当文件没有扩展名的时候使用的默认扩展名。
+	 * @param locale 文件选择器显示的语言。
 	 * @return 用户选择的文件。
 	 */
-	public File askFile4Save(File directory, FileFilter[] fileFilters, boolean acceptAllFileFilter, String defaultFileExtension);
+	public File askFile4Save(File directory, FileFilter[] fileFilters, boolean acceptAllFileFilter,
+			String defaultFileExtension, Locale locale);
 	
 	/**
 	 * 解除考勤文件面板的点击锁定。

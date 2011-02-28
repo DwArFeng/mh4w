@@ -29,8 +29,8 @@ public final class JxlXlsSaver extends AbstractXlsSaver{
 	
 	/**
 	 * 生成。
-	 * @param out
-	 * @throws IOException
+	 * @param out 指定的输出流。
+	 * @throws IOException IO异常。
 	 */
 	public JxlXlsSaver(OutputStream out) throws IOException {
 		super(out);
