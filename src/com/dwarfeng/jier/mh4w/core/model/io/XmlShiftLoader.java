@@ -17,7 +17,7 @@ import com.dwarfeng.jier.mh4w.core.model.struct.UnsafeShift;
  * Xml 班次读取器。
  * <p> 通过 xml 读取不安全班次信息。
  * @author DwArFeng
- * @since 0.0.0-alpha
+ * @since 0.0.1-beta
  */
 public final class XmlShiftLoader extends StreamLoader<Set<UnsafeShift>>{
 

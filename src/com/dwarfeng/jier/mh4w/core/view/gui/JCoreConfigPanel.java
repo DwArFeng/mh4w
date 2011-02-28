@@ -25,7 +25,7 @@ import com.dwarfeng.jier.mh4w.core.util.Mh4wUtil;
 /**
  * ∫À–ƒ≈‰÷√√Ê∞Â°£
  * @author DwArFeng
- * @since 0.0.0-alpha
+ * @since 0.0.1-beta
  */
 public class JCoreConfigPanel extends JPanel implements MutilangSupported{
 	

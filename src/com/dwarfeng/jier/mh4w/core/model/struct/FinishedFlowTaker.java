@@ -7,7 +7,7 @@ import com.dwarfeng.jier.mh4w.core.model.cm.BackgroundModel;
  * 完成过程取出器。
  * <p> 用于在后台模型中取出完成的过程，并且记录在指定的 Logger 之中。
  * @author  DwArFeng
- * @since 0.0.0-alpha
+ * @since 0.0.1-beta
  */
 public interface FinishedFlowTaker extends ExternalReadWriteThreadSafe, MutilangSupported{
 

@@ -2,6 +2,7 @@ package com.dwarfeng.jier.mh4w.core.model.cm;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -15,11 +16,11 @@ import com.dwarfeng.jier.mh4w.core.model.struct.CountDate;
  * <p> 日期类型模型的默认实现。
  * <p> 该模型中的数据的读写均是线程安全的。
  * @author DwArFeng
- * @since 0.0.0-alpha
+ * @since 0.0.1-beta
  */
 public final class DefaultDateTypeModel extends AbstractDateTypeModel {
 
-	private final Map<CountDate, DateType> delegate = new HashMap<>();
+	private final Map<CountDate, DateType> delegate = new LinkedHashMap<>();
 	
 	/**
 	 * 新实例。
@@ -154,7 +155,7 @@ public final class DefaultDateTypeModel extends AbstractDateTypeModel {
 			boolean aFlag = delegate.containsKey(key);
 			DateType dateType = delegate.remove(key);
 			if(aFlag){
-				//只有 key 属于 CountDate 对象，才有可能被移除，因此该类型转换时安全的。
+				//只有 key 属于 CountDate 对象，才有可能被移除，因此该类型转换是安全的。
 				fireDateRemoved((CountDate) key);
 			}
 			return dateType;

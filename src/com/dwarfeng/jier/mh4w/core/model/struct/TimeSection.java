@@ -5,7 +5,7 @@ import java.util.Objects;
 /**
  * 时间区间。
  * @author DwArFeng
- * @since 0.0.0-alpha
+ * @since 0.0.1-beta
  */
 public final class TimeSection {
 	

@@ -6,7 +6,7 @@ import com.dwarfeng.jier.mh4w.core.model.struct.Shift;
 /**
  * °à´Î¹Û²ìÆ÷¡£
  * @author DwArFeng
- * @since 0.0.0-alpha
+ * @since 0.0.1-beta
  */
 public interface ShiftObverser extends Obverser{
 	

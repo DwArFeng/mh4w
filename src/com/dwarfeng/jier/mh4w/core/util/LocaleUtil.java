@@ -8,7 +8,7 @@ import com.dwarfeng.dutil.basic.str.FactoriesByString;
 /**
  * 地区常用方法。
  * @author  DwArFeng
- * @since 0.0.0-alpha
+ * @since 0.0.1-beta
  */
 public final class LocaleUtil {
 

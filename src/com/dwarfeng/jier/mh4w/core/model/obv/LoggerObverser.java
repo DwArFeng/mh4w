@@ -8,7 +8,7 @@ import com.dwarfeng.jier.mh4w.core.model.struct.LoggerInfo;
 /**
  * ¼ÇÂ¼Æ÷¹Û²ìÆ÷¡£
  * @author  DwArFeng
- * @since 0.0.0-alpha
+ * @since 0.0.1-beta
  */
 public interface LoggerObverser extends Obverser{
 	

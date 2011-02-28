@@ -15,7 +15,7 @@ import java.util.concurrent.TimeoutException;
  * <p> 该类代理一个执行器服务器，用于获取执行器服务器的状态。
  * <p> 该执行器服务器仅可用于查询状态，调用其它的任何方法都将抛出异常。
  * @author DwArFeng
- * @since 0.0.0-alpha
+ * @since 0.0.1-beta
  */
 public final class ReadOnlyExecutorService implements ExecutorService{
 	

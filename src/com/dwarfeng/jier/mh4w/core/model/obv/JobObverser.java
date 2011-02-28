@@ -6,7 +6,7 @@ import com.dwarfeng.jier.mh4w.core.model.struct.Job;
 /**
  * ¹¤×÷¹Û²ìÆ÷¡£
  * @author DwArFeng
- * @since 0.0.0-alpha
+ * @since 0.0.1-beta
  */
 public interface JobObverser extends Obverser {
 	

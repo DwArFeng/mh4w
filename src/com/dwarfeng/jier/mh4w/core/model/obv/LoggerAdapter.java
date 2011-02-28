@@ -7,7 +7,7 @@ import com.dwarfeng.jier.mh4w.core.model.struct.LoggerInfo;
 /**
  * 记录器模型观察器适配器。
  * @author  DwArFeng
- * @since 0.0.0-alpha
+ * @since 0.0.1-beta
  */
 public abstract class LoggerAdapter implements LoggerObverser{
 

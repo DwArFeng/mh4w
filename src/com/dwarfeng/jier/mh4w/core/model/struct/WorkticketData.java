@@ -3,7 +3,7 @@ package com.dwarfeng.jier.mh4w.core.model.struct;
 /**
  * ¹¤Æ±Êý¾Ý¡£
  * @author DwArFeng
- * @since 0.0.0-alpha
+ * @since 0.0.1-beta
  */
 public interface WorkticketData extends DataWithPerson, DataFromXls{
 	

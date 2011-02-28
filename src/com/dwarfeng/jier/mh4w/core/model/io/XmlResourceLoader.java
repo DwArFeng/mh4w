@@ -19,7 +19,7 @@ import com.dwarfeng.jier.mh4w.core.model.struct.DefaultResource;
  * xml资源模型读取器。
  * <p> 使用xml读取资源模型。
  * @author  DwArFeng
- * @since 0.0.0-alpha
+ * @since 0.0.1-beta
  */
 public class XmlResourceLoader extends StreamLoader<ResourceModel> {
 

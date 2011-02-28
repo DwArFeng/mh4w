@@ -6,7 +6,7 @@ import java.util.Objects;
  * 统计时间。
  * <p> 该名称是为了与 Date 加以区分。
  * @author DwArFeng
- * @since 0.0.0-alpha
+ * @since 0.0.1-beta
  */
 public final class CountDate {
 	

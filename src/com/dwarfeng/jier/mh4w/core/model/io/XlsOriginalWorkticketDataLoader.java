@@ -15,7 +15,7 @@ import com.dwarfeng.jier.mh4w.core.model.struct.OriginalWorkticketData;
  * Xls 原始工票数据取器。
  * <p> 利用 xls 文件读取原始工票数据。
  * @author DwArFeng
- * @since 0.0.0-alpha
+ * @since 0.0.1-beta
  */
 public final class XlsOriginalWorkticketDataLoader extends StreamLoader<DataListModel<OriginalWorkticketData>>{
 

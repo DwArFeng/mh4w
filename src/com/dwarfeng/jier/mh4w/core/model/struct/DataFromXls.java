@@ -3,7 +3,7 @@ package com.dwarfeng.jier.mh4w.core.model.struct;
 /**
  * 指示着这条数据是从 xls 中读取的。
  * @author DwArFeng
- * @since 0.0.0-alpha
+ * @since 0.0.1-beta
  */
 public interface DataFromXls {
 

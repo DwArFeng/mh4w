@@ -9,7 +9,7 @@ import javax.swing.JList;
 /**
  * 与选区有关的列表鼠标动作侦听。
  * @author DwArFeng
- * @since 0.0.0-alpha
+ * @since 0.0.1-beta
  */
 public final class JListMouseMotionListener4Selection implements MouseMotionListener{
 	

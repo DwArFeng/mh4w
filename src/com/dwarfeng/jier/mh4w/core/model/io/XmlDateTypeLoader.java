@@ -16,7 +16,7 @@ import com.dwarfeng.jier.mh4w.core.model.struct.UnsafeDateTypeEntry;
 /**
  * Xml 日期类型读取器。
  * @author DwArFeng
- * @since 0.0.0-alpha
+ * @since 0.0.1-beta
  */
 public class XmlDateTypeLoader extends StreamLoader<Set<UnsafeDateTypeEntry>> {
 

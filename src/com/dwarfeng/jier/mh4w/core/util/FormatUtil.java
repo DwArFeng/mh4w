@@ -11,7 +11,7 @@ import com.dwarfeng.jier.mh4w.core.model.struct.TimeSection;
  * 格式化数据工具类。
  * <p> 用于将某些结构进行格式化输出。
  * @author DwArFeng
- * @since 0.0.0-alpha
+ * @since 0.0.1-beta
  */
 public final class FormatUtil {
 

@@ -8,7 +8,7 @@ import com.dwarfeng.jier.mh4w.core.model.eum.DateType;
  * 默认出勤数据。
  * <p> 出勤数据的默认实现。
  * @author DwArFeng
- * @since 0.0.0-alpha
+ * @since 0.0.1-beta
  */
 public final class DefaultAttendanceData implements AttendanceData{
 	

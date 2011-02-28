@@ -5,7 +5,7 @@ import java.io.File;
 /**
  * 文件选择模型观察器适配器。
  * @author DwArFeng
- * @since 0.0.0-alpha
+ * @since 0.0.1-beta
  */
 public abstract class FileSelectAdapter implements FileSelectObverser{
 

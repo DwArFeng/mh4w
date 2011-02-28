@@ -15,7 +15,7 @@ import com.dwarfeng.jier.mh4w.core.model.struct.Updateable;
  * 多语言模型。
  * <p> 模型中数据的读写均应该是线程安全的。
  * @author  DwArFeng
- * @since 0.0.0-alpha
+ * @since 0.0.1-beta
  */
 public interface MutilangModel extends Map<Locale, MutilangInfo>, ObverserSet<MutilangObverser>, ExternalReadWriteThreadSafe, Updateable{
 	

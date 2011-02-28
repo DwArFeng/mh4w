@@ -9,7 +9,7 @@ import com.dwarfeng.jier.mh4w.core.model.struct.MutilangInfo;
 /**
  * ∂‡”Ô—‘π€≤Ï∆˜°£
  * @author  DwArFeng
- * @since 0.0.0-alpha
+ * @since 0.0.1-beta
  */
 public interface MutilangObverser extends Obverser{
 

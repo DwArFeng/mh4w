@@ -10,7 +10,7 @@ import com.dwarfeng.dutil.develop.cfg.ConfigKey;
 /**
  * Ä¬ÈÏÅäÖÃÈë¿Ú¡£
  * @author  DwArFeng
- * @since 0.0.0-alpha
+ * @since 0.0.1-beta
  */
 public final class DefaultConfigEntry implements ConfigEntry{
 	

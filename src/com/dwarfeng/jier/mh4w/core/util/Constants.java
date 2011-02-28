@@ -175,7 +175,7 @@ public final class Constants {
 	 * 内部多语言信息。
 	 * <p> 多语言信息的内部实现。
 	 * @author  DwArFeng
-	 * @since 0.0.0-alpha
+	 * @since 0.0.1-beta
 	 */
 	private static final class InnerMutilangInfo implements MutilangInfo {
 		
@@ -214,7 +214,7 @@ public final class Constants {
 	 * 内部记录器信息。
 	 * <p> 记录器信息的内部实现。
 	 * @author DwArFeng
-	 * @since 0.0.0-alpha
+	 * @since 0.0.1-beta
 	 */
 	private static final class InnerLoggerInfo implements LoggerInfo{
 	
@@ -240,7 +240,7 @@ public final class Constants {
 	 * 默认记录器多语言接口。
 	 * <p> 使用程序中内置的简体中文。
 	 * @author  DwArFeng
-	 * @since 0.0.0-alpha
+	 * @since 0.0.1-beta
 	 */
 	private static final class DefaultLoggerMutilang implements Mutilang {
 		
@@ -267,7 +267,7 @@ public final class Constants {
 	 * 默认记录器多语言接口。
 	 * <p> 使用程序中内置的简体中文。
 	 * @author DwArFeng
-	 * @since 0.0.0-alpha
+	 * @since 0.0.1-beta
 	 */
 	private static final class DefaultLabelMutilang implements Mutilang{
 

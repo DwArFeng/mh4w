@@ -15,7 +15,7 @@ import com.dwarfeng.jier.mh4w.core.util.Mh4wUtil;
  * 默认完成过程取出器。
  * <p> 完成过程取出器的默认实现。
  * @author  DwArFeng
- * @since 0.0.0-alpha
+ * @since 0.0.1-beta
  */
 public class DefaultFinishedFlowTaker implements FinishedFlowTaker {
 	

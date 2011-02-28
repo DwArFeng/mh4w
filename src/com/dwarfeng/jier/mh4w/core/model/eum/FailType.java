@@ -3,7 +3,7 @@ package com.dwarfeng.jier.mh4w.core.model.eum;
 /**
  *  ß∞‹¿‡–Õ√∂æŸ°£
  * @author DwArFeng
- * @since 0.0.0-alpha
+ * @since 0.0.1-beta
  */
 public enum FailType {
 

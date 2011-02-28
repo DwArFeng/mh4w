@@ -6,7 +6,7 @@ import com.dwarfeng.jier.mh4w.core.util.CountUtil;
  * 默认不安全工作。
  * <p> 不安全工作的默认实现。
  * @author DwArFeng
- * @since 0.0.0-alpha
+ * @since 0.0.1-beta
  */
 public final class DefaultUnsafeJob implements UnsafeJob{
 

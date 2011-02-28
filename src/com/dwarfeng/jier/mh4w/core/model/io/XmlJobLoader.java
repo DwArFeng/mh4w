@@ -17,7 +17,7 @@ import com.dwarfeng.jier.mh4w.core.model.struct.UnsafeJob;
  * Xml 工作读取器。
  * <p> 使用 xml 读取不安全工作。
  * @author DwArFeng
- * @since 0.0.0-alpha
+ * @since 0.0.1-beta
  */
 public class XmlJobLoader extends StreamLoader<Set<UnsafeJob>> {
 

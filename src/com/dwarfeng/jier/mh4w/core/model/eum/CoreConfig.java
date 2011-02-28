@@ -13,7 +13,7 @@ import com.dwarfeng.jier.mh4w.core.model.struct.DefaultConfigEntry;
  * 程序配置枚举。
  * <p> 此枚举记录程序运行时所需要的所有的配置。
  * @author  DwArFeng
- * @since 0.0.0-alpha
+ * @since 0.0.1-beta
  */
 public enum CoreConfig implements ConfigEntry{
 	

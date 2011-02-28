@@ -4,7 +4,7 @@ package com.dwarfeng.jier.mh4w.core.model.struct;
  * 转换异常。
  * <p> 当数据从原始数据转换成次级数据时，如果出现错误，则抛出该异常。
  * @author DwArFeng
- * @since 0.0.0-alpha
+ * @since 0.0.1-beta
  */
 public class TransException extends Exception {
 

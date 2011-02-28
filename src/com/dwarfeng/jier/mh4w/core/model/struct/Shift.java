@@ -5,7 +5,7 @@ import com.dwarfeng.dutil.basic.str.Name;
 /**
  * °à´Î¡£
  * @author DwArFeng
- * @since 0.0.0-alpha
+ * @since 0.0.1-beta
  */
 public interface Shift extends Name{
 

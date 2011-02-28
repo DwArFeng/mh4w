@@ -48,7 +48,7 @@ import com.dwarfeng.jier.mh4w.core.view.obv.MainFrameObverser;
 /**
  * 程序的主界面。
  * @author  DwArFeng
- * @since 0.0.0-alpha
+ * @since 0.0.1-beta
  */
 public final class MainFrame extends JFrame implements MutilangSupported, ObverserSet<MainFrameObverser>{
 

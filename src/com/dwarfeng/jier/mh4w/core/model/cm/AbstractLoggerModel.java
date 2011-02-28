@@ -13,7 +13,7 @@ import com.dwarfeng.jier.mh4w.core.model.obv.LoggerObverser;
  * <p> 记录器模型的抽象实现。
  * <p> 模型中数据的读写均应该是线程安全的。
  * @author  DwArFeng
- * @since 0.0.0-alpha
+ * @since 0.0.1-beta
  */
 public abstract class AbstractLoggerModel implements LoggerModel {
 

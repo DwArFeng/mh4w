@@ -7,7 +7,7 @@ import com.dwarfeng.jier.mh4w.core.model.struct.DefaultName;
  * 记录器文本键。
  * <p> 该键枚举用于实现记录器的多语言。
  * @author  DwArFeng
- * @since 0.0.0-alpha
+ * @since 0.0.1-beta
  */
 public enum LoggerStringKey implements Name{
 

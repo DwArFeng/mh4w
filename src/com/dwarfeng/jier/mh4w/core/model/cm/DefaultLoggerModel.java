@@ -22,7 +22,7 @@ import com.dwarfeng.jier.mh4w.core.util.Mh4wUtil;
  * <p> 记录器模型接口的默认实现。
  * <p> 该模型中的数据的读写均是线程安全的。
  * @author  DwArFeng
- * @since 0.0.0-alpha
+ * @since 0.0.1-beta
  */
 public final class DefaultLoggerModel extends AbstractLoggerModel {
 	

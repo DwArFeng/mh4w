@@ -7,7 +7,7 @@ import java.io.OutputStream;
 /**
  * 程序中使用的资源。
  * @author DwArFeng
- * @since 0.0.0-alpha
+ * @since 0.0.1-beta
  */
 public interface Resource {
 

@@ -7,7 +7,7 @@ import com.dwarfeng.jier.mh4w.core.model.eum.DateType;
  * <p> 入口提供了获取统计日期以及日期类型的方法，这正是日期类型模型所需要的键和值。
  * <p> 不安全的日期类型，相较于日期模型的入口，其读取速度较慢，还可能产生异常。
  * @author DwArFeng
- * @since 0.0.0-alpha
+ * @since 0.0.1-beta
  */
 public interface UnsafeDateTypeEntry {
 	

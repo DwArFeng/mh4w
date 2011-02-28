@@ -17,7 +17,7 @@ import com.dwarfeng.jier.mh4w.core.model.cm.BlockModel;
  * xml阻挡模型读取器。
  * <p> 使用xml读取阻挡模型。
  * @author DwArFeng
- * @since 0.0.0-alpha
+ * @since 0.0.1-beta
  */
 public class XmlBlockLoader extends StreamLoader<BlockModel> {
 

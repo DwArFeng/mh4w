@@ -52,7 +52,7 @@ public class JWorkticketDataPanel extends JPanel implements MutilangSupported{
 		 */
 		@Override
 		public int getColumnCount() {
-			return 6;
+			return 5;
 		};
 		
 		/*
@@ -75,7 +75,7 @@ public class JWorkticketDataPanel extends JPanel implements MutilangSupported{
 				setHorizontalAlignment(JLabel.LEFT);
 				setText((String) value);
 			}
-			if(column == 4 || column == 5){
+			if(column == 4) {
 				setHorizontalAlignment(JLabel.RIGHT);
 				setText(FormatUtil.formatDouble((double) value));
 			}
@@ -103,8 +103,7 @@ public class JWorkticketDataPanel extends JPanel implements MutilangSupported{
 							value.getPerson().getWorkNumber(),
 							value.getPerson().getName(),
 							value.getJob().getName(),
-							value.getWorkticket(),
-							value.getJob().getValuePerHour()
+							value.getWorkticket()
 						});
 				}
 			});
@@ -125,8 +124,7 @@ public class JWorkticketDataPanel extends JPanel implements MutilangSupported{
 							newValue.getPerson().getWorkNumber(),
 							newValue.getPerson().getName(),
 							newValue.getJob().getName(),
-							newValue.getWorkticket(),
-							newValue.getJob().getValuePerHour()
+							newValue.getWorkticket()
 						});
 				}
 			});
@@ -197,14 +195,12 @@ public class JWorkticketDataPanel extends JPanel implements MutilangSupported{
 		table.getColumnModel().getColumn(2).setCellRenderer(tableRenderer);
 		table.getColumnModel().getColumn(3).setCellRenderer(tableRenderer);
 		table.getColumnModel().getColumn(4).setCellRenderer(tableRenderer);
-		table.getColumnModel().getColumn(5).setCellRenderer(tableRenderer);
 		
 		table.getColumnModel().getColumn(0).setHeaderValue(getLabel(LabelStringKey.JWorkticketDataPanel_1));
 		table.getColumnModel().getColumn(1).setHeaderValue(getLabel(LabelStringKey.JWorkticketDataPanel_2));
 		table.getColumnModel().getColumn(2).setHeaderValue(getLabel(LabelStringKey.JWorkticketDataPanel_3));
 		table.getColumnModel().getColumn(3).setHeaderValue(getLabel(LabelStringKey.JWorkticketDataPanel_4));
 		table.getColumnModel().getColumn(4).setHeaderValue(getLabel(LabelStringKey.JWorkticketDataPanel_5));
-		table.getColumnModel().getColumn(5).setHeaderValue(getLabel(LabelStringKey.JWorkticketDataPanel_6));
 
 		((JLabel) table.getTableHeader().getDefaultRenderer()).setHorizontalAlignment(JLabel.CENTER);
 		table.setFillsViewportHeight(true);
@@ -221,7 +217,6 @@ public class JWorkticketDataPanel extends JPanel implements MutilangSupported{
 							workticketData.getPerson().getName(),
 							workticketData.getJob().getName(),
 							workticketData.getWorkticket(),
-							workticketData.getJob().getValuePerHour()
 						});
 				}
 			}finally {
@@ -254,7 +249,6 @@ public class JWorkticketDataPanel extends JPanel implements MutilangSupported{
 		table.getColumnModel().getColumn(2).setHeaderValue(getLabel(LabelStringKey.JWorkticketDataPanel_3));
 		table.getColumnModel().getColumn(3).setHeaderValue(getLabel(LabelStringKey.JWorkticketDataPanel_4));
 		table.getColumnModel().getColumn(4).setHeaderValue(getLabel(LabelStringKey.JWorkticketDataPanel_5));
-		table.getColumnModel().getColumn(5).setHeaderValue(getLabel(LabelStringKey.JWorkticketDataPanel_6));
 		
 		table.repaint();
 	}
@@ -289,8 +283,7 @@ public class JWorkticketDataPanel extends JPanel implements MutilangSupported{
 							workticketData.getPerson().getWorkNumber(),
 							workticketData.getPerson().getName(),
 							workticketData.getJob().getName(),
-							workticketData.getWorkticket(),
-							workticketData.getJob().getValuePerHour()
+							workticketData.getWorkticket()
 						});
 				}
 			}finally {

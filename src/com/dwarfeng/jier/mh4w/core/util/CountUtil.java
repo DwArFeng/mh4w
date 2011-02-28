@@ -43,7 +43,7 @@ import com.dwarfeng.jier.mh4w.core.model.struct.WorkticketData;
 /**
  *与统计有关工具方法。
  * @author DwArFeng
- * @since 0.0.0-alpha
+ * @since 0.0.1-beta
  */
 public final class CountUtil {
 
@@ -594,17 +594,7 @@ public final class CountUtil {
 				workticketPercentMap.put(entry.getKey(), workticket == 0 ? 0 : entry.getValue() / workticket);
 			}
 			
-			//计算 较复杂的统计量  -  value
-			double value = 0;
-			if(originalWorkTime > 0){
-				double b = workticket / originalWorkTime;
-				double c = b * equivalentWorkTime;
-				for(Map.Entry<Job, Double> entry : workticketPercentMap.entrySet()){
-					value += c * entry.getValue() * entry.getKey().getValuePerHour();
-				}
-			}
-
-			countResults.add(new DefaultCountResult(person, equivalentWorkTime, originalWorkTime, workticket, workticketMap, workticketPercentMap, value));
+			countResults.add(new DefaultCountResult(person, equivalentWorkTime, originalWorkTime, workticket, workticketMap, workticketPercentMap));
 		}
 		
 		return countResults;

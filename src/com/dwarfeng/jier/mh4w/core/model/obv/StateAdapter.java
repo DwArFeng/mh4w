@@ -5,7 +5,7 @@ import com.dwarfeng.jier.mh4w.core.model.eum.CountState;
 /**
  * ×´Ì¬¹Û²ìÆ÷ÊÊÅäÆ÷¡£
  * @author DwArFeng
- * @since 0.0.0-alpha
+ * @since 0.0.1-beta
  */
 public abstract class StateAdapter implements StateObverser {
 

@@ -5,7 +5,7 @@ import com.dwarfeng.jier.mh4w.core.model.struct.Flow;
 /**
  * 过程模型观察器适配器。
  * @author  DwArFeng
- * @since 0.0.0-alpha
+ * @since 0.0.1-beta
  */
 public abstract class FlowAdapter implements FlowObverser{
 

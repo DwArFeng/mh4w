@@ -3,7 +3,7 @@ package com.dwarfeng.jier.mh4w.core.model.struct;
 /**
  * 统计结果。
  * @author DwArFeng
- * @since 0.0.0-alpha
+ * @since 0.0.1-beta
  */
 public interface CountResult extends DataWithPerson{
 
@@ -40,11 +40,5 @@ public interface CountResult extends DataWithPerson{
 	 * @throws NullPointerException 入口参数为 <code>null</code>。
 	 */
 	public double getWorkticketPercent(Job job);
-	
-	/**
-	 * 获取应得的金额。
-	 * @return 应得的金额。
-	 */
-	public double getValue();
 	
 }

@@ -51,7 +51,7 @@ public class JJobPanel extends JPanel implements MutilangSupported{
 		 */
 		@Override
 		public int getColumnCount() {
-			return 3;
+			return 2;
 		};
 		
 		/*
@@ -79,9 +79,6 @@ public class JJobPanel extends JPanel implements MutilangSupported{
 				setHorizontalAlignment(JLabel.LEFT);
 			}
 			if(column == 1){
-				setHorizontalAlignment(JLabel.RIGHT);
-			}
-			if(column == 2){
 				setHorizontalAlignment(JLabel.LEFT);
 				int index = (int) value;
 		        String result = "";
@@ -110,9 +107,7 @@ public class JJobPanel extends JPanel implements MutilangSupported{
 				public void run() {
 					tableModel.addRow(new Object[]{
 							job.getName(),
-							job.getValuePerHour(),
 							job.getOriginalColumn(),
-							job
 					});
 				}
 			});
@@ -184,10 +179,10 @@ public class JJobPanel extends JPanel implements MutilangSupported{
 		table.getTableHeader().setReorderingAllowed(false);
 		table.getColumnModel().getColumn(0).setCellRenderer(tableRenderer);
 		table.getColumnModel().getColumn(1).setCellRenderer(tableRenderer);
-		table.getColumnModel().getColumn(2).setCellRenderer(tableRenderer);
+		
 		table.getColumnModel().getColumn(0).setHeaderValue(getLabel(LabelStringKey.JJobPanel_1));
 		table.getColumnModel().getColumn(1).setHeaderValue(getLabel(LabelStringKey.JJobPanel_2));
-		table.getColumnModel().getColumn(2).setHeaderValue(getLabel(LabelStringKey.JJobPanel_3));
+		
 		((JLabel) table.getTableHeader().getDefaultRenderer()).setHorizontalAlignment(JLabel.CENTER);
 		scrollPane.setViewportView(table);
 		
@@ -198,9 +193,7 @@ public class JJobPanel extends JPanel implements MutilangSupported{
 				for(Job job : jobModel){
 					tableModel.addRow(new Object[]{
 						job.getName(),
-						job.getValuePerHour(),
-						job.getOriginalColumn(),
-						job
+						job.getOriginalColumn()
 					});
 				}
 			}finally {
@@ -229,7 +222,6 @@ public class JJobPanel extends JPanel implements MutilangSupported{
 		//更新各标签的文本。
 		table.getColumnModel().getColumn(0).setHeaderValue(getLabel(LabelStringKey.JJobPanel_1));
 		table.getColumnModel().getColumn(1).setHeaderValue(getLabel(LabelStringKey.JJobPanel_2));
-		table.getColumnModel().getColumn(2).setHeaderValue(getLabel(LabelStringKey.JJobPanel_3));
 	}
 
 	/**
@@ -259,9 +251,7 @@ public class JJobPanel extends JPanel implements MutilangSupported{
 				for(Job job : jobModel){
 					tableModel.addRow(new Object[]{
 						job.getName(),
-						job.getValuePerHour(),
-						job.getOriginalColumn(),
-						job
+						job.getOriginalColumn()
 					});
 				}
 			}finally {
@@ -276,8 +266,9 @@ public class JJobPanel extends JPanel implements MutilangSupported{
 	 * 释放资源。
 	 */
 	public void dispose() {
-		// TODO Auto-generated method stub
-		
+		if(Objects.nonNull(jobModel)){
+			jobModel.removeObverser(jobObverser);
+		}
 	}
 
 	private String getLabel(LabelStringKey labelStringKey){

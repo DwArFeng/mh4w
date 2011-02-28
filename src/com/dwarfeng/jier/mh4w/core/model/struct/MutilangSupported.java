@@ -4,7 +4,7 @@ package com.dwarfeng.jier.mh4w.core.model.struct;
  * 多语言支持接口。
  * <p> 实现该接口意味着该对象是一个接受Mutilang以实现多语言化的对象。
  * @author  DwArFeng
- * @since 0.0.0-alpha
+ * @since 0.0.1-beta
  */
 public interface MutilangSupported {
 	

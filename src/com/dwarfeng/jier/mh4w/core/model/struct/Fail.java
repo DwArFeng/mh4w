@@ -5,7 +5,7 @@ import com.dwarfeng.jier.mh4w.core.model.eum.FailType;
 /**
  * Ê§°Ü¡£
  * @author DwArFeng
- * @since 0.0.0-alpha
+ * @since 0.0.1-beta
  */
 public interface Fail {
 

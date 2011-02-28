@@ -8,7 +8,7 @@ import com.dwarfeng.jier.mh4w.core.model.struct.MutilangInfo;
 /**
  * 多语言模型观察器适配器。
  * @author DwArFeng
- * @since 0.0.0-alpha
+ * @since 0.0.1-beta
  */
 public abstract class MutilangAdapter implements MutilangObverser {
 

@@ -4,7 +4,7 @@ package com.dwarfeng.jier.mh4w.core.model.struct;
  * 不安全工作。
  * <p> 不安全工作与工作接口相比，速度要更慢，而且其返回方法可能会抛出异常。
  * @author DwArFeng
- * @since 0.0.0-alpha
+ * @since 0.0.1-beta
  */
 public interface UnsafeJob {
 	

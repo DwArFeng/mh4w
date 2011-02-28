@@ -23,7 +23,7 @@ import com.dwarfeng.jier.mh4w.core.util.FormatUtil;
  * Xls 统计结果保存器。
  * <p> 用 xls 保存统计结果。
  * @author DwArFeng
- * @since 0.0.0-alpha
+ * @since 0.0.1-beta
  */
 public final class XlsCountResultsSaver extends StreamSaver<XlsCountResultsSaver.CountResults> {
 	
@@ -63,8 +63,8 @@ public final class XlsCountResultsSaver extends StreamSaver<XlsCountResultsSaver
 			saver.createSheet(0, getLabel(LabelStringKey.JxlCountResultsSaver_1));
 			saver.setString(0, 0, 0, getLabel(LabelStringKey.JxlCountResultsSaver_2));
 			saver.setString(0, 1, 0, formatLable(LabelStringKey.JxlCountResultsSaver_3, Calendar.getInstance().getTime().toString()));
-			saver.mergeCell(0, 0, 0, 0, 6 + countResults.getJobModel().size());
-			saver.mergeCell(0, 1, 0, 1, 6 + countResults.getJobModel().size());
+			saver.mergeCell(0, 0, 0, 0, 5 + countResults.getJobModel().size());
+			saver.mergeCell(0, 1, 0, 1, 5 + countResults.getJobModel().size());
 			saver.setCellFormat(0, 0, 0, true, TITLE_SIZE, Alignment.CENTER);
 			saver.setCellFormat(0, 1, 0, false, NORMAL_SIZE, Alignment.RIGHT);
 			
@@ -78,7 +78,6 @@ public final class XlsCountResultsSaver extends StreamSaver<XlsCountResultsSaver
 				saver.setString(0, 2, 5 + i, jobIterator.next().getName());
 			}
 			saver.setString(0, 2, 5 + countResults.getJobModel().size(), getLabel(LabelStringKey.JxlCountResultsSaver_9));
-			saver.setString(0, 2, 6 + countResults.getJobModel().size(), getLabel(LabelStringKey.JxlCountResultsSaver_10));
 			
 			int writeRow;
 			
@@ -94,7 +93,6 @@ public final class XlsCountResultsSaver extends StreamSaver<XlsCountResultsSaver
 					saver.setNumber(0, writeRow, 5 + i, data.getWorkticket(jobIterator.next()));
 				}
 				saver.setNumber(0, writeRow, 5 + countResults.getJobModel().size(), data.getWorkticket());
-				saver.setNumber(0, writeRow, 6 + countResults.getJobModel().size(), data.getValue());
 				saver.setRowHeight(0, writeRow, 17);
 				writeRow ++;
 			}
@@ -108,7 +106,6 @@ public final class XlsCountResultsSaver extends StreamSaver<XlsCountResultsSaver
 				saver.setColumnWidth(0, 5 + i, COLUMN_WIDTH_SHORT);
 			}
 			saver.setColumnWidth(0, 5 + countResults.getJobModel().size(), COLUMN_WIDTH_SHORT);
-			saver.setColumnWidth(0, 6 + countResults.getJobModel().size(), COLUMN_WIDTH_SHORT);
 			
 			saver.setColumnFormatAsString(0, 0, false, NORMAL_SIZE, Alignment.LEFT);
 			saver.setColumnFormatAsString(0, 1, false, NORMAL_SIZE, Alignment.LEFT);
@@ -119,7 +116,6 @@ public final class XlsCountResultsSaver extends StreamSaver<XlsCountResultsSaver
 				saver.setColumnFormatAsNumber(0, 5 + i, NUMBER_FORMAT);
 			}
 			saver.setColumnFormatAsNumber(0, 5 + countResults.getJobModel().size(), NUMBER_FORMAT);
-			saver.setColumnFormatAsNumber(0, 6 + countResults.getJobModel().size(), NUMBER_FORMAT);
 			
 			//--------------------------------第二张表--------------------------------
 			saver.createSheet(1, getLabel(LabelStringKey.JxlCountResultsSaver_20));
@@ -175,7 +171,6 @@ public final class XlsCountResultsSaver extends StreamSaver<XlsCountResultsSaver
 			saver.setString(2, 0, 2, getLabel(LabelStringKey.JxlCountResultsSaver_24));
 			saver.setString(2, 0, 3, getLabel(LabelStringKey.JxlCountResultsSaver_25));
 			saver.setString(2, 0, 4, getLabel(LabelStringKey.JxlCountResultsSaver_26));
-			saver.setString(2, 0, 5, getLabel(LabelStringKey.JxlCountResultsSaver_27));
 			
 			writeRow = 1;
 			for(WorkticketData data : countResults.getWorkticketDataModel()){
@@ -184,7 +179,6 @@ public final class XlsCountResultsSaver extends StreamSaver<XlsCountResultsSaver
 				saver.setString(2, writeRow, 2, data.getPerson().getName());
 				saver.setString(2, writeRow, 3, data.getJob().getName());
 				saver.setNumber(2, writeRow, 4, data.getWorkticket());
-				saver.setNumber(2, writeRow, 5, data.getJob().getValuePerHour());
 				saver.setRowHeight(2, writeRow, 17);
 				writeRow ++;
 			}
@@ -201,7 +195,6 @@ public final class XlsCountResultsSaver extends StreamSaver<XlsCountResultsSaver
 			saver.setColumnFormatAsString(2, 2, false, NORMAL_SIZE, Alignment.LEFT);
 			saver.setColumnFormatAsString(2, 3, false, NORMAL_SIZE, Alignment.LEFT);
 			saver.setColumnFormatAsNumber(2, 4, NUMBER_FORMAT);
-			saver.setColumnFormatAsNumber(2, 5, NUMBER_FORMAT);
 			
 		}catch (Exception e) {
 			throw new SaveFailedException("统计结果保存器 - 无法正确地向指定的输出流保存统计结果", e);
@@ -227,7 +220,7 @@ public final class XlsCountResultsSaver extends StreamSaver<XlsCountResultsSaver
 	/**
 	 * 统计结果集合。
 	 * @author DwArFeng
-	 * @since 0.0.0-alpha
+	 * @since 0.0.1-beta
 	 */
 	public final static class CountResults{
 		

@@ -7,7 +7,7 @@ import java.util.Objects;
  * 默认统计结果。
  * <p> 统计结果的默认实现。
  * @author DwArFeng
- * @since 0.0.0-alpha
+ * @since 0.0.1-beta
  */
 public final class DefaultCountResult implements CountResult {
 
@@ -17,7 +17,6 @@ public final class DefaultCountResult implements CountResult {
 	private final double workticket;
 	private final Map<Job, Double> workticketMap;
 	private final Map<Job, Double> workticketPercentMap;
-	private final double value;
 	
 	/**
 	 * 新实例。
@@ -27,11 +26,10 @@ public final class DefaultCountResult implements CountResult {
 	 * @param workticket 工票总时间。
 	 * @param workticketMap 指定的工票工时映射。
 	 * @param workticketPercentMap 指定的工票工时百分比映射。
-	 * @param value 指定的应得金额。
 	 * @throws NullPointerException 入口参数为 <code>null</code>。
 	 */
 	public DefaultCountResult(Person person, double equivalentWorkTime, double originalWorkTime, double workticket, 
-			Map<Job, Double> workticketMap, Map<Job, Double> workticketPercentMap, double value) {
+			Map<Job, Double> workticketMap, Map<Job, Double> workticketPercentMap) {
 		Objects.requireNonNull(person, "入口参数 person 不能为 null。");
 		Objects.requireNonNull(workticketMap, "入口参数 workticketMap 不能为 null。");
 		Objects.requireNonNull(workticketPercentMap, "入口参数 workticketPercentMap 不能为 null。");
@@ -42,7 +40,6 @@ public final class DefaultCountResult implements CountResult {
 		this.workticket = workticket;
 		this.workticketMap = workticketMap;
 		this.workticketPercentMap = workticketPercentMap;
-		this.value = value;
 	}
 
 	/*
@@ -97,15 +94,6 @@ public final class DefaultCountResult implements CountResult {
 	@Override
 	public double getWorkticketPercent(Job job) {
 		return workticketPercentMap.getOrDefault(job, 0.0);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.dwarfeng.jier.mh4w.core.model.struct.CountResult#getValue()
-	 */
-	@Override
-	public double getValue() {
-		return value;
 	}
 
 }

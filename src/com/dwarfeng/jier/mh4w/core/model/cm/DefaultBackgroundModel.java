@@ -21,7 +21,7 @@ import com.dwarfeng.jier.mh4w.core.model.struct.Flow;
  * <p> 后台模型接口的默认实现。
  * <p> 该模型中的数据的读写均是线程安全的。
  * @author DwArFeng
- * @since 0.0.0-alpha
+ * @since 0.0.1-beta
  */
 public final class DefaultBackgroundModel extends AbstractBackgroundModel {
 	

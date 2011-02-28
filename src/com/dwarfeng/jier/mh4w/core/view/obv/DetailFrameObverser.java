@@ -5,7 +5,7 @@ import com.dwarfeng.dutil.basic.prog.Obverser;
 /**
  * ÏêÏ¸Ãæ°å¹Û²ìÆ÷¡£
  * @author DwArFeng
- * @since 0.0.0-alpha
+ * @since 0.0.1-beta
  */
 public interface DetailFrameObverser extends Obverser{
 

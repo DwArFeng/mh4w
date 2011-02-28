@@ -30,10 +30,9 @@ import com.dwarfeng.jier.mh4w.core.util.Mh4wUtil;
 import com.dwarfeng.jier.mh4w.core.view.obv.CountResultPanalAdapter;
 import com.dwarfeng.jier.mh4w.core.view.obv.CountResultPanelObverser;
 import com.dwarfeng.jier.mh4w.core.view.obv.DetailFrameObverser;
+import javax.swing.JPanel;
 
 public class DetailFrame extends JFrame implements MutilangSupported, ObverserSet<DetailFrameObverser>{
-
-	private static final long serialVersionUID = 138508987670165964L;
 
 	/**观察器集合*/
 	private final Set<DetailFrameObverser> obversers = Collections.newSetFromMap(new WeakHashMap<>());
@@ -106,6 +105,7 @@ public class DetailFrame extends JFrame implements MutilangSupported, ObverserSe
 		};
 		
 	};
+	private JPanel panel;
 
 	/**
 	 * 新实例。
@@ -159,13 +159,17 @@ public class DetailFrame extends JFrame implements MutilangSupported, ObverserSe
 		workticketDataPanel = new JWorkticketDataPanel(mutilang, workticketDataModel);
 		tabbedPane.addTab(getLabel(LabelStringKey.DetailFrame_5), null, workticketDataPanel, null);
 		
+		panel = new JPanel();
+		tabbedPane.addTab(getLabel(LabelStringKey.DetailFrame_6), null, panel, null);
+		
 		countResultPanel = new JCountResultPanel(mutilang, countResultModel);
 		countResultPanel.addObverser(countResultPanelObverser);
-		tabbedPane.addTab(getLabel(LabelStringKey.DetailFrame_6), null, countResultPanel, null);
+		tabbedPane.addTab(getLabel(LabelStringKey.DetailFrame_7), null, countResultPanel, null);
 		
 		tabbedPane.setEnabledAt(2, false);
 		tabbedPane.setEnabledAt(3, false);
 		tabbedPane.setEnabledAt(4, false);
+		tabbedPane.setEnabledAt(5, false);
 
 		if(Objects.nonNull(this.stateModel)){
 			this.stateModel.removeObverser(stateObverser);
@@ -252,7 +256,7 @@ public class DetailFrame extends JFrame implements MutilangSupported, ObverserSe
 		tabbedPane.setTitleAt(1, getLabel(LabelStringKey.DetailFrame_3));
 		tabbedPane.setTitleAt(2, getLabel(LabelStringKey.DetailFrame_4));
 		tabbedPane.setTitleAt(3, getLabel(LabelStringKey.DetailFrame_5));
-		tabbedPane.setTitleAt(4, getLabel(LabelStringKey.DetailFrame_6));
+		tabbedPane.setTitleAt(4, getLabel(LabelStringKey.DetailFrame_7));
 	}
 	
 	/**
@@ -333,12 +337,14 @@ public class DetailFrame extends JFrame implements MutilangSupported, ObverserSe
 		tabbedPane.setEnabledAt(2, false);
 		tabbedPane.setEnabledAt(3, false);
 		tabbedPane.setEnabledAt(4, false);
+		tabbedPane.setEnabledAt(5, false);
 	}
 	
 	private void enableTablePanel(){
 		tabbedPane.setEnabledAt(2, true);
 		tabbedPane.setEnabledAt(3, true);
 		tabbedPane.setEnabledAt(4, true);
+		tabbedPane.setEnabledAt(5, true);
 	}
 
 }

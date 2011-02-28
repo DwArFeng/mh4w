@@ -4,7 +4,7 @@ package com.dwarfeng.jier.mh4w.core.model.struct;
  * 阻挡接口。
  * <p> 该接口线程安全，不向外暴露同步锁。
  * @author DwArFeng
- * @since 0.0.0-alpha
+ * @since 0.0.1-beta
  */
 public interface Block{
 

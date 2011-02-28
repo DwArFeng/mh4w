@@ -8,7 +8,7 @@ import java.util.Comparator;
  * 如果起始时间相等，则根据同样的方法比较结束时间。
  * <p> 该比较器不能比较 null 元素。
  * @author DwArFeng
- * @since 0.0.0-alpha
+ * @since 0.0.1-beta
  */
 public final class TimeSectionComparator implements Comparator<TimeSection> {
 	

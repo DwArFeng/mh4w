@@ -18,7 +18,7 @@ import com.dwarfeng.dutil.develop.cfg.DefaultConfigModel;
  * <p> 配置模型的线程安全的默认实现。
  * <p> 该模型中的数据的读写均是线程安全的。
  * @author DwArFeng
- * @since 0.0.0-alpha
+ * @since 0.0.1-beta
  */
 public class DefaultSyncConfigModel extends AbstractSyncConfigModel {
 

@@ -6,7 +6,7 @@ import com.dwarfeng.jier.mh4w.core.model.struct.Flow;
 /**
  * ¹ý³Ì¹Û²ìÆ÷¡£
  * @author  DwArFeng
- * @since 0.0.0-alpha
+ * @since 0.0.1-beta
  */
 public interface FlowObverser extends Obverser{
 	

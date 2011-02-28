@@ -5,7 +5,7 @@ import com.dwarfeng.dutil.basic.prog.Obverser;
 /**
  * 统计结果面板适配器。
  * @author DwArFeng
- * @since 0.0.0-alpha
+ * @since 0.0.1-beta
  */
 public interface CountResultPanelObverser extends Obverser{
 

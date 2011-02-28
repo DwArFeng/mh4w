@@ -6,7 +6,7 @@ import com.dwarfeng.jier.mh4w.core.model.eum.FailType;
  * 默认失败。
  * <p> 失败接口的默认实现。
  * @author DwArFeng
- * @since 0.0.0-alpha
+ * @since 0.0.1-beta
  */
 public final class DefaultFail implements Fail {
 

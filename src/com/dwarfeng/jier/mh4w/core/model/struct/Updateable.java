@@ -3,7 +3,7 @@ package com.dwarfeng.jier.mh4w.core.model.struct;
 /**
  * 可更新接口。
  * @author  DwArFeng
- * @since 0.0.0-alpha
+ * @since 0.0.1-beta
  */
 public interface Updateable{
 	

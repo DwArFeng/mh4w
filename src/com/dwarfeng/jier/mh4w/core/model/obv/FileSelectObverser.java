@@ -7,7 +7,7 @@ import com.dwarfeng.dutil.basic.prog.Obverser;
 /**
  * 文件选择模型观察器。
  * @author DwArFeng
- * @since 0.0.0-alpha
+ * @since 0.0.1-beta
  */
 public interface FileSelectObverser extends Obverser {
 

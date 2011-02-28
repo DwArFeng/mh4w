@@ -10,7 +10,7 @@ import com.dwarfeng.jier.mh4w.core.util.LocaleUtil;
  * 默认核心配置模型。
  * <p> 核心配置模型的默认实现。
  * @author DwArFeng
- * @since 0.0.0-alpha
+ * @since 0.0.1-beta
  */
 public class DefaultCoreConfigModel extends DefaultSyncConfigModel implements CoreConfigModel{
 	

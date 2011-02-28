@@ -5,7 +5,7 @@ import java.util.Map;
 /**
  * ∂‡”Ô—‘µƒ Ù–‘°£
  * @author  DwArFeng
- * @since 0.0.0-alpha
+ * @since 0.0.1-beta
  */
 public interface MutilangInfo {
 	

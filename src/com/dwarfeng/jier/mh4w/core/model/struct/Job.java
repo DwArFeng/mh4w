@@ -5,16 +5,10 @@ import com.dwarfeng.dutil.basic.str.Name;
 /**
  * 工作。
  * @author DwArFeng
- * @since 0.0.0-alpha
+ * @since 0.0.1-beta
  */
 public interface Job extends Name{
 
-	/**
-	 * 获取每小时的工作价值。
-	 * @return  每小时的工作价值。
-	 */
-	public double getValuePerHour();
-	
 	/**
 	 * 获取该工作数据在原始表格中所在的列。
 	 * @return 该工作数据在原始表格中所在的列。

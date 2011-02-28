@@ -124,7 +124,7 @@ import com.dwarfeng.jier.mh4w.core.view.obv.MainFrameObverser;
 /**
  * 工时统计软件。
  * @author DwArFeng
- * @since 0.0.0-alpha
+ * @since 0.0.1-beta
  */
 public final class Mh4w {
 	
@@ -1003,7 +1003,7 @@ public final class Mh4w {
 		 * 内部抽象过程。
 		 * <p> 定义常用的内部用方法。
 		 * @author DwArFeng
-		 * @since 0.0.0-alpha
+		 * @since 0.0.1-beta
 		 */
 		private abstract class AbstractInnerFlow extends AbstractFlow{
 			
@@ -1132,7 +1132,7 @@ public final class Mh4w {
 		 * 可能会改变程序的状态的流。
 		 * <p> 封装了常用的状态监测的方法。
 		 * @author DwArFeng
-		 * @since 0.0.0-alpha
+		 * @since 0.0.1-beta
 		 */
 		private abstract class AbstractMayChangeStateFlow extends AbstractInnerFlow{
 
@@ -1385,10 +1385,9 @@ public final class Mh4w {
 					for(UnsafeJob unsafeJob : unsafeJobs){
 						try{
 							String name = unsafeJob.getName();
-							double valuePerHour = unsafeJob.getValuePerHour();
 							int originalColumn = unsafeJob.getOriginalColumn();
 							
-							Job job = new DefaultJob(name, valuePerHour, originalColumn);
+							Job job = new DefaultJob(name, originalColumn);
 							manager.getJobModel().add(job);
 						}catch (ProcessException e) {
 							warn(LoggerStringKey.Mh4w_FlowProvider_45, e);
@@ -2085,10 +2084,9 @@ public final class Mh4w {
 					for(UnsafeJob unsafeJob : unsafeJobs){
 						try{
 							String name = unsafeJob.getName();
-							double valuePerHour = unsafeJob.getValuePerHour();
 							int originalColumn = unsafeJob.getOriginalColumn();
 							
-							Job job = new DefaultJob(name, valuePerHour, originalColumn);
+							Job job = new DefaultJob(name, originalColumn);
 							manager.getJobModel().add(job);
 						}catch (ProcessException e) {
 							warn(LoggerStringKey.Mh4w_FlowProvider_45, e);

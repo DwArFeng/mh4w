@@ -6,7 +6,7 @@ import com.dwarfeng.jier.mh4w.core.model.eum.DateType;
  * 默认不安全日期类型入口。
  * <p> 不安全日期类型入口的默认实现。
  * @author DwArFeng
- * @since 0.0.0-alpha
+ * @since 0.0.1-beta
  */
 public final class DefaultUnsafeDateTypeEntry implements UnsafeDateTypeEntry{
 	

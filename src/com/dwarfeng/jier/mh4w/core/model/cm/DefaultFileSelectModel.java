@@ -9,7 +9,7 @@ import com.dwarfeng.jier.mh4w.core.model.obv.FileSelectObverser;
  * 默认文件选择模型。
  * <p> 文件选择模型的默认实现。
  * @author DwArFeng
- * @since 0.0.0-alpha
+ * @since 0.0.1-beta
  */
 public final class DefaultFileSelectModel extends AbstractFileSelectModel{
 	

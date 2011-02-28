@@ -6,7 +6,7 @@ import com.dwarfeng.jier.mh4w.core.util.CountUtil;
  * 默认不安全班次。
  * <p> 不安全班次的默认实现。
  * @author DwArFeng
- * @since 0.0.0-alpha
+ * @since 0.0.1-beta
  */
 public class DefaultUnsafeShift implements UnsafeShift {
 	

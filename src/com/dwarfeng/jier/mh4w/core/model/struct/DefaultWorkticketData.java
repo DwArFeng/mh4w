@@ -6,7 +6,7 @@ import java.util.Objects;
  * 默认工票数据。
  * <p> 工票数据的默认实现。
  * @author DwArFeng
- * @since 0.0.0-alpha
+ * @since 0.0.1-beta
  */
 public final class DefaultWorkticketData implements WorkticketData{
 	

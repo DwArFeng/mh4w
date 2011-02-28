@@ -14,7 +14,7 @@ import com.dwarfeng.jier.mh4w.core.model.struct.OriginalAttendanceData;
  * Xls 原始出勤数据取器。
  * <p> 利用 xls 文件读取原始出勤数据。
  * @author DwArFeng
- * @since 0.0.0-alpha
+ * @since 0.0.1-beta
  */
 public class XlsOriginalAttendanceDataLoader extends StreamLoader<DataListModel<OriginalAttendanceData>>{
 

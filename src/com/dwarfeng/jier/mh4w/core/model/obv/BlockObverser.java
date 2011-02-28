@@ -7,7 +7,7 @@ import com.dwarfeng.dutil.basic.prog.Obverser;
 /**
  * ×èµ²¹Û²ìÆ÷¡£
  * @author  DwArFeng
- * @since 0.0.0-alpha
+ * @since 0.0.1-beta
  */
 public interface BlockObverser extends Obverser {
 

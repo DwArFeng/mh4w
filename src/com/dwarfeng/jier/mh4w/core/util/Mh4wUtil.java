@@ -18,7 +18,7 @@ import com.dwarfeng.jier.mh4w.core.model.struct.Logger;
 /**
  * 关于工时统计软件的工具类。
  * @author  DwArFeng
- * @since 0.0.0-alpha
+ * @since 0.0.1-beta
  */
 public final class Mh4wUtil {
 	
@@ -93,7 +93,7 @@ public final class Mh4wUtil {
 	 * 默认记录器接口。
 	 * <p> 该记录器不进行任何操作。
 	 * @author  DwArFeng
-	 * @since 0.0.0-alpha
+	 * @since 0.0.1-beta
 	 */
 	private static final class InitialLogger implements Logger{
 

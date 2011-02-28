@@ -5,7 +5,7 @@ import com.dwarfeng.dutil.basic.prog.Obverser;
 /**
  * 列表操作观察器。
  * @author DwArFeng
- * @since 0.0.0-alpha
+ * @since 0.0.1-beta
  */
 public interface ListOperateObverser<T> extends Obverser {
 

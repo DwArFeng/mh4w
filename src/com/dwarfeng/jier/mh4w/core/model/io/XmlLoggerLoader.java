@@ -18,7 +18,7 @@ import com.dwarfeng.jier.mh4w.core.model.struct.DefaultLoggerInfo;
  * xml记录器模型读取器。
  * <p> 使用xml读取多语言模型。
  * @author  DwArFeng
- * @since 0.0.0-alpha
+ * @since 0.0.1-beta
  */
 public final class XmlLoggerLoader extends StreamLoader<LoggerModel> {
 

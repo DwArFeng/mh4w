@@ -7,7 +7,7 @@ import com.dwarfeng.jier.mh4w.core.model.struct.DefaultName;
  * 程序的字符串键。
  * <p> 该字符串键枚举记录了程序中所用到的所有字符串的键。
  * @author  DwArFeng
- * @since 0.0.0-alpha
+ * @since 0.0.1-beta
  */
 public enum LabelStringKey implements Name{
 	
@@ -28,6 +28,7 @@ public enum LabelStringKey implements Name{
 	DetailFrame_4(new DefaultName("DetailFrame.4")),
 	DetailFrame_5(new DefaultName("DetailFrame.5")),
 	DetailFrame_6(new DefaultName("DetailFrame.6")),
+	DetailFrame_7(new DefaultName("DetailFrame.7")),
 
 	AttrFrame_1(new DefaultName("AttrFrame.1")),
 	AttrFrame_2(new DefaultName("AttrFrame.2")),

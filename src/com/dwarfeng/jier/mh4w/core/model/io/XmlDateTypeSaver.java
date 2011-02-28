@@ -20,7 +20,7 @@ import com.dwarfeng.jier.mh4w.core.model.struct.CountDate;
  * Xml 日期类型保存器。
  * <p> 使用 xml 对日期类型模型进行保存。
  * @author DwArFeng
- * @since 0.0.0-alpha
+ * @since 0.0.1-beta
  */
 public final class XmlDateTypeSaver extends StreamSaver<DateTypeModel> {
 

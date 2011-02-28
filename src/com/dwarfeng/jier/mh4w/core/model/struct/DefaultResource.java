@@ -16,7 +16,7 @@ import com.dwarfeng.dutil.basic.io.IoUtil;
  * 默认资源接口。
  * <p> 资源接口的默认实现。
  * @author  DwArFeng
- * @since 0.0.0-alpha
+ * @since 0.0.1-beta
  */
 public class DefaultResource implements Resource{
 	

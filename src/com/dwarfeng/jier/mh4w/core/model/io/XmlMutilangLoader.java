@@ -18,7 +18,7 @@ import com.dwarfeng.jier.mh4w.core.util.LocaleUtil;
  * xml多语言模型读取器。
  * <p> 使用xml读取多语言模型。
  * @author  DwArFeng
- * @since 0.0.0-alpha
+ * @since 0.0.1-beta
  */
 public final class XmlMutilangLoader extends StreamLoader<MutilangModel> {
 

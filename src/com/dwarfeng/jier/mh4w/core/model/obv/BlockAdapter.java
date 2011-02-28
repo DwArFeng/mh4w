@@ -5,7 +5,7 @@ import java.util.Set;
 /**
  * ×èµ²Ä£ĞÍ¹Û²ìÆ÷ÊÊÅäÆ÷¡£
  * @author  DwArFeng
- * @since 0.0.0-alpha
+ * @since 0.0.1-beta
  */
 public abstract class BlockAdapter implements BlockObverser{
 
