@@ -155,6 +155,10 @@ public enum LabelStringKey implements Name{
 	JAttendanceOffsetPanel_1(new DefaultName("JAttendanceOffsetPanel.1")),
 	JAttendanceOffsetPanel_2(new DefaultName("JAttendanceOffsetPanel.2")),
 	JAttendanceOffsetPanel_3(new DefaultName("JAttendanceOffsetPanel.3")),
+	JAttendanceOffsetPanel_4(new DefaultName("JAttendanceOffsetPanel.4")),
+	JAttendanceOffsetPanel_5(new DefaultName("JAttendanceOffsetPanel.5")),
+	JAttendanceOffsetPanel_6(new DefaultName("JAttendanceOffsetPanel.6")),
+	JAttendanceOffsetPanel_7(new DefaultName("JAttendanceOffsetPanel.7")),
 
 	;
 

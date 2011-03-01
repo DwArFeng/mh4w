@@ -82,6 +82,7 @@ import com.dwarfeng.jier.mh4w.core.model.struct.AttendanceOffset;
 import com.dwarfeng.jier.mh4w.core.model.struct.CountDate;
 import com.dwarfeng.jier.mh4w.core.model.struct.CountResult;
 import com.dwarfeng.jier.mh4w.core.model.struct.DataFromXls;
+import com.dwarfeng.jier.mh4w.core.model.struct.DefaultAttendanceOffset;
 import com.dwarfeng.jier.mh4w.core.model.struct.DefaultFail;
 import com.dwarfeng.jier.mh4w.core.model.struct.DefaultFinishedFlowTaker;
 import com.dwarfeng.jier.mh4w.core.model.struct.DefaultJob;
@@ -92,11 +93,13 @@ import com.dwarfeng.jier.mh4w.core.model.struct.Flow;
 import com.dwarfeng.jier.mh4w.core.model.struct.Job;
 import com.dwarfeng.jier.mh4w.core.model.struct.OriginalAttendanceData;
 import com.dwarfeng.jier.mh4w.core.model.struct.OriginalWorkticketData;
+import com.dwarfeng.jier.mh4w.core.model.struct.Person;
 import com.dwarfeng.jier.mh4w.core.model.struct.ProcessException;
 import com.dwarfeng.jier.mh4w.core.model.struct.Resource;
 import com.dwarfeng.jier.mh4w.core.model.struct.Shift;
 import com.dwarfeng.jier.mh4w.core.model.struct.TimeSection;
 import com.dwarfeng.jier.mh4w.core.model.struct.TransException;
+import com.dwarfeng.jier.mh4w.core.model.struct.UnsafeAttendanceOffset;
 import com.dwarfeng.jier.mh4w.core.model.struct.UnsafeDateTypeEntry;
 import com.dwarfeng.jier.mh4w.core.model.struct.UnsafeJob;
 import com.dwarfeng.jier.mh4w.core.model.struct.UnsafeShift;
@@ -554,6 +557,24 @@ public final class Mh4w {
 				manager.getBackgroundModel().submit(flowProvider.newExportCountResultFlow());
 			};
 			
+			/*
+			 * (non-Javadoc)
+			 * @see com.dwarfeng.jier.mh4w.core.view.obv.DetailFrameAdapter#fireSubmitAttendanceOffset(com.dwarfeng.jier.mh4w.core.model.struct.UnsafeAttendanceOffset)
+			 */
+			@Override
+			public void fireSubmitAttendanceOffset(UnsafeAttendanceOffset unsafeAttendanceOffset) {
+				manager.getBackgroundModel().submit(flowProvider.newSubmitAttendanceOffsetFlow(unsafeAttendanceOffset));
+			};
+			
+			/*
+			 * (non-Javadoc)
+			 * @see com.dwarfeng.jier.mh4w.core.view.obv.DetailFrameObverser#fireClearAttendanceOffset()
+			 */
+			@Override
+			public void fireClearAttendanceOffset() {
+				manager.getBackgroundModel().submit(flowProvider.newClearAttendanceOffsetFlow());
+			};
+			
 		};
 		private final AttrFrameObverser attrFrameObverser = new AttrFrameAdapter() {
 			
@@ -1007,6 +1028,23 @@ public final class Mh4w {
 		 */
 		public Flow newExportCountResultFlow() {
 			return new ExportCountResultFlow();
+		}
+
+		/**
+		 * 获取一个新的提交考勤补偿的流。
+		 * @param unsafeAttendanceOffset 指定的不安全考勤补偿。
+		 * @return 新的提交考勤补偿的流。
+		 */
+		public Flow newSubmitAttendanceOffsetFlow(UnsafeAttendanceOffset unsafeAttendanceOffset) {
+			return new SubmitAttendanceOffsetFlow(unsafeAttendanceOffset);
+		}
+
+		/**
+		 * 获取一个新的清除考勤补偿的流。
+		 * @return 新的清除考勤补偿的流。
+		 */
+		public Flow newClearAttendanceOffsetFlow() {
+			return new ClearAttendanceOffsetFlow();
 		}
 
 		/**
@@ -1897,7 +1935,7 @@ public final class Mh4w {
 					//统计数据，并把统计结果放在统计结果模型中
 					info(LoggerStringKey.Mh4w_FlowProvider_79);
 					for(CountResult countResult : CountUtil.countData(manager.getAttendanceDataModel(),
-							manager.getWorkticketDataModel())){
+							manager.getWorkticketDataModel(), manager.getAttendanceOffsetModel())){
 						manager.getCountResultModel().add(countResult);
 					}
 					
@@ -2355,17 +2393,17 @@ public final class Mh4w {
 						throw new IllegalStateException("程序还未启动或已经结束");
 					}
 					
-					info(LoggerStringKey.Mh4w_FlowProvider_68);
+					info(LoggerStringKey.Mh4w_FlowProvider_92);
 					
 					manager.getDateTypeModel().clear();
 					
 					mayCountResultOutdated();
 					
-					message(LoggerStringKey.Mh4w_FlowProvider_69);
+					message(LoggerStringKey.Mh4w_FlowProvider_93);
 					
 				}catch (Exception e) {
 					setThrowable(e);
-					message(LoggerStringKey.Mh4w_FlowProvider_70);
+					message(LoggerStringKey.Mh4w_FlowProvider_94);
 				}
 			}
 			
@@ -2479,7 +2517,7 @@ public final class Mh4w {
 		private final class ExportCountResultFlow extends AbstractInnerFlow{
 			
 			public ExportCountResultFlow() {
-				super(BlockKey.SAVE_DATE_TYPE_ENTRY);
+				super(BlockKey.EXPORT_COUNT_RESULT);
 			}
 		
 			/*
@@ -2547,6 +2585,93 @@ public final class Mh4w {
 				}catch (Exception e) {
 					setThrowable(e);
 					message(LoggerStringKey.Mh4w_FlowProvider_82);
+				}
+			}
+			
+		}
+
+		private final class SubmitAttendanceOffsetFlow extends AbstractInnerFlow{
+			
+			private final UnsafeAttendanceOffset unsafeAttendanceOffset;
+		
+			public SubmitAttendanceOffsetFlow(UnsafeAttendanceOffset unsafeAttendanceOffset) {
+				super(BlockKey.SUBMIT_ATTENDANCE_OFFSET);
+				this.unsafeAttendanceOffset = unsafeAttendanceOffset;
+			}
+		
+			/*
+			 * (non-Javadoc)
+			 * @see com.dwarfeng.tp.core.control.Mh4w.FlowProvider.AbstractInnerFlow#processImpl()
+			 */
+			@Override
+			protected void processImpl() {
+				try{
+					if(getState() != RuntimeState.RUNNING){
+						throw new IllegalStateException("程序还未启动或已经结束");
+					}
+					
+					info(LoggerStringKey.Mh4w_FlowProvider_85);
+					
+					AttendanceOffset attendanceOffset = null;
+					
+					try{
+						Person person = unsafeAttendanceOffset.getPerson();
+						String description = unsafeAttendanceOffset.getDescription();
+						double value = unsafeAttendanceOffset.getValue();
+						
+						attendanceOffset = new DefaultAttendanceOffset(person, description, value);
+					}catch (ProcessException e) {
+						warn(LoggerStringKey.Mh4w_FlowProvider_88, e);
+					}
+					
+					if(Objects.nonNull(attendanceOffset)){
+						manager.getAttendanceOffsetModel().add(attendanceOffset);
+						if(manager.getStateModel().getCountState().equals(CountState.STARTED_EXPORTED)){
+							manager.getStateModel().setCountState(CountState.STARTED_WAITING);
+						}
+					}
+					
+					message(LoggerStringKey.Mh4w_FlowProvider_86);
+					
+				}catch (Exception e) {
+					setThrowable(e);
+					message(LoggerStringKey.Mh4w_FlowProvider_87);
+				}
+			}
+			
+		}
+
+		private final class ClearAttendanceOffsetFlow extends AbstractInnerFlow{
+			
+			public ClearAttendanceOffsetFlow() {
+				super(BlockKey.SUBMIT_ATTENDANCE_OFFSET);
+			}
+		
+			/*
+			 * (non-Javadoc)
+			 * @see com.dwarfeng.tp.core.control.Mh4w.FlowProvider.AbstractInnerFlow#processImpl()
+			 */
+			@Override
+			protected void processImpl() {
+				try{
+					if(getState() != RuntimeState.RUNNING){
+						throw new IllegalStateException("程序还未启动或已经结束");
+					}
+					
+					info(LoggerStringKey.Mh4w_FlowProvider_89);
+
+					if(manager.getAttendanceOffsetModel().size() > 0){
+						manager.getAttendanceOffsetModel().clear();
+						if(manager.getStateModel().getCountState().equals(CountState.STARTED_EXPORTED)){
+							manager.getStateModel().setCountState(CountState.STARTED_WAITING);
+						}
+					}
+					
+					message(LoggerStringKey.Mh4w_FlowProvider_90);
+					
+				}catch (Exception e) {
+					setThrowable(e);
+					message(LoggerStringKey.Mh4w_FlowProvider_91);
 				}
 			}
 			
@@ -2627,7 +2752,7 @@ public final class Mh4w {
 			
 			//解除对象的引用
 			INSTANCES.remove(Mh4w.this);
-	
+			
 		}
 		
 	

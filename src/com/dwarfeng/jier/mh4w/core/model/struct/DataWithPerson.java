@@ -12,5 +12,13 @@ public interface DataWithPerson {
 	 * @return 数据中的员工。
 	 */
 	public Person getPerson();
+	
+	/**
+	 * 获得工票数据中的工号（主键）。
+	 * @return 出勤数据中的工号（主键）。
+	 */
+	public default String getWorkNumber(){
+		return getPerson().getWorkNumber();
+	}
 
 }

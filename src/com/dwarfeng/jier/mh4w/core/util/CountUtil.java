@@ -23,6 +23,7 @@ import com.dwarfeng.jier.mh4w.core.model.eum.DateType;
 import com.dwarfeng.jier.mh4w.core.model.io.XlsOriginalAttendanceDataLoader;
 import com.dwarfeng.jier.mh4w.core.model.io.XlsOriginalWorkticketDataLoader;
 import com.dwarfeng.jier.mh4w.core.model.struct.AttendanceData;
+import com.dwarfeng.jier.mh4w.core.model.struct.AttendanceOffset;
 import com.dwarfeng.jier.mh4w.core.model.struct.CountDate;
 import com.dwarfeng.jier.mh4w.core.model.struct.CountResult;
 import com.dwarfeng.jier.mh4w.core.model.struct.Counter;
@@ -532,10 +533,11 @@ public final class CountUtil {
 	 * @throws NullPointerException 入口参数为 <code>null</code>。
 	 */
 	public static Set<CountResult> countData(DataListModel<AttendanceData> attendanceDataModel,
-			DataListModel<WorkticketData> workticketDataModel){
+			DataListModel<WorkticketData> workticketDataModel, DataListModel<AttendanceOffset> attendanceOffsetModel){
 		Objects.requireNonNull(attendanceDataModel, "入口参数 attendanceDataModel 不能为 null。");
 		Objects.requireNonNull(workticketDataModel, "入口参数 workticketDataModel 不能为 null。");
-		
+		Objects.requireNonNull(attendanceOffsetModel, "入口参数 attendanceOffsetModel 不能为 null。");
+
 		//以工号为主键归档数据
 		Map<String, Set<AttendanceData>> attendanceDataMap = new LinkedHashMap<>();
 		Map<String, Set<WorkticketData>> workticketDataMap = new LinkedHashMap<>();
@@ -562,6 +564,21 @@ public final class CountUtil {
 			workticketDataModel.getLock().readLock().unlock();
 		}
 		
+		//以工号为主键归档考勤补偿
+		Map<String, Set<AttendanceOffset>> attendanceOffsetMap = new LinkedHashMap<>();
+		
+		attendanceOffsetModel.getLock().readLock().lock();
+		try{
+			for(AttendanceOffset attendanceOffset : attendanceOffsetModel){
+				if(! attendanceOffsetMap.containsKey(attendanceOffset.getWorkNumber())){
+					attendanceOffsetMap.put(attendanceOffset.getWorkNumber(), new LinkedHashSet<>());
+				}
+				attendanceOffsetMap.get(attendanceOffset.getWorkNumber()).add(attendanceOffset);
+			}
+		}finally {
+			attendanceOffsetModel.getLock().readLock().unlock();
+		}
+		
 		//开辟统计结果集合
 		Set<CountResult> countResults = new LinkedHashSet<>();
 		
@@ -573,10 +590,12 @@ public final class CountUtil {
 			//对简单的统计量进行提取
 			Person person = null;
 			double equivalentWorkTime = 0;
+			double equivalentWorkTimeOffset = 0;
 			double originalWorkTime = 0;
 			double workticket = 0;
+			double equivalentWorkticket = 0;
 			Map<Job, Double> workticketMap = new LinkedHashMap<>();
-			Map<Job, Double> workticketPercentMap = new LinkedHashMap<>();
+			Map<Job, Double> equivalentWorkticketMap = new LinkedHashMap<>();
 			
 			for(AttendanceData data : attendanceDatas){
 				if(Objects.isNull(person)) person = data.getPerson();
@@ -590,11 +609,23 @@ public final class CountUtil {
 				workticketMap.put(data.getJob(), data.getWorkticket());
 			}
 			
-			for(Map.Entry<Job, Double> entry : workticketMap.entrySet()){
-				workticketPercentMap.put(entry.getKey(), workticket == 0 ? 0 : entry.getValue() / workticket);
+			if(attendanceOffsetMap.containsKey(workNumber)){
+				for(AttendanceOffset attendanceOffset : attendanceOffsetMap.get(workNumber)){
+					equivalentWorkTimeOffset += attendanceOffset.getValue();
+				}
 			}
 			
-			countResults.add(new DefaultCountResult(person, equivalentWorkTime, originalWorkTime, workticket, workticketMap, workticketPercentMap));
+			double coe = (equivalentWorkTime + equivalentWorkTimeOffset) / originalWorkTime;
+			
+			equivalentWorkticket = workticket * coe;
+			
+			for(Map.Entry<Job, Double> entry : workticketMap.entrySet()){
+				equivalentWorkticketMap.put(entry.getKey(), entry.getValue() * coe);
+			}
+			
+			countResults.add(new DefaultCountResult(person, equivalentWorkTime, 
+					equivalentWorkTimeOffset, originalWorkTime, workticket, equivalentWorkticket, 
+					workticketMap, equivalentWorkticketMap));
 		}
 		
 		return countResults;

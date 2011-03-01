@@ -25,9 +25,12 @@ import com.dwarfeng.jier.mh4w.core.model.struct.Mutilang;
 import com.dwarfeng.jier.mh4w.core.model.struct.MutilangSupported;
 import com.dwarfeng.jier.mh4w.core.model.struct.OriginalAttendanceData;
 import com.dwarfeng.jier.mh4w.core.model.struct.OriginalWorkticketData;
+import com.dwarfeng.jier.mh4w.core.model.struct.UnsafeAttendanceOffset;
 import com.dwarfeng.jier.mh4w.core.model.struct.WorkticketData;
 import com.dwarfeng.jier.mh4w.core.util.Constants;
 import com.dwarfeng.jier.mh4w.core.util.Mh4wUtil;
+import com.dwarfeng.jier.mh4w.core.view.obv.AttendanceOffsetPanelAdapter;
+import com.dwarfeng.jier.mh4w.core.view.obv.AttendanceOffsetPanelObverser;
 import com.dwarfeng.jier.mh4w.core.view.obv.CountResultPanalAdapter;
 import com.dwarfeng.jier.mh4w.core.view.obv.CountResultPanelObverser;
 import com.dwarfeng.jier.mh4w.core.view.obv.DetailFrameObverser;
@@ -100,12 +103,38 @@ public class DetailFrame extends JFrame implements MutilangSupported, ObverserSe
 	};
 	private final CountResultPanelObverser countResultPanelObverser = new CountResultPanalAdapter() {
 		
+		/*
+		 * (non-Javadoc)
+		 * @see com.dwarfeng.jier.mh4w.core.view.obv.CountResultPanalAdapter#fireExportCountResult()
+		 */
 		@Override
 		public void fireExportCountResult() {
 			DetailFrame.this.fireExportCountResult();
 		};
 		
 	};
+	private final AttendanceOffsetPanelObverser attendanceOffsetPanelObverser = new AttendanceOffsetPanelAdapter() {
+		
+		/*
+		 * (non-Javadoc)
+		 * @see com.dwarfeng.jier.mh4w.core.view.obv.AttendanceOffsetPanelAdapter#fireAddAttendanceOffset(com.dwarfeng.jier.mh4w.core.model.struct.UnsafeAttendanceOffset)
+		 */
+		@Override
+		public void fireSubmitAttendanceOffset(UnsafeAttendanceOffset unsafeAttendanceOffset) {
+			DetailFrame.this.fireSubmitAttendanceOffset(unsafeAttendanceOffset);
+		};
+		
+		/*
+		 * (non-Javadoc)
+		 * @see com.dwarfeng.jier.mh4w.core.view.obv.AttendanceOffsetPanelAdapter#fireClearAttendanceOffset()
+		 */
+		@Override
+		public void fireClearAttendanceOffset() {
+			DetailFrame.this.fireClearAttendanceOffset();
+		};
+		
+	};
+	
 	/**
 	 * 新实例。
 	 */
@@ -160,6 +189,7 @@ public class DetailFrame extends JFrame implements MutilangSupported, ObverserSe
 		tabbedPane.addTab(getLabel(LabelStringKey.DetailFrame_5), null, workticketDataPanel, null);
 		
 		attendanceOffsetPanel = new JAttendanceOffsetPanel(mutilang, attendanceOffsetModel, countResultModel);
+		attendanceOffsetPanel.addObverser(attendanceOffsetPanelObverser);
 		tabbedPane.addTab(getLabel(LabelStringKey.DetailFrame_6), null, attendanceOffsetPanel, null);
 		
 		countResultPanel = new JCountResultPanel(mutilang, countResultModel);
@@ -248,6 +278,7 @@ public class DetailFrame extends JFrame implements MutilangSupported, ObverserSe
 		attendanceDataPanel.updateMutilang();
 		workticketDataPanel.updateMutilang();
 		countResultPanel.updateMutilang();
+		attendanceOffsetPanel.updateMutilang();
 		
 		//更新各标签的文本。
 		setTitle(getLabel(LabelStringKey.DetailFrame_1));
@@ -256,7 +287,8 @@ public class DetailFrame extends JFrame implements MutilangSupported, ObverserSe
 		tabbedPane.setTitleAt(1, getLabel(LabelStringKey.DetailFrame_3));
 		tabbedPane.setTitleAt(2, getLabel(LabelStringKey.DetailFrame_4));
 		tabbedPane.setTitleAt(3, getLabel(LabelStringKey.DetailFrame_5));
-		tabbedPane.setTitleAt(4, getLabel(LabelStringKey.DetailFrame_7));
+		tabbedPane.setTitleAt(4, getLabel(LabelStringKey.DetailFrame_6));
+		tabbedPane.setTitleAt(5, getLabel(LabelStringKey.DetailFrame_7));
 	}
 	
 	/**
@@ -305,6 +337,8 @@ public class DetailFrame extends JFrame implements MutilangSupported, ObverserSe
 		workticketDataPanel.dispose();
 		countResultPanel.removeObverser(countResultPanelObverser);
 		countResultPanel.dispose();
+		attendanceOffsetPanel.removeObverser(attendanceOffsetPanelObverser);
+		attendanceOffsetPanel.dispose();
 		super.dispose();
 	}
 
@@ -317,6 +351,18 @@ public class DetailFrame extends JFrame implements MutilangSupported, ObverserSe
 	private void fireExportCountResult() {
 		for(DetailFrameObverser obverser : obversers){
 			if(Objects.nonNull(obverser)) obverser.fireExportCountResult();
+		}
+	}
+
+	private void fireSubmitAttendanceOffset(UnsafeAttendanceOffset unsafeAttendanceOffset) {
+		for(DetailFrameObverser obverser : obversers){
+			if(Objects.nonNull(obverser)) obverser.fireSubmitAttendanceOffset(unsafeAttendanceOffset);
+		}
+	}
+
+	private void fireClearAttendanceOffset() {
+		for(DetailFrameObverser obverser : obversers){
+			if(Objects.nonNull(obverser)) obverser.fireClearAttendanceOffset();
 		}
 	}
 

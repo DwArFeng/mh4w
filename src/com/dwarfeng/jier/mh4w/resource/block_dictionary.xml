@@ -51,6 +51,8 @@
 		<dictionary value="save_date_type_entry"/>
 		<dictionary value="load_date_type_entry"/>
 		<dictionary value="export_count_result"/>
+		<dictionary value="submit_attendance_offset"/>
+		<dictionary value="remove_attendance_offset"/>
 		<dictionary value="count"/>
 	</key>
 	<key value="show_attr_frame">
@@ -133,7 +135,19 @@
 		<dictionary value="clear_date_type_entry"/>
 		<dictionary value="save_date_type_entry"/>
 		<dictionary value="load_date_type_entry"/>
+		<dictionary value="count"/>
 		<dictionary value="export_count_result"/>
+	</key>
+	<key value="submit_attendance_offset">
+		<dictionary value="initialize"/>
+		<dictionary value="submit_attendance_offset"/>
+		<dictionary value="remove_attendance_offset"/>
+		<dictionary value="count"/>
+	</key>
+	<key value="remove_attendance_offset">
+		<dictionary value="initialize"/>
+		<dictionary value="submit_attendance_offset"/>
+		<dictionary value="remove_attendance_offset"/>
 		<dictionary value="count"/>
 	</key>
 </root>

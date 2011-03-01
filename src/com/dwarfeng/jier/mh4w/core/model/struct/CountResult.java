@@ -17,7 +17,7 @@ public interface CountResult extends DataWithPerson{
 	 * 获取等效工时的补偿。
 	 * @return 等效工时的补偿。
 	 */
-	public double getEquivalentOffset();
+	public double getEquivalentWorkTimeOffset();
 	
 	/**
 	 * 获取原始工作时间。
@@ -32,6 +32,12 @@ public interface CountResult extends DataWithPerson{
 	public double getWorkticket();
 	
 	/**
+	 * 获取等效工票。
+	 * @return 等效工票。
+	 */
+	public double getEquivalentWorkticket();
+	
+	/**
 	 * 获取指定工作对应的工票。
 	 * @param job 指定的工作。
 	 * @return 指定工作对应的工票。
@@ -40,11 +46,11 @@ public interface CountResult extends DataWithPerson{
 	public double getWorkticket(Job job); 
 	
 	/**
-	 * 获取指定工作对应的工票占比。
+	 * 获取指定工作对应的等效工票。
 	 * @param job 指定的工作。
-	 * @return 指定的工作对应的工票占比。
+	 * @return 指定工作对应的等效工票。
 	 * @throws NullPointerException 入口参数为 <code>null</code>。
 	 */
-	public double getWorkticketPercent(Job job);
+	public double getEquivalentWorkticket(Job job);
 	
 }

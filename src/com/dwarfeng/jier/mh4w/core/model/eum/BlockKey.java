@@ -31,6 +31,8 @@ public enum BlockKey implements Name{
 	SAVE_DATE_TYPE_ENTRY(new DefaultName("save_date_type_entry")),
 	LOAD_DATE_TYPE_ENTRY(new DefaultName("load_date_type_entry")),
 	EXPORT_COUNT_RESULT(new DefaultName("export_count_result")),
+	SUBMIT_ATTENDANCE_OFFSET(new DefaultName("submit_attendance_offset")),
+	REMOVE_ATTENDANCE_OFFSET(new DefaultName("remove_attendance_offset")),
 
 	;
 

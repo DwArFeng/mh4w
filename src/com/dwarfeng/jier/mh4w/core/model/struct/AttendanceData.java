@@ -10,14 +10,6 @@ import com.dwarfeng.jier.mh4w.core.model.eum.DateType;
 public interface AttendanceData extends DataWithPerson, DataFromXls{
 	
 	/**
-	 * 获得出勤数据中的工号（主键）。
-	 * @return 出勤数据中的工号（主键）。
-	 */
-	public default String getWorkNumber(){
-		return getPerson().getWorkNumber();
-	}
-	
-	/**
 	 * 获取数据中的统计日期。
 	 * @return 数据中的统计日期。
 	 */

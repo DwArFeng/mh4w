@@ -8,14 +8,6 @@ package com.dwarfeng.jier.mh4w.core.model.struct;
 public interface WorkticketData extends DataWithPerson, DataFromXls{
 	
 	/**
-	 * 获得工票数据中的工号（主键）。
-	 * @return 出勤数据中的工号（主键）。
-	 */
-	public default String getWorkNumber(){
-		return getPerson().getWorkNumber();
-	}
-	
-	/**
 	 * 忽的工票数据中的工作类型。
 	 * @return 工票数据中的工作类型。
 	 */
