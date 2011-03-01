@@ -31,7 +31,9 @@ public enum ResourceKey implements Name{
 	DEFINE_JOBS("define.jobs"),
 	/**日期类型*/
 	STORAGE_DATE_TYPE("storage.date_type"),
-	
+	/**考勤补偿*/
+	STORAGE_ATT_OFFSET("storage.att_offset"),
+
 	;
 
 	private final String name;

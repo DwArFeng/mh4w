@@ -78,6 +78,7 @@ import com.dwarfeng.jier.mh4w.core.model.obv.MutilangAdapter;
 import com.dwarfeng.jier.mh4w.core.model.obv.MutilangObverser;
 import com.dwarfeng.jier.mh4w.core.model.struct.AbstractFlow;
 import com.dwarfeng.jier.mh4w.core.model.struct.AttendanceData;
+import com.dwarfeng.jier.mh4w.core.model.struct.AttendanceOffset;
 import com.dwarfeng.jier.mh4w.core.model.struct.CountDate;
 import com.dwarfeng.jier.mh4w.core.model.struct.CountResult;
 import com.dwarfeng.jier.mh4w.core.model.struct.DataFromXls;
@@ -254,6 +255,7 @@ public final class Mh4w {
 		private DataListModel<WorkticketData> workticketDataModel = new DefaultDataListModel<>();
 		private DateTypeModel dateTypeModel = new DefaultDateTypeModel();
 		private DataListModel<CountResult> countResultModel = new DefaultDataListModel<>();
+		private DataListModel<AttendanceOffset> attendanceOffsetModel = new DefaultDataListModel<>();
 		//structs
 		private FinishedFlowTaker finishedFlowTaker = new DefaultFinishedFlowTaker(backgroundModel, 
 				loggerModel.getLogger(), loggerMutilangModel.getMutilang());
@@ -349,7 +351,8 @@ public final class Mh4w {
 						originalWorkticketDataModel,
 						attendanceDataModel,
 						workticketDataModel,
-						countResultModel
+						countResultModel,
+						attendanceOffsetModel
 				);
 				detailFrame.addObverser(detailFrameObverser);
 				return detailFrame;
@@ -803,6 +806,13 @@ public final class Mh4w {
 		 */
 		public DataListModel<CountResult> getCountResultModel() {
 			return countResultModel;
+		}
+
+		/**
+		 * @return the attendanceOffsetModel
+		 */
+		public DataListModel<AttendanceOffset> getAttendanceOffsetModel() {
+			return attendanceOffsetModel;
 		}
 
 		/**

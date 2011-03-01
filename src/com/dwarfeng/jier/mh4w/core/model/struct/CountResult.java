@@ -14,6 +14,12 @@ public interface CountResult extends DataWithPerson{
 	public double getEquivalentWorkTime();
 	
 	/**
+	 * 获取等效工时的补偿。
+	 * @return 等效工时的补偿。
+	 */
+	public double getEquivalentOffset();
+	
+	/**
 	 * 获取原始工作时间。
 	 * @return 原始工作时间。
 	 */

@@ -19,6 +19,7 @@ import com.dwarfeng.jier.mh4w.core.model.eum.LabelStringKey;
 import com.dwarfeng.jier.mh4w.core.model.obv.StateAdapter;
 import com.dwarfeng.jier.mh4w.core.model.obv.StateObverser;
 import com.dwarfeng.jier.mh4w.core.model.struct.AttendanceData;
+import com.dwarfeng.jier.mh4w.core.model.struct.AttendanceOffset;
 import com.dwarfeng.jier.mh4w.core.model.struct.CountResult;
 import com.dwarfeng.jier.mh4w.core.model.struct.Mutilang;
 import com.dwarfeng.jier.mh4w.core.model.struct.MutilangSupported;
@@ -30,7 +31,6 @@ import com.dwarfeng.jier.mh4w.core.util.Mh4wUtil;
 import com.dwarfeng.jier.mh4w.core.view.obv.CountResultPanalAdapter;
 import com.dwarfeng.jier.mh4w.core.view.obv.CountResultPanelObverser;
 import com.dwarfeng.jier.mh4w.core.view.obv.DetailFrameObverser;
-import javax.swing.JPanel;
 
 public class DetailFrame extends JFrame implements MutilangSupported, ObverserSet<DetailFrameObverser>{
 
@@ -49,6 +49,7 @@ public class DetailFrame extends JFrame implements MutilangSupported, ObverserSe
 	private final JAttendanceDataPanel attendanceDataPanel;
 	private final JWorkticketDataPanel workticketDataPanel;
 	private final JCountResultPanel countResultPanel;
+	private final JAttendanceOffsetPanel attendanceOffsetPanel;
 
 	/*
 	 * 非 final 域。
@@ -105,13 +106,11 @@ public class DetailFrame extends JFrame implements MutilangSupported, ObverserSe
 		};
 		
 	};
-	private JPanel panel;
-
 	/**
 	 * 新实例。
 	 */
 	public DetailFrame() {
-		this(Constants.getDefaultLabelMutilang(), null, null, null, null, null, null);
+		this(Constants.getDefaultLabelMutilang(), null, null, null, null, null, null, null);
 	}
 	
 	/**
@@ -127,7 +126,8 @@ public class DetailFrame extends JFrame implements MutilangSupported, ObverserSe
 	 */
 	public DetailFrame(Mutilang mutilang, StateModel stateModel, DataListModel<OriginalAttendanceData> originalAttendanceDataModel,
 			DataListModel<OriginalWorkticketData> originalWorkticketDataModel, DataListModel<AttendanceData> attendanceDataModel,
-			DataListModel<WorkticketData> workticketDataModel, DataListModel<CountResult> countResultModel) {
+			DataListModel<WorkticketData> workticketDataModel, DataListModel<CountResult> countResultModel,
+			DataListModel<AttendanceOffset> attendanceOffsetModel) {
 		Objects.requireNonNull(mutilang, "入口参数 mutilang 不能为 null。");
 	
 		this.mutilang = mutilang;
@@ -159,8 +159,8 @@ public class DetailFrame extends JFrame implements MutilangSupported, ObverserSe
 		workticketDataPanel = new JWorkticketDataPanel(mutilang, workticketDataModel);
 		tabbedPane.addTab(getLabel(LabelStringKey.DetailFrame_5), null, workticketDataPanel, null);
 		
-		panel = new JPanel();
-		tabbedPane.addTab(getLabel(LabelStringKey.DetailFrame_6), null, panel, null);
+		attendanceOffsetPanel = new JAttendanceOffsetPanel(mutilang, attendanceOffsetModel, countResultModel);
+		tabbedPane.addTab(getLabel(LabelStringKey.DetailFrame_6), null, attendanceOffsetPanel, null);
 		
 		countResultPanel = new JCountResultPanel(mutilang, countResultModel);
 		countResultPanel.addObverser(countResultPanelObverser);
