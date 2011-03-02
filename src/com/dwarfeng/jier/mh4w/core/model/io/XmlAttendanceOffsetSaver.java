@@ -1,7 +1,6 @@
 package com.dwarfeng.jier.mh4w.core.model.io;
 
 import java.io.OutputStream;
-import java.util.Map;
 import java.util.Objects;
 
 import org.dom4j.Document;
@@ -12,24 +11,23 @@ import org.dom4j.io.XMLWriter;
 
 import com.dwarfeng.dutil.basic.io.SaveFailedException;
 import com.dwarfeng.dutil.basic.io.StreamSaver;
-import com.dwarfeng.jier.mh4w.core.model.cm.DateTypeModel;
-import com.dwarfeng.jier.mh4w.core.model.eum.DateType;
-import com.dwarfeng.jier.mh4w.core.model.struct.CountDate;
+import com.dwarfeng.jier.mh4w.core.model.cm.DataListModel;
+import com.dwarfeng.jier.mh4w.core.model.struct.AttendanceOffset;
 
 /**
- * Xml 日期类型保存器。
- * <p> 使用 xml 对日期类型模型进行保存。
+ * Xml 考勤补偿保存器。
+ * <p> 使用 xml 保存考勤补偿数据。
  * @author DwArFeng
- * @since 0.0.1-beta
+ * @since 0.0.2-beta
  */
-public final class XmlDateTypeSaver extends StreamSaver<DateTypeModel> {
+public final class XmlAttendanceOffsetSaver extends StreamSaver<DataListModel<AttendanceOffset>>{
 
 	/**
 	 * 新实例。
 	 * @param out 指定的输出流。
 	 * @throws NullPointerException 入口参数为 <code>null</code>。
 	 */
-	public XmlDateTypeSaver(OutputStream out) {
+	public XmlAttendanceOffsetSaver(OutputStream out) {
 		super(out);
 	}
 
@@ -38,19 +36,21 @@ public final class XmlDateTypeSaver extends StreamSaver<DateTypeModel> {
 	 * @see com.dwarfeng.dutil.basic.prog.Saver#save(java.lang.Object)
 	 */
 	@Override
-	public void save(DateTypeModel dateTypeModel) throws SaveFailedException {
-		Objects.requireNonNull(dateTypeModel, "入口参数 dateTypeModel 不能为 null。");
+	public void save(DataListModel<AttendanceOffset> attendanceOffsetModel) throws SaveFailedException {
+		Objects.requireNonNull(attendanceOffsetModel, "入口参数 attendanceOffsetModel 不能为 null。");
 		
 		try{
 			Element root = DocumentHelper.createElement("root");
 			
-			for(Map.Entry<CountDate, DateType> entry : dateTypeModel.entrySet()){
-				Element date = DocumentHelper.createElement("date");
-				date.addAttribute("year", entry.getKey().getYear() + "");
-				date.addAttribute("month", entry.getKey().getMonth() + "");
-				date.addAttribute("day", entry.getKey().getDay() + "");
-				date.addAttribute("date_type", entry.getValue().toString());
-				root.add(date);
+			for(AttendanceOffset attendanceOffset : attendanceOffsetModel){
+				Element data = DocumentHelper.createElement("data");
+				data.addAttribute("work_number", attendanceOffset.getPerson().getWorkNumber());
+				data.addAttribute("name", attendanceOffset.getPerson().getName());
+				data.addAttribute("department", attendanceOffset.getPerson().getDepartment());
+				data.addAttribute("value", attendanceOffset.getValue() + "");
+				data.addAttribute("description", attendanceOffset.getDescription());
+
+				root.add(data);
 			}
 			
 			Document document = DocumentHelper.createDocument(root);

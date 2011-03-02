@@ -14,6 +14,7 @@ public final class DefaultCountResult implements CountResult {
 	private final Person person;
 	private final double equivalentWorkTime;
 	private final double equivalentWorkTimeOffset;
+	private final double amplifyCoefficient;
 	private final double originalWorkTime;
 	private final double workticket;
 	private final double equivalentWorkticket;
@@ -22,19 +23,20 @@ public final class DefaultCountResult implements CountResult {
 	
 	/**
 	 * 新实例。
-	 * @param person 指定的人员。
-	 * @param equivalentWorkTime 指定的等效工时。
+	 * @param person 人员。
+	 * @param equivalentWorkTime 等效工时。
 	 * @param equivalentWorkTimeOffset 等效工时补偿。
+	 * @param amplifyCoefficient 增益系数。
 	 * @param originalWorkTime 指定的原始工时。
 	 * @param workticket 工票总时间。
 	 * @param equivalentWorkticket 等效工票时间。
-	 * @param workticketMap 指定的工票工时映射。
-	 * @param workticketPercentMap 指定的工票工时百分比映射。
+	 * @param workticketMap 工票工时映射。
+	 * @param equivalentWorkticketMap 等效工票工时映射。
 	 * @throws NullPointerException 入口参数为 <code>null</code>。
 	 */
 	public DefaultCountResult(Person person, double equivalentWorkTime, double equivalentWorkTimeOffset,
-			double originalWorkTime, double workticket, double equivalentWorkticket, Map<Job, Double> workticketMap,
-			Map<Job, Double> equivalentWorkticketMap) {
+			double amplifyCoefficient, double originalWorkTime, double workticket, double equivalentWorkticket, 
+			Map<Job, Double> workticketMap, Map<Job, Double> equivalentWorkticketMap) {
 		Objects.requireNonNull(person, "入口参数 person 不能为 null。");
 		Objects.requireNonNull(workticketMap, "入口参数 workticketMap 不能为 null。");
 		Objects.requireNonNull(equivalentWorkticketMap, "入口参数 equivalentWorkticketMap 不能为 null。");
@@ -42,6 +44,7 @@ public final class DefaultCountResult implements CountResult {
 		this.person = person;
 		this.equivalentWorkTime = equivalentWorkTime;
 		this.equivalentWorkTimeOffset = equivalentWorkTimeOffset;
+		this.amplifyCoefficient = amplifyCoefficient;
 		this.originalWorkTime = originalWorkTime;
 		this.workticket = workticket;
 		this.equivalentWorkticket = equivalentWorkticket;
@@ -74,6 +77,15 @@ public final class DefaultCountResult implements CountResult {
 	@Override
 	public double getEquivalentWorkTimeOffset() {
 		return equivalentWorkTimeOffset;
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see com.dwarfeng.jier.mh4w.core.model.struct.CountResult#getAmplifyCoefficient()
+	 */
+	@Override
+	public double getAmplifyCoefficient() {
+		return amplifyCoefficient;
 	}
 
 	/*

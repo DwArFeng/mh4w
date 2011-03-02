@@ -67,7 +67,7 @@ public class JCountResultPanel extends JPanel implements MutilangSupported, Obve
 		 */
 		@Override
 		public int getColumnCount() {
-			return 6;
+			return 9;
 		};
 		
 		/*
@@ -90,7 +90,7 @@ public class JCountResultPanel extends JPanel implements MutilangSupported, Obve
 				setHorizontalAlignment(JLabel.LEFT);
 				setText((String) value);
 			}
-			if(column == 3 || column == 4 || column ==5){
+			if(column == 3 || column == 4 || column ==5 || column == 6 || column == 7 || column == 8){
 				setHorizontalAlignment(JLabel.RIGHT);
 				setText(FormatUtil.formatDouble((double) value));
 			}
@@ -119,7 +119,10 @@ public class JCountResultPanel extends JPanel implements MutilangSupported, Obve
 							value.getPerson().getName(),
 							value.getOriginalWorkTime(),
 							value.getEquivalentWorkTime(),
-							value.getWorkticket()
+							value.getEquivalentWorkTimeOffset(),
+							value.getAmplifyCoefficient(),
+							value.getWorkticket(),
+							value.getEquivalentWorkticket()
 						});
 				}
 			});
@@ -141,7 +144,10 @@ public class JCountResultPanel extends JPanel implements MutilangSupported, Obve
 							newValue.getPerson().getName(),
 							newValue.getOriginalWorkTime(),
 							newValue.getEquivalentWorkTime(),
-							newValue.getWorkticket()
+							newValue.getEquivalentWorkTimeOffset(),
+							newValue.getAmplifyCoefficient(),
+							newValue.getWorkticket(),
+							newValue.getEquivalentWorkticket()
 						});
 				}
 			});
@@ -212,13 +218,19 @@ public class JCountResultPanel extends JPanel implements MutilangSupported, Obve
 		table.getColumnModel().getColumn(3).setCellRenderer(tableRenderer);
 		table.getColumnModel().getColumn(4).setCellRenderer(tableRenderer);
 		table.getColumnModel().getColumn(5).setCellRenderer(tableRenderer);
-		
+		table.getColumnModel().getColumn(6).setCellRenderer(tableRenderer);
+		table.getColumnModel().getColumn(7).setCellRenderer(tableRenderer);
+		table.getColumnModel().getColumn(8).setCellRenderer(tableRenderer);
+
 		table.getColumnModel().getColumn(0).setHeaderValue(getLabel(LabelStringKey.JCountResultPanel_1));
 		table.getColumnModel().getColumn(1).setHeaderValue(getLabel(LabelStringKey.JCountResultPanel_2));
 		table.getColumnModel().getColumn(2).setHeaderValue(getLabel(LabelStringKey.JCountResultPanel_3));
 		table.getColumnModel().getColumn(3).setHeaderValue(getLabel(LabelStringKey.JCountResultPanel_4));
 		table.getColumnModel().getColumn(4).setHeaderValue(getLabel(LabelStringKey.JCountResultPanel_5));
 		table.getColumnModel().getColumn(5).setHeaderValue(getLabel(LabelStringKey.JCountResultPanel_6));
+		table.getColumnModel().getColumn(6).setHeaderValue(getLabel(LabelStringKey.JCountResultPanel_7));
+		table.getColumnModel().getColumn(7).setHeaderValue(getLabel(LabelStringKey.JCountResultPanel_8));
+		table.getColumnModel().getColumn(8).setHeaderValue(getLabel(LabelStringKey.JCountResultPanel_9));
 
 		((JLabel) table.getTableHeader().getDefaultRenderer()).setHorizontalAlignment(JLabel.CENTER);
 		table.setFillsViewportHeight(true);
@@ -235,7 +247,10 @@ public class JCountResultPanel extends JPanel implements MutilangSupported, Obve
 							countResult.getPerson().getName(),
 							countResult.getOriginalWorkTime(),
 							countResult.getEquivalentWorkTime(),
+							countResult.getEquivalentWorkTimeOffset(),
+							countResult.getAmplifyCoefficient(),
 							countResult.getWorkticket(),
+							countResult.getEquivalentWorkticket()
 						});
 				}
 			}finally {
@@ -255,7 +270,7 @@ public class JCountResultPanel extends JPanel implements MutilangSupported, Obve
 		panel.setLayout(gbl_panel);
 		
 		exportButton = new JButton();
-		exportButton.setText(getLabel(LabelStringKey.JCountResultPanel_8));
+		exportButton.setText(getLabel(LabelStringKey.JCountResultPanel_10));
 		exportButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -323,7 +338,7 @@ public class JCountResultPanel extends JPanel implements MutilangSupported, Obve
 	@Override
 	public void updateMutilang() {
 		//更新各标签的文本。
-		exportButton.setText(getLabel(LabelStringKey.JCountResultPanel_8));
+		exportButton.setText(getLabel(LabelStringKey.JCountResultPanel_10));
 		
 		table.getColumnModel().getColumn(0).setHeaderValue(getLabel(LabelStringKey.JCountResultPanel_1));
 		table.getColumnModel().getColumn(1).setHeaderValue(getLabel(LabelStringKey.JCountResultPanel_2));
@@ -331,7 +346,10 @@ public class JCountResultPanel extends JPanel implements MutilangSupported, Obve
 		table.getColumnModel().getColumn(3).setHeaderValue(getLabel(LabelStringKey.JCountResultPanel_4));
 		table.getColumnModel().getColumn(4).setHeaderValue(getLabel(LabelStringKey.JCountResultPanel_5));
 		table.getColumnModel().getColumn(5).setHeaderValue(getLabel(LabelStringKey.JCountResultPanel_6));
-		
+		table.getColumnModel().getColumn(6).setHeaderValue(getLabel(LabelStringKey.JCountResultPanel_7));
+		table.getColumnModel().getColumn(7).setHeaderValue(getLabel(LabelStringKey.JCountResultPanel_8));
+		table.getColumnModel().getColumn(8).setHeaderValue(getLabel(LabelStringKey.JCountResultPanel_9));
+
 		table.repaint();
 	}
 
@@ -366,7 +384,10 @@ public class JCountResultPanel extends JPanel implements MutilangSupported, Obve
 							countResult.getPerson().getName(),
 							countResult.getOriginalWorkTime(),
 							countResult.getEquivalentWorkTime(),
-							countResult.getWorkticket()
+							countResult.getEquivalentWorkTimeOffset(),
+							countResult.getAmplifyCoefficient(),
+							countResult.getWorkticket(),
+							countResult.getEquivalentWorkticket()
 						});
 				}
 			}finally {

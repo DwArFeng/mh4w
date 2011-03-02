@@ -11,18 +11,15 @@ import com.dwarfeng.jier.mh4w.core.util.CountUtil;
 public final class DefaultUnsafeJob implements UnsafeJob{
 
 	private final String name;
-	private final String valuePerHour;
 	private final String originalColumn;
 	
 	/**
 	 *新实例。 
 	 * @param name 指定的名称。
-	 * @param valuePerHour 指定的每小时价值。
 	 * @param originalColumn 指定的原始数据列。
 	 */
-	public DefaultUnsafeJob(String name, String valuePerHour, String originalColumn) {
+	public DefaultUnsafeJob(String name, String originalColumn) {
 		this.name = name;
-		this.valuePerHour = valuePerHour;
 		this.originalColumn = originalColumn;
 	}
 
@@ -36,19 +33,6 @@ public final class DefaultUnsafeJob implements UnsafeJob{
 			return name;
 		}catch (Exception e) {
 			throw new ProcessException("默认不安全工作 - 无法解析工作中的名称", e);
-		}
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.dwarfeng.jier.mh4w.core.model.struct.UnsafeJob#getValuePerHour()
-	 */
-	@Override
-	public double getValuePerHour() throws ProcessException {
-		try{
-			return Double.parseDouble(valuePerHour);
-		}catch (Exception e) {
-			throw new ProcessException("默认不安全工作 - 无法解析工作中的每小时价值", e);
 		}
 	}
 

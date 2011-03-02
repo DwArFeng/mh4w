@@ -24,6 +24,7 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.ListCellRenderer;
+import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
@@ -46,10 +47,10 @@ import com.dwarfeng.jier.mh4w.core.util.Mh4wUtil;
 import com.dwarfeng.jier.mh4w.core.view.obv.AttendanceOffsetPanelObverser;
 import com.sun.glass.events.KeyEvent;
 
-import javax.swing.ListSelectionModel;
-
 public class JAttendanceOffsetPanel extends JPanel implements MutilangSupported, ObverserSet<AttendanceOffsetPanelObverser> {
-	
+
+	private static final long serialVersionUID = 6243768107970879415L;
+
 	/**观察器集合*/
 	private final Set<AttendanceOffsetPanelObverser> obversers = Collections.newSetFromMap(new WeakHashMap<>());
 	
@@ -67,6 +68,8 @@ public class JAttendanceOffsetPanel extends JPanel implements MutilangSupported,
 	private final JLabel timeLabel;
 	private final JLabel descritionLabel;
 	private final JButton clearButton;
+	private final JButton loadButton;
+	private final JButton saveButton;
 
 	/*
 	 * 各模型。
@@ -151,7 +154,6 @@ public class JAttendanceOffsetPanel extends JPanel implements MutilangSupported,
 							FormatUtil.formatPerson(value.getPerson()),
 							value.getValue(),
 							value.getDescription(),
-							value
 					});
 				}
 			});
@@ -171,7 +173,6 @@ public class JAttendanceOffsetPanel extends JPanel implements MutilangSupported,
 							FormatUtil.formatPerson(newValue.getPerson()),
 							newValue.getValue(),
 							newValue.getDescription(),
-							newValue
 					});
 				}
 			});
@@ -273,6 +274,7 @@ public class JAttendanceOffsetPanel extends JPanel implements MutilangSupported,
 		}
 		
 	};
+
 	/**
 	 * 新实例。
 	 */
@@ -281,9 +283,10 @@ public class JAttendanceOffsetPanel extends JPanel implements MutilangSupported,
 	}
 
 	/**
-	 * 
-	 * @param mutilang
-	 * @param attendanceOffsetModel
+	 * 新实例。
+	 * @param mutilang 指定的多语言接口，不能为 <code>null</code>。
+	 * @param attendanceOffsetModel 指定的考勤补偿模型。
+	 * @param countResultModel 指定的统计结果模型。
 	 */
 	public JAttendanceOffsetPanel(Mutilang mutilang, DataListModel<AttendanceOffset> attendanceOffsetModel,
 			DataListModel<CountResult> countResultModel) {
@@ -301,7 +304,19 @@ public class JAttendanceOffsetPanel extends JPanel implements MutilangSupported,
 		table.setFillsViewportHeight(true);
 		table.setModel(tableModel);
 		table.getTableHeader().setReorderingAllowed(false);
-		
+		table.getInputMap(JComponent.WHEN_FOCUSED).put(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0), "remove");
+		table.getActionMap().put("remove", new AbstractAction() {
+			
+			private static final long serialVersionUID = 7760542975339282553L;
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				int index = table.getSelectedRow();
+				if(index >= 0 && tableModel.getRowCount() >= 0){
+					fireRemoveAttendanceOffset(index);
+				}
+			}
+		});
 		table.getColumnModel().getColumn(0).setCellRenderer(tableRenderer);
 		table.getColumnModel().getColumn(1).setCellRenderer(tableRenderer);
 		table.getColumnModel().getColumn(2).setCellRenderer(tableRenderer);
@@ -334,7 +349,7 @@ public class JAttendanceOffsetPanel extends JPanel implements MutilangSupported,
 		panel.add(comboBox, gbc_comboBox);
 		
 		timeLabel = new JLabel();
-		timeLabel.setText(getLabel(LabelStringKey.JAttendanceDataPanel_5));
+		timeLabel.setText(getLabel(LabelStringKey.JAttendanceOffsetPanel_5));
 		GridBagConstraints gbc_timeLabel = new GridBagConstraints();
 		gbc_timeLabel.insets = new Insets(0, 0, 5, 5);
 		gbc_timeLabel.anchor = GridBagConstraints.EAST;
@@ -386,7 +401,7 @@ public class JAttendanceOffsetPanel extends JPanel implements MutilangSupported,
 		panel.add(submitButton, gbc_btnNewButton);
 		
 		descritionLabel = new JLabel();
-		descritionLabel.setText(getLabel(LabelStringKey.JAttendanceDataPanel_6));
+		descritionLabel.setText(getLabel(LabelStringKey.JAttendanceOffsetPanel_6));
 		GridBagConstraints gbc_descritionLabel = new GridBagConstraints();
 		gbc_descritionLabel.insets = new Insets(0, 0, 0, 5);
 		gbc_descritionLabel.anchor = GridBagConstraints.EAST;
@@ -426,21 +441,35 @@ public class JAttendanceOffsetPanel extends JPanel implements MutilangSupported,
 		gbc_clearButton.gridy = 1;
 		panel_1.add(clearButton, gbc_clearButton);
 		
-		JButton btnNewButton_2 = new JButton("New button");
+		saveButton = new JButton();
+		saveButton.setText(getLabel(LabelStringKey.JAttendanceOffsetPanel_8));
+		saveButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				fireSaveAttendanceOffset();
+			}
+		});
 		GridBagConstraints gbc_btnNewButton_2 = new GridBagConstraints();
 		gbc_btnNewButton_2.fill = GridBagConstraints.BOTH;
 		gbc_btnNewButton_2.insets = new Insets(0, 0, 5, 0);
 		gbc_btnNewButton_2.gridx = 0;
 		gbc_btnNewButton_2.gridy = 2;
-		panel_1.add(btnNewButton_2, gbc_btnNewButton_2);
+		panel_1.add(saveButton, gbc_btnNewButton_2);
 		
-		JButton button = new JButton("New button");
+		loadButton = new JButton();
+		loadButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				fireLoadAttendanceOffset();
+			}
+		});
+		loadButton.setText(getLabel(LabelStringKey.JAttendanceOffsetPanel_9));
 		GridBagConstraints gbc_button = new GridBagConstraints();
 		gbc_button.fill = GridBagConstraints.BOTH;
 		gbc_button.insets = new Insets(0, 0, 5, 0);
 		gbc_button.gridx = 0;
 		gbc_button.gridy = 3;
-		panel_1.add(button, gbc_button);
+		panel_1.add(loadButton, gbc_button);
 		
 		if(Objects.nonNull(attendanceOffsetModel)){
 			attendanceOffsetModel.addObverser(attendanceOffsetObverser);
@@ -451,7 +480,6 @@ public class JAttendanceOffsetPanel extends JPanel implements MutilangSupported,
 							FormatUtil.formatPerson(attendanceOffset.getPerson()),
 							attendanceOffset.getValue(),
 							attendanceOffset.getDescription(),
-							attendanceOffset
 						});
 				}
 			}finally {
@@ -474,7 +502,6 @@ public class JAttendanceOffsetPanel extends JPanel implements MutilangSupported,
 		}
 		
 		this.countResultModel = countResultModel;
-		
 	}
 
 	/*
@@ -533,8 +560,8 @@ public class JAttendanceOffsetPanel extends JPanel implements MutilangSupported,
 		table.getColumnModel().getColumn(1).setHeaderValue(getLabel(LabelStringKey.JAttendanceOffsetPanel_2));
 		table.getColumnModel().getColumn(2).setHeaderValue(getLabel(LabelStringKey.JAttendanceOffsetPanel_3));
 		
-		timeLabel.setText(getLabel(LabelStringKey.JAttendanceDataPanel_5));
-		descritionLabel.setText(getLabel(LabelStringKey.JAttendanceDataPanel_6));
+		timeLabel.setText(getLabel(LabelStringKey.JAttendanceOffsetPanel_5));
+		descritionLabel.setText(getLabel(LabelStringKey.JAttendanceOffsetPanel_6));
 		
 		submitButton.setText(getLabel(LabelStringKey.JAttendanceOffsetPanel_4));
 		clearButton.setText(getLabel(LabelStringKey.JAttendanceOffsetPanel_7));
@@ -570,7 +597,6 @@ public class JAttendanceOffsetPanel extends JPanel implements MutilangSupported,
 							FormatUtil.formatPerson(attendanceOffset.getPerson()),
 							attendanceOffset.getValue(),
 							attendanceOffset.getDescription(),
-							attendanceOffset
 						});
 				}
 			}finally {
@@ -636,6 +662,24 @@ public class JAttendanceOffsetPanel extends JPanel implements MutilangSupported,
 	private void fireClearAttendanceOffset() {
 		for(AttendanceOffsetPanelObverser obverser : obversers){
 			if(Objects.nonNull(obverser)) obverser.fireClearAttendanceOffset();
+		}
+	}
+
+	private void fireSaveAttendanceOffset() {
+		for(AttendanceOffsetPanelObverser obverser : obversers){
+			if(Objects.nonNull(obverser)) obverser.fireSaveAttendanceOffset();
+		}
+	}
+
+	private void fireLoadAttendanceOffset() {
+		for(AttendanceOffsetPanelObverser obverser : obversers){
+			if(Objects.nonNull(obverser)) obverser.fireLoadAttendanceOffset();
+		}
+	}
+
+	private void fireRemoveAttendanceOffset(int index) {
+		for(AttendanceOffsetPanelObverser obverser : obversers){
+			if(Objects.nonNull(obverser)) obverser.fireRemoveAttendanceOffset(index);
 		}
 	}
 

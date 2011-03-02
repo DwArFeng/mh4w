@@ -15,5 +15,15 @@ public abstract class DetailFrameAdapter implements DetailFrameObverser {
 	public void fireExportCountResult() {}
 	@Override
 	public void fireSubmitAttendanceOffset(UnsafeAttendanceOffset unsafeAttendanceOffset) {}
+	@Override
+	public void fireClearAttendanceOffset() {}
+	@Override
+	public void fireSaveAttendanceOffset() {}
+	@Override
+	public void fireLoadAttendanceOffset() {}
+	@Override
+	public void fireRemoveAttendanceOffset(int index) {}
+	@Override
+	public void fireUpdateCountResult() {}
 	
 }

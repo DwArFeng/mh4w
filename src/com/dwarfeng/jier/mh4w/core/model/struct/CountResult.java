@@ -20,6 +20,12 @@ public interface CountResult extends DataWithPerson{
 	public double getEquivalentWorkTimeOffset();
 	
 	/**
+	 * 获取增益系数。
+	 * @return 增益系数。
+	 */
+	public double getAmplifyCoefficient();
+	
+	/**
 	 * 获取原始工作时间。
 	 * @return 原始工作时间。
 	 */

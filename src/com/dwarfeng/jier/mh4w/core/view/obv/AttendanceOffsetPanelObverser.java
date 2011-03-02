@@ -21,4 +21,20 @@ public interface AttendanceOffsetPanelObverser extends Obverser{
 	 */
 	public void fireClearAttendanceOffset();
 
+	/**
+	 * Í¨Öª±£´æ¿¼ÇÚ²¹³¥¡£
+	 */
+	public void fireSaveAttendanceOffset();
+
+	/**
+	 * Í¨Öª¶ÁÈ¡¿¼ÇÚ²¹³¥¡£
+	 */
+	public void fireLoadAttendanceOffset();
+
+	/**
+	 * Í¨ÖªÒÆ³ý¿¼ÇÚ²¹³¥¡£
+	 * @param index ÐèÒªÒÆ³ýµÄÐòºÅ¡£
+	 */
+	public void fireRemoveAttendanceOffset(int index);
+
 }

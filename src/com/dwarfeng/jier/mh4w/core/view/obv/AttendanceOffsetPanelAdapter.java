@@ -13,5 +13,11 @@ public abstract class AttendanceOffsetPanelAdapter implements AttendanceOffsetPa
 	public void fireSubmitAttendanceOffset(UnsafeAttendanceOffset unsafeAttendanceOffset) {}
 	@Override
 	public void fireClearAttendanceOffset() {}
+	@Override
+	public void fireSaveAttendanceOffset() {}
+	@Override
+	public void fireLoadAttendanceOffset() {}
+	@Override
+	public void fireRemoveAttendanceOffset(int index) {}
 	
 }

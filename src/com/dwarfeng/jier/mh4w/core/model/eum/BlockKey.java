@@ -33,6 +33,10 @@ public enum BlockKey implements Name{
 	EXPORT_COUNT_RESULT(new DefaultName("export_count_result")),
 	SUBMIT_ATTENDANCE_OFFSET(new DefaultName("submit_attendance_offset")),
 	REMOVE_ATTENDANCE_OFFSET(new DefaultName("remove_attendance_offset")),
+	CLEAR_ATTENDANCE_OFFSET(new DefaultName("clear_attendance_offset")),
+	LOAD_ATTENDANCE_OFFSET(new DefaultName("load_attendance_offset")),
+	SAVE_ATTENDANCE_OFFSET(new DefaultName("save_attendance_offset")),
+	UPDATE_COUNT_RESULT(new DefaultName("update_count_result")),
 
 	;
 

@@ -1,6 +1,8 @@
 package com.dwarfeng.jier.mh4w.core.view.gui;
 
 import java.awt.BorderLayout;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.Collections;
@@ -36,6 +38,8 @@ import com.dwarfeng.jier.mh4w.core.view.obv.CountResultPanelObverser;
 import com.dwarfeng.jier.mh4w.core.view.obv.DetailFrameObverser;
 
 public class DetailFrame extends JFrame implements MutilangSupported, ObverserSet<DetailFrameObverser>{
+
+	private static final long serialVersionUID = 2328522059977800328L;
 
 	/**观察器集合*/
 	private final Set<DetailFrameObverser> obversers = Collections.newSetFromMap(new WeakHashMap<>());
@@ -131,6 +135,33 @@ public class DetailFrame extends JFrame implements MutilangSupported, ObverserSe
 		@Override
 		public void fireClearAttendanceOffset() {
 			DetailFrame.this.fireClearAttendanceOffset();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.dwarfeng.jier.mh4w.core.view.obv.AttendanceOffsetPanelObverser#fireSaveAttendanceOffset()
+		 */
+		@Override
+		public void fireSaveAttendanceOffset() {
+			DetailFrame.this.fireSaveAttendanceOffset();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.dwarfeng.jier.mh4w.core.view.obv.AttendanceOffsetPanelAdapter#fireLoadAttendanceOffset()
+		 */
+		@Override
+		public void fireLoadAttendanceOffset() {
+			DetailFrame.this.fireLoadAttendanceOffset();
+		};
+		
+		/*
+		 * (non-Javadoc)
+		 * @see com.dwarfeng.jier.mh4w.core.view.obv.AttendanceOffsetPanelAdapter#fireRemoveAttendanceOffset()
+		 */
+		@Override
+		public void fireRemoveAttendanceOffset(int index) {
+			DetailFrame.this.fireRemoveAttendanceOffset(index);
 		};
 		
 	};
@@ -151,6 +182,7 @@ public class DetailFrame extends JFrame implements MutilangSupported, ObverserSe
 	 * @param attendanceDataModel 指定的出勤数据模型。
 	 * @param workticketDataModel 指定的工票数据模型。
 	 * @param countResultModel 指定的共计结果模型。
+	 * @param attendanceOffsetModel 指定的考勤补偿模型。
 	 * @throws NullPointerException 入口参数为 <code>null</code>。
 	 */
 	public DetailFrame(Mutilang mutilang, StateModel stateModel, DataListModel<OriginalAttendanceData> originalAttendanceDataModel,
@@ -193,6 +225,12 @@ public class DetailFrame extends JFrame implements MutilangSupported, ObverserSe
 		tabbedPane.addTab(getLabel(LabelStringKey.DetailFrame_6), null, attendanceOffsetPanel, null);
 		
 		countResultPanel = new JCountResultPanel(mutilang, countResultModel);
+		countResultPanel.addComponentListener(new ComponentAdapter() {
+			@Override
+			public void componentShown(ComponentEvent e) {
+				fireUpdateCountResult();
+			}
+		});
 		countResultPanel.addObverser(countResultPanelObverser);
 		tabbedPane.addTab(getLabel(LabelStringKey.DetailFrame_7), null, countResultPanel, null);
 		
@@ -363,6 +401,30 @@ public class DetailFrame extends JFrame implements MutilangSupported, ObverserSe
 	private void fireClearAttendanceOffset() {
 		for(DetailFrameObverser obverser : obversers){
 			if(Objects.nonNull(obverser)) obverser.fireClearAttendanceOffset();
+		}
+	}
+
+	private void fireSaveAttendanceOffset() {
+		for(DetailFrameObverser obverser : obversers){
+			if(Objects.nonNull(obverser)) obverser.fireSaveAttendanceOffset();
+		}
+	}
+
+	private void fireLoadAttendanceOffset() {
+		for(DetailFrameObverser obverser : obversers){
+			if(Objects.nonNull(obverser)) obverser.fireLoadAttendanceOffset();
+		}
+	}
+
+	private void fireRemoveAttendanceOffset(int index) {
+		for(DetailFrameObverser obverser : obversers){
+			if(Objects.nonNull(obverser)) obverser.fireRemoveAttendanceOffset(index);
+		}
+	}
+
+	private void fireUpdateCountResult() {
+		for(DetailFrameObverser obverser : obversers){
+			if(Objects.nonNull(obverser)) obverser.fireUpdateCountResult();
 		}
 	}
 

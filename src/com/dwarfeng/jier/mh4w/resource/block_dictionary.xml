@@ -53,6 +53,10 @@
 		<dictionary value="export_count_result"/>
 		<dictionary value="submit_attendance_offset"/>
 		<dictionary value="remove_attendance_offset"/>
+		<dictionary value="clear_attendance_offset"/>
+		<dictionary value="load_attendance_offset"/>
+		<dictionary value="save_attendance_offset"/>
+		<dictionary value="update_count_result"/>
 		<dictionary value="count"/>
 	</key>
 	<key value="show_attr_frame">
@@ -136,18 +140,80 @@
 		<dictionary value="save_date_type_entry"/>
 		<dictionary value="load_date_type_entry"/>
 		<dictionary value="count"/>
+		<dictionary value="submit_attendance_offset"/>
+		<dictionary value="remove_attendance_offset"/>
+		<dictionary value="clear_attendance_offset"/>
+		<dictionary value="load_attendance_offset"/>
+		<dictionary value="save_attendance_offset"/>
+		<dictionary value="update_count_result"/>
 		<dictionary value="export_count_result"/>
 	</key>
 	<key value="submit_attendance_offset">
 		<dictionary value="initialize"/>
 		<dictionary value="submit_attendance_offset"/>
 		<dictionary value="remove_attendance_offset"/>
+		<dictionary value="clear_attendance_offset"/>
+		<dictionary value="load_attendance_offset"/>
+		<dictionary value="save_attendance_offset"/>
 		<dictionary value="count"/>
 	</key>
 	<key value="remove_attendance_offset">
 		<dictionary value="initialize"/>
 		<dictionary value="submit_attendance_offset"/>
 		<dictionary value="remove_attendance_offset"/>
+		<dictionary value="clear_attendance_offset"/>
+		<dictionary value="load_attendance_offset"/>
+		<dictionary value="save_attendance_offset"/>
 		<dictionary value="count"/>
+	</key>
+	<key value="clear_attendance_offset">
+		<dictionary value="initialize"/>
+		<dictionary value="submit_attendance_offset"/>
+		<dictionary value="remove_attendance_offset"/>
+		<dictionary value="clear_attendance_offset"/>
+		<dictionary value="load_attendance_offset"/>
+		<dictionary value="save_attendance_offset"/>
+		<dictionary value="count"/>
+	</key>
+	<key value="load_attendance_offset">
+		<dictionary value="initialize"/>
+		<dictionary value="submit_attendance_offset"/>
+		<dictionary value="remove_attendance_offset"/>
+		<dictionary value="clear_attendance_offset"/>
+		<dictionary value="load_attendance_offset"/>
+		<dictionary value="save_attendance_offset"/>
+		<dictionary value="count"/>
+	</key>
+	<key value="save_attendance_offset">
+		<dictionary value="initialize"/>
+		<dictionary value="submit_attendance_offset"/>
+		<dictionary value="remove_attendance_offset"/>
+		<dictionary value="clear_attendance_offset"/>
+		<dictionary value="load_attendance_offset"/>
+		<dictionary value="save_attendance_offset"/>
+		<dictionary value="update_count_result"/>
+		<dictionary value="count"/>
+	</key>
+	<key value="update_count_result">
+		<dictionary value="initialize"/>
+		<dictionary value="closing"/>
+		<dictionary value="select_attendance_file"/>
+		<dictionary value="select_workticket_file"/>
+		<dictionary value="reset_count"/>
+		<dictionary value="show_detail"/>
+		<dictionary value="reload_attr"/>
+		<dictionary value="submit_date_type_entry"/>
+		<dictionary value="remove_date_type_entry"/>
+		<dictionary value="clear_date_type_entry"/>
+		<dictionary value="save_date_type_entry"/>
+		<dictionary value="load_date_type_entry"/>
+		<dictionary value="submit_attendance_offset"/>
+		<dictionary value="remove_attendance_offset"/>
+		<dictionary value="clear_attendance_offset"/>
+		<dictionary value="load_attendance_offset"/>
+		<dictionary value="save_attendance_offset"/>
+		<dictionary value="count"/>
+		<dictionary value="export_count_result"/>
+		<dictionary value="update_count_result"/>
 	</key>
 </root>

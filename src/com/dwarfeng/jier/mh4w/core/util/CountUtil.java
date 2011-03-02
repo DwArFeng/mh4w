@@ -529,6 +529,7 @@ public final class CountUtil {
 	 * 统计数据。
 	 * @param attendanceDataModel 指定的考勤数据模型。
 	 * @param workticketDataModel 指定的工票数据模型。
+	 * @param attendanceOffsetModel 指定的考勤补偿模型。
 	 * @return 由指定数据得到的统计结果。
 	 * @throws NullPointerException 入口参数为 <code>null</code>。
 	 */
@@ -594,6 +595,7 @@ public final class CountUtil {
 			double originalWorkTime = 0;
 			double workticket = 0;
 			double equivalentWorkticket = 0;
+			double amplifyCoefficient = 0;
 			Map<Job, Double> workticketMap = new LinkedHashMap<>();
 			Map<Job, Double> equivalentWorkticketMap = new LinkedHashMap<>();
 			
@@ -615,16 +617,17 @@ public final class CountUtil {
 				}
 			}
 			
-			double coe = (equivalentWorkTime + equivalentWorkTimeOffset) / originalWorkTime;
-			
-			equivalentWorkticket = workticket * coe;
-			
+			if(originalWorkTime != 0){
+				amplifyCoefficient = (equivalentWorkTime + equivalentWorkTimeOffset) / originalWorkTime;
+				equivalentWorkticket = workticket * amplifyCoefficient;
+			}
+
 			for(Map.Entry<Job, Double> entry : workticketMap.entrySet()){
-				equivalentWorkticketMap.put(entry.getKey(), entry.getValue() * coe);
+				equivalentWorkticketMap.put(entry.getKey(), entry.getValue() * amplifyCoefficient);
 			}
 			
 			countResults.add(new DefaultCountResult(person, equivalentWorkTime, 
-					equivalentWorkTimeOffset, originalWorkTime, workticket, equivalentWorkticket, 
+					equivalentWorkTimeOffset, amplifyCoefficient, originalWorkTime, workticket, equivalentWorkticket, 
 					workticketMap, equivalentWorkticketMap));
 		}
 		

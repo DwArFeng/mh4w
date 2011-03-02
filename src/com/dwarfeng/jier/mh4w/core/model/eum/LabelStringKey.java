@@ -123,6 +123,8 @@ public enum LabelStringKey implements Name{
 	JCountResultPanel_6(new DefaultName("JCountResultPanel.6")),
 	JCountResultPanel_7(new DefaultName("JCountResultPanel.7")),
 	JCountResultPanel_8(new DefaultName("JCountResultPanel.8")),
+	JCountResultPanel_9(new DefaultName("JCountResultPanel.9")),
+	JCountResultPanel_10(new DefaultName("JCountResultPanel.10")),
 	
 	JxlCountResultsSaver_1(new DefaultName("JxlCountResultsSaver.1")),
 	JxlCountResultsSaver_2(new DefaultName("JxlCountResultsSaver.2")),
@@ -151,6 +153,20 @@ public enum LabelStringKey implements Name{
 	JxlCountResultsSaver_25(new DefaultName("JxlCountResultsSaver.25")),
 	JxlCountResultsSaver_26(new DefaultName("JxlCountResultsSaver.26")),
 	JxlCountResultsSaver_27(new DefaultName("JxlCountResultsSaver.27")),
+	JxlCountResultsSaver_28(new DefaultName("JxlCountResultsSaver.28")),
+	JxlCountResultsSaver_29(new DefaultName("JxlCountResultsSaver.29")),
+	JxlCountResultsSaver_30(new DefaultName("JxlCountResultsSaver.30")),
+	JxlCountResultsSaver_31(new DefaultName("JxlCountResultsSaver.31")),
+	JxlCountResultsSaver_32(new DefaultName("JxlCountResultsSaver.32")),
+	JxlCountResultsSaver_33(new DefaultName("JxlCountResultsSaver.33")),
+	JxlCountResultsSaver_34(new DefaultName("JxlCountResultsSaver.34")),
+	JxlCountResultsSaver_35(new DefaultName("JxlCountResultsSaver.35")),
+	JxlCountResultsSaver_36(new DefaultName("JxlCountResultsSaver.36")),
+	JxlCountResultsSaver_37(new DefaultName("JxlCountResultsSaver.37")),
+	JxlCountResultsSaver_38(new DefaultName("JxlCountResultsSaver.38")),
+	JxlCountResultsSaver_39(new DefaultName("JxlCountResultsSaver.39")),
+	JxlCountResultsSaver_40(new DefaultName("JxlCountResultsSaver.40")),
+	JxlCountResultsSaver_41(new DefaultName("JxlCountResultsSaver.41")),
 
 	JAttendanceOffsetPanel_1(new DefaultName("JAttendanceOffsetPanel.1")),
 	JAttendanceOffsetPanel_2(new DefaultName("JAttendanceOffsetPanel.2")),
@@ -159,6 +175,8 @@ public enum LabelStringKey implements Name{
 	JAttendanceOffsetPanel_5(new DefaultName("JAttendanceOffsetPanel.5")),
 	JAttendanceOffsetPanel_6(new DefaultName("JAttendanceOffsetPanel.6")),
 	JAttendanceOffsetPanel_7(new DefaultName("JAttendanceOffsetPanel.7")),
+	JAttendanceOffsetPanel_8(new DefaultName("JAttendanceOffsetPanel.8")),
+	JAttendanceOffsetPanel_9(new DefaultName("JAttendanceOffsetPanel.9")),
 
 	;
 

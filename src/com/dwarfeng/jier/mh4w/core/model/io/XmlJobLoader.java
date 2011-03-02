@@ -58,10 +58,9 @@ public class XmlJobLoader extends StreamLoader<Set<UnsafeJob>> {
 			for(Element job : jobs){
 				try{
 					String name = job.element("name").attributeValue("value");
-					String valuePerHour = job.element("value-per-hour").attributeValue("value");
 					String originalColumn = job.element("column").attributeValue("value");
 					
-					UnsafeJob unsafeJob = new DefaultUnsafeJob(name, valuePerHour, originalColumn);
+					UnsafeJob unsafeJob = new DefaultUnsafeJob(name, originalColumn);
 					unsafeJobs.add(unsafeJob);
 				}catch (Exception e) {
 					continue next;
