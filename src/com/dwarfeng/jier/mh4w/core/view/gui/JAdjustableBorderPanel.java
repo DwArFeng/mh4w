@@ -22,7 +22,7 @@ import com.dwarfeng.dutil.basic.StringFieldKey;
  * <p>该面板的布局类似于边界布局样式中的布局，不过边界与边界之前有拖动条。通过拖动这些拖动条
  * 可以调整边界的大小，以达到动态调整边界大小的效果。
  * @author DwArFeng
- * @since 0.0.2-beta
+ * @since 1.0.0
  */
 public class JAdjustableBorderPanel extends JPanel{
 	

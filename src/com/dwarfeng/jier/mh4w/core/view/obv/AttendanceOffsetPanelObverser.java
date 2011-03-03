@@ -6,7 +6,7 @@ import com.dwarfeng.jier.mh4w.core.model.struct.UnsafeAttendanceOffset;
 /**
  * ¿¼ÇÚ²¹³¥Ãæ°å¹Û²ìÆ÷¡£
  * @author DwArFeng
- * @since 0.0.2-beta
+ * @since 1.0.0
  */
 public interface AttendanceOffsetPanelObverser extends Obverser{
 

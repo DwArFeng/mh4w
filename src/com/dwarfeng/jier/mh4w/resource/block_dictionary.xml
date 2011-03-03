@@ -8,9 +8,11 @@
 	</key>
 	<key value="select_attendance_file">
 		<dictionary value="initialize"/>
+		<dictionary value="count"/>
 	</key>
 	<key value="select_workticket_file">
 		<dictionary value="initialize"/>
+		<dictionary value="count"/>
 	</key>
 	<key value="reset_count">
 		<dictionary value="initialize"/>

@@ -608,7 +608,7 @@ public final class CountUtil {
 			for(WorkticketData data : workticketDatas){
 				if(Objects.isNull(person)) person = data.getPerson();
 				workticket += data.getWorkticket();
-				workticketMap.put(data.getJob(), data.getWorkticket());
+				workticketMap.put(data.getJob(), data.getWorkticket() + workticketMap.getOrDefault(data.getJob(), 0.0));
 			}
 			
 			if(attendanceOffsetMap.containsKey(workNumber)){

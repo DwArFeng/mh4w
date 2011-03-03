@@ -6,7 +6,7 @@ import java.util.Objects;
  * 默认不安全考勤补偿。
  * <p> 不安全考勤补偿的默认
  * @author DwArFeng
- * @since 0.0.2-beta
+ * @since 1.0.0
  */
 public final class DefaultUnsafeAttendanceOffset implements UnsafeAttendanceOffset {
 	

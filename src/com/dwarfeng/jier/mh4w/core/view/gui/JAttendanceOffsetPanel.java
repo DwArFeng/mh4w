@@ -1,11 +1,17 @@
 package com.dwarfeng.jier.mh4w.core.view.gui;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.Set;
@@ -18,6 +24,7 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -25,10 +32,17 @@ import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.ListCellRenderer;
 import javax.swing.ListSelectionModel;
+import javax.swing.Popup;
+import javax.swing.PopupFactory;
+import javax.swing.SwingUtilities;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.plaf.basic.BasicComboBoxEditor;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 
+import com.dwarfeng.dutil.basic.gui.swing.MuaListModel;
 import com.dwarfeng.dutil.basic.prog.ObverserSet;
 import com.dwarfeng.jier.mh4w.core.model.cm.DataListModel;
 import com.dwarfeng.jier.mh4w.core.model.eum.LabelStringKey;
@@ -49,8 +63,6 @@ import com.sun.glass.events.KeyEvent;
 
 public class JAttendanceOffsetPanel extends JPanel implements MutilangSupported, ObverserSet<AttendanceOffsetPanelObverser> {
 
-	private static final long serialVersionUID = 6243768107970879415L;
-
 	/**观察器集合*/
 	private final Set<AttendanceOffsetPanelObverser> obversers = Collections.newSetFromMap(new WeakHashMap<>());
 	
@@ -70,7 +82,13 @@ public class JAttendanceOffsetPanel extends JPanel implements MutilangSupported,
 	private final JButton clearButton;
 	private final JButton loadButton;
 	private final JButton saveButton;
+	private final JPersonPopupPanel personPopupPanel;
 
+	/*
+	 * 非 final 域。
+	 */
+	private Popup personPopup;
+	
 	/*
 	 * 各模型。
 	 */
@@ -135,6 +153,7 @@ public class JAttendanceOffsetPanel extends JPanel implements MutilangSupported,
 		};
 		
 	};
+	private final InnerComboBoxEditor comboBoxEditor = new InnerComboBoxEditor();
 	
 	/*
 	 * 各模型的观察器。
@@ -293,7 +312,7 @@ public class JAttendanceOffsetPanel extends JPanel implements MutilangSupported,
 		Objects.requireNonNull(mutilang, "入口参数 mutilang 不能为 null。");
 		
 		this.mutilang = mutilang;
-		
+			
 		setLayout(new BorderLayout(0, 0));
 		
 		JScrollPane scrollPane = new JScrollPane();
@@ -339,6 +358,8 @@ public class JAttendanceOffsetPanel extends JPanel implements MutilangSupported,
 		panel.setLayout(gbl_panel);
 		
 		comboBox = new JComboBox<>();
+		comboBox.setEditable(true);
+		comboBox.setEditor(comboBoxEditor);
 		comboBox.setModel(comboBoxModel);
 		comboBox.setRenderer(comboBoxRenderer);
 		GridBagConstraints gbc_comboBox = new GridBagConstraints();
@@ -365,6 +386,8 @@ public class JAttendanceOffsetPanel extends JPanel implements MutilangSupported,
 		gbc_textField.gridy = 0;
 		panel.add(timeTextField, gbc_textField);
 		timeTextField.setColumns(10);
+		
+		personPopupPanel = new JPersonPopupPanel();
 		
 		submitButton = new JButton();
 		submitButton.setText(getLabel(LabelStringKey.JAttendanceOffsetPanel_4));
@@ -645,6 +668,8 @@ public class JAttendanceOffsetPanel extends JPanel implements MutilangSupported,
 	 * 释放资源。
 	 */
 	public void dispose() {
+		hidePersonPopup();
+		
 		if(Objects.nonNull(attendanceOffsetModel)){
 			attendanceOffsetModel.removeObverser(attendanceOffsetObverser);
 		}
@@ -685,6 +710,172 @@ public class JAttendanceOffsetPanel extends JPanel implements MutilangSupported,
 
 	private String getLabel(LabelStringKey labelStringKey){
 		return mutilang.getString(labelStringKey.getName());
+	}
+	
+	private void checkPersonList(String str){
+		personPopupPanel.listModel.clear();
+		for(int i = 0 ; i < comboBoxModel.getSize() ; i ++){
+			Person person = comboBoxModel.getElementAt(i);
+			String workNumber = person.getWorkNumber();
+			String name = person.getName();
+			if(workNumber.indexOf(str) >=0 || name.indexOf(str) >= 0){
+				personPopupPanel.listModel.add(person);
+			}
+			if(personPopupPanel.listModel.size() > 0){
+				personPopupPanel.list.setSelectedIndex(0);
+			}
+		}
+	}
+	
+	private void showPersonPopup(){
+		if(Objects.isNull(personPopup)){
+			Point point = new Point();
+			SwingUtilities.convertPointToScreen(point, comboBox);
+			
+			personPopupPanel.setPreferredSize(new Dimension(comboBox.getPreferredSize().width,
+					personPopupPanel.getPreferredSize().height));
+			personPopup = PopupFactory.getSharedInstance().getPopup(null, personPopupPanel,
+					point.x, point.y - personPopupPanel.getPreferredSize().height);
+			personPopup.show();
+			
+			personPopupPanel.requestFocus();
+		}
+	}
+	
+	private void hidePersonPopup(){
+		if(Objects.nonNull(personPopup)){
+			personPopup.hide();
+			personPopup = null;
+		}
+	}
+	
+	private final class InnerComboBoxEditor extends BasicComboBoxEditor{
+
+		private Person person;
+		
+		public InnerComboBoxEditor() {
+			editor.getDocument().addDocumentListener(new DocumentListener() {
+				
+				/*
+				 * (non-Javadoc)
+				 * @see javax.swing.event.DocumentListener#removeUpdate(javax.swing.event.DocumentEvent)
+				 */
+				@Override
+				public void removeUpdate(DocumentEvent e) {
+					checkPersonList(editor.getText());
+					if(editor.hasFocus()){
+						showPersonPopup();
+					}
+				}
+				
+				/*
+				 * (non-Javadoc)
+				 * @see javax.swing.event.DocumentListener#insertUpdate(javax.swing.event.DocumentEvent)
+				 */
+				@Override
+				public void insertUpdate(DocumentEvent e) {
+					checkPersonList(editor.getText());
+					if(editor.hasFocus()){
+						showPersonPopup();
+					}
+				}
+				
+				/*
+				 * (non-Javadoc)
+				 * @see javax.swing.event.DocumentListener#changedUpdate(javax.swing.event.DocumentEvent)
+				 */
+				@Override
+				public void changedUpdate(DocumentEvent e) {
+					checkPersonList(editor.getText());
+					if(editor.hasFocus()){
+						showPersonPopup();
+					}
+				}
+			});
+			editor.addFocusListener(new FocusAdapter() {
+				@Override
+				public void focusLost(FocusEvent e) {
+					hidePersonPopup();
+				}
+			});
+			
+		}
+		
+		/*
+		 * (non-Javadoc)
+		 * @see javax.swing.plaf.basic.BasicComboBoxEditor#setItem(java.lang.Object)
+		 */
+		@Override
+		public void setItem(Object anObject) {
+			if(! (anObject instanceof Person)) return;
+			person = (Person) anObject;
+			editor.setText(Objects.isNull(person) ? "" : FormatUtil.formatPerson(person));
+		};
+		
+		/*
+		 * (non-Javadoc)
+		 * @see javax.swing.plaf.basic.BasicComboBoxEditor#getItem()
+		 */
+		@Override
+		public Object getItem() {
+			return person;
+		}
+		
+	}
+	
+	private final class JPersonPopupPanel extends JPanel{
+		
+		private final JList<Person> list;
+		
+		private final MuaListModel<Person> listModel = new MuaListModel<>();
+		private final ListCellRenderer<Object> listRenderer = new DefaultListCellRenderer(){
+		
+			private static final long serialVersionUID = 4706002997882975038L;
+
+			@Override
+			public java.awt.Component getListCellRendererComponent(javax.swing.JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+				super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+				//此处转换是安全的。
+				setText(Objects.isNull(value) ? "" : FormatUtil.formatPerson((Person) value));
+				return this;
+			};
+			
+		};
+		
+		public JPersonPopupPanel() {
+			
+			addFocusListener(new FocusAdapter() {
+				@Override
+				public void focusLost(FocusEvent e) {
+					hidePersonPopup();
+				}
+			});
+			setLayout(new BorderLayout());
+			
+			JScrollPane scrollPane = new JScrollPane();
+			add(scrollPane, BorderLayout.CENTER);
+			
+			list = new JList<>();
+			list.addMouseListener(new MouseAdapter() {
+				@Override
+				public void mouseClicked(MouseEvent e) {
+					if(e.getClickCount() == 2){
+						Person person = list.getSelectedValue();
+						if(Objects.nonNull(person)){
+							comboBoxEditor.setItem(person);
+							hidePersonPopup();
+						}
+					}
+				}
+			});
+			list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+			list.setModel(listModel);
+			list.setCellRenderer(listRenderer);
+			list.setModel(listModel);
+			
+			scrollPane.getViewport().setView(list);
+		}
+		
 	}
 
 }

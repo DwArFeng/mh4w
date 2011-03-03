@@ -190,8 +190,8 @@ public abstract class AbstractGuiController implements GuiController {
 	@Override
 	public File[] askFile4Open(File directory, FileFilter[] fileFilters, boolean acceptAllFileFilter, 
 			boolean mutiSelectionEnabled,int fileSelectionMode, Locale locale) {
-		lock.writeLock().lock();
-		try{
+//		lock.writeLock().lock();
+//		try{
 			if(Objects.isNull(mainFrame)) return null;
 			JFileChooser chooser = new JFileChooser();
 			SwingUtil.setJFileChooserLocal(chooser, locale == null ? Locale.getDefault() : locale);
@@ -215,9 +215,9 @@ public abstract class AbstractGuiController implements GuiController {
 			}else{
 				return new File[0];
 			}
-		}finally {
-			lock.writeLock().unlock();
-		}
+//		}finally {
+//			lock.writeLock().unlock();
+//		}
 	}
 
 	/*
@@ -227,8 +227,8 @@ public abstract class AbstractGuiController implements GuiController {
 	@Override
 	public File askFile4Save(File directory, FileFilter[] fileFilters, boolean acceptAllFileFilter, 
 			String defaultFileExtension, Locale locale) {
-		lock.writeLock().lock();
-		try{
+//		lock.writeLock().lock();
+//		try{
 			Component component = null;
 			
 			if(Objects.nonNull(detailFrame) || detailFrame.isVisible()){
@@ -260,9 +260,9 @@ public abstract class AbstractGuiController implements GuiController {
 			}else{
 				return null;
 			}
-		}finally {
-			lock.writeLock().unlock();
-		}
+//		}finally {
+//			lock.writeLock().unlock();
+//		}
 	}
 	
 	/*

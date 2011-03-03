@@ -18,7 +18,7 @@ import com.dwarfeng.jier.mh4w.core.model.struct.AttendanceOffset;
  * Xml ¿¼ÇÚ²¹³¥±£´æÆ÷¡£
  * <p> Ê¹ÓÃ xml ±£´æ¿¼ÇÚ²¹³¥Êý¾Ý¡£
  * @author DwArFeng
- * @since 0.0.2-beta
+ * @since 1.0.0
  */
 public final class XmlAttendanceOffsetSaver extends StreamSaver<DataListModel<AttendanceOffset>>{
 

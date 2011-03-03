@@ -17,7 +17,7 @@ import com.dwarfeng.jier.mh4w.core.model.struct.UnsafeAttendanceOffset;
  * Xml ¿¼ÇÚ²¹³¥¶ÁÈ¡Æ÷¡£
  * <p> Í¨¹ý xml ¶ÁÈ¡¿¼ÇÚ²¹³¥Êý¾Ý¡£
  * @author DwArFeng
- * @since 0.0.2-beta
+ * @since 1.0.0
  */
 public final class XmlAttendanceOffsetLoader extends StreamLoader<Set<UnsafeAttendanceOffset>>{
 

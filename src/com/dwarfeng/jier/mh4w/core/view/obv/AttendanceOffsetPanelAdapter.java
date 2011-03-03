@@ -5,7 +5,7 @@ import com.dwarfeng.jier.mh4w.core.model.struct.UnsafeAttendanceOffset;
 /**
  * ³öÇÚ²¹³¥Ãæ°å¹Û²ìÆ÷ÊÊÅäÆ÷¡£
  * @author DwArFeng
- * @since 0.0.2-beta
+ * @since 1.0.0
  */
 public abstract class AttendanceOffsetPanelAdapter implements AttendanceOffsetPanelObverser {
 

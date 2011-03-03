@@ -10,18 +10,16 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Objects;
 import java.util.Set;
+import java.util.WeakHashMap;
 import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.atomic.AtomicReference;
 
 import javax.swing.JFileChooser;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 
 import com.dwarfeng.dutil.basic.io.CT;
 import com.dwarfeng.dutil.basic.prog.DefaultVersion;
+import com.dwarfeng.dutil.basic.prog.ObverserSet;
 import com.dwarfeng.dutil.basic.prog.RuntimeState;
 import com.dwarfeng.dutil.basic.prog.Version;
 import com.dwarfeng.dutil.basic.prog.VersionType;
@@ -30,6 +28,7 @@ import com.dwarfeng.dutil.develop.cfg.ConfigAdapter;
 import com.dwarfeng.dutil.develop.cfg.ConfigKey;
 import com.dwarfeng.dutil.develop.cfg.ConfigObverser;
 import com.dwarfeng.dutil.develop.cfg.io.PropConfigLoader;
+import com.dwarfeng.jier.mh4w.core.control.obv.Mh4wObverser;
 import com.dwarfeng.jier.mh4w.core.model.cm.BackgroundModel;
 import com.dwarfeng.jier.mh4w.core.model.cm.BlockModel;
 import com.dwarfeng.jier.mh4w.core.model.cm.CoreConfigModel;
@@ -93,6 +92,7 @@ import com.dwarfeng.jier.mh4w.core.model.struct.Fail;
 import com.dwarfeng.jier.mh4w.core.model.struct.FinishedFlowTaker;
 import com.dwarfeng.jier.mh4w.core.model.struct.Flow;
 import com.dwarfeng.jier.mh4w.core.model.struct.Job;
+import com.dwarfeng.jier.mh4w.core.model.struct.Logger;
 import com.dwarfeng.jier.mh4w.core.model.struct.OriginalAttendanceData;
 import com.dwarfeng.jier.mh4w.core.model.struct.OriginalWorkticketData;
 import com.dwarfeng.jier.mh4w.core.model.struct.Person;
@@ -128,75 +128,91 @@ import com.dwarfeng.jier.mh4w.core.view.obv.MainFrameAdapter;
 import com.dwarfeng.jier.mh4w.core.view.obv.MainFrameObverser;
 
 /**
- * 工时统计软件。
+ * 工时统计实例。
+ * <p> 该实例不是线程安全的。
  * @author DwArFeng
  * @since 0.0.1-beta
  */
-public final class Mh4w {
+public final class Mh4w implements ObverserSet<Mh4wObverser>{
 	
-	/**
-	 * 启动程序的方法。 
-	 * @param args 入口参数。
-	 */
-	public static void main(String[] args) {
-		//CT.trace(VERSION);
-		
-		try {
-			UIManager.setLookAndFeel(new NimbusLookAndFeel());
-		} catch (UnsupportedLookAndFeelException ignore) {
-			//界面中的所有元素均支持这一外观，因此不可能出现异常。
-		}
-		
-		Mh4w mh4w = null;
-		try {
-			mh4w = new Mh4w();
-			mh4w.start();
-		} catch (ProcessException e) {
-			if(Objects.nonNull(mh4w)){
-				mh4w.manager.getLoggerModel().getLogger().error("程序未能正确启动", e);
-				System.exit(12450);
-			}else{
-				System.exit(12451);
-			}
-		}
-	}
-	
-	/**程序的版本*/
+	/**实例的版本*/
 	public final static Version VERSION = new DefaultVersion.Builder()
 			.type(VersionType.RELEASE)
 			.firstVersion((byte) 1)
-			.secondVersion((byte) 0)
+			.secondVersion((byte) 1)
 			.thirdVersion((byte) 0)
-			.buildDate("20170302")
+			.buildDate("20170303")
 			.buildVersion('A')
 			.type(VersionType.RELEASE)
 			.build();
 	
-	/**程序的实例列表，用于持有引用*/
+	/**实例的实例列表，用于持有引用*/
 	private static final Set<Mh4w> INSTANCES  = Collections.synchronizedSet(new HashSet<>());
 	/**工具平台的进程工厂*/
 	private static final ThreadFactory THREAD_FACTORY = new NumberedThreadFactory("mh4w");
 	
-	/**程序的过程提供器*/
+	/**实例的观察器集合*/
+	private final Set<Mh4wObverser> obversers = Collections.newSetFromMap(new WeakHashMap<>());
+	
+	/**实例的过程提供器*/
 	private final FlowProvider flowProvider = new FlowProvider();
-	/**程序管理器*/
+	/**实例管理器*/
 	private final Manager manager;
-	/**程序的状态*/
-	private final AtomicReference<RuntimeState> state;
 	
+	/**实例的状态*/
+	private RuntimeState state;
 	
+	/**
+	 * 新实例。
+	 */
 	public Mh4w() {
 		this.manager = new Manager();
-		this.state = new AtomicReference<RuntimeState>(RuntimeState.NOT_START);
+		this.state = RuntimeState.NOT_START;
 		
 		//为自己保留引用。
 		INSTANCES.add(this);
 	}
 	
+	/*
+	 * (non-Javadoc)
+	 * @see com.dwarfeng.dutil.basic.prog.ObverserSet#getObversers()
+	 */
+	@Override
+	public Set<Mh4wObverser> getObversers() {
+		return Collections.unmodifiableSet(obversers);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.dwarfeng.dutil.basic.prog.ObverserSet#addObverser(com.dwarfeng.dutil.basic.prog.Obverser)
+	 */
+	@Override
+	public boolean addObverser(Mh4wObverser obverser) {
+		return obversers.add(obverser);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.dwarfeng.dutil.basic.prog.ObverserSet#removeObverser(com.dwarfeng.dutil.basic.prog.Obverser)
+	 */
+	@Override
+	public boolean removeObverser(Mh4wObverser obverser) {
+		return obversers.remove(obverser);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.dwarfeng.dutil.basic.prog.ObverserSet#clearObverser()
+	 */
+	@Override
+	public void clearObverser() {
+		obversers.clear();
+	}
+
 	/**
-	 * 启动程序。
+	 * 启动实例。
 	 * @throws ProcessException 过程异常。
-	 * @throws IllegalStateException 程序已经开始。
+	 * @throws IllegalStateException 实例已经开始。
 	 */
 	public void start() throws ProcessException{
 		//开启初始化过程
@@ -212,31 +228,45 @@ public final class Mh4w {
 		if(initializeFlow.getThrowable() != null){
 			throw new ProcessException("初始化过程失败", initializeFlow.getThrowable());
 		}
+		RuntimeState oldValue = state;
+		state = RuntimeState.RUNNING;
+		
+		fireStateChanged(oldValue, state);
 	}
 	
 	/**
-	 * 返回程序的状态。
-	 * @return 程序的状态。
+	 * 返回实例的状态。
+	 * @return 实例的状态。
 	 */
 	public RuntimeState getState() {
-		return state.get();
-	}
-
-	private void setState(RuntimeState state){
-		this.state.set(state);
+		return state;
 	}
 	
 	/**
-	 * 尝试关闭本程序。
-	 * <p> 调用该方法后，会尝试关闭程序。如果程序满足关闭的条件，则关闭，否则，会询问用户。
+	 * 尝试关闭本实例。
+	 * <p> 调用该方法后，会尝试关闭实例。如果实例满足关闭的条件，则关闭，否则，会询问用户。
 	 * 就像是用户点击关闭按钮那样。
 	 */
 	public void tryExit(){
 		manager.getBackgroundModel().submit(flowProvider.newClosingFlow());
 	}
+	
+	/**
+	 * 获取实例的记录器。
+	 * @return 实例的记录器。
+	 */
+	public Logger getLogger(){
+		return manager.getLoggerModel().getLogger();
+	}
 
 	private void exit(){
 		THREAD_FACTORY.newThread(new Exitor()).start();
+	}
+	
+	private void fireStateChanged(RuntimeState oldValue, RuntimeState newValue){
+		for(Mh4wObverser obverser : obversers){
+			if(Objects.nonNull(obverser)) obverser.fireStateChanged(oldValue, newValue);
+		}
 	}
 
 	private final class Manager {
@@ -726,7 +756,7 @@ public final class Mh4w {
 				loggerMutilangModel.update();
 				labelMutilangModel.update();
 			} catch (ProcessException e) {
-				//未初始化之前，多语言模型使用的是固化在程序中的数据，不可能出现异常。
+				//未初始化之前，多语言模型使用的是固化在实例中的数据，不可能出现异常。
 				e.printStackTrace();
 			}
 		}
@@ -898,16 +928,16 @@ public final class Mh4w {
 	private final class FlowProvider {
 
 		/**
-		 * 获取一个新的程序初始化时使用的过程。
-		 * @return 新的程序初始化时使用的后台过程。
+		 * 获取一个新的实例初始化时使用的过程。
+		 * @return 新的实例初始化时使用的后台过程。
 		 */
 		public Flow newInitializeFlow() {
 			return new InitializeFlow();
 		}
 		
 		/**
-		 * 获取一个新的程序关闭流。
-		 * @return 新的程序关闭流。
+		 * 获取一个新的实例关闭流。
+		 * @return 新的实例关闭流。
 		 */
 		public Flow newClosingFlow() {
 			return new WindowClosingFlow();
@@ -1249,7 +1279,7 @@ public final class Mh4w {
 		}
 
 		/**
-		 * 可能会改变程序的状态的流。
+		 * 可能会改变实例的状态的流。
 		 * <p> 封装了常用的状态监测的方法。
 		 * @author DwArFeng
 		 * @since 0.0.1-beta
@@ -1280,8 +1310,8 @@ public final class Mh4w {
 			}
 
 			/**
-			 * 检查程序是否可以进行统计了。
-			 * @return 程序是否可以进行统计了。
+			 * 检查实例是否可以进行统计了。
+			 * @return 实例是否可以进行统计了。
 			 */
 			protected boolean isReadyForCount(){
 				if(Objects.isNull(manager.getFileSelectModel().getAttendanceFile())) return false;
@@ -1291,9 +1321,9 @@ public final class Mh4w {
 			}
 
 			/**
-			 * 可能会导致程序的统计结果过期。
-			 * <p> 该方法会检查程序的统计状态，如果状态不是还未统计，则令统计结果过期。
-			 * @return 该操作是否造成了程序的统计结果过期。
+			 * 可能会导致实例的统计结果过期。
+			 * <p> 该方法会检查实例的统计状态，如果状态不是还未统计，则令统计结果过期。
+			 * @return 该操作是否造成了实例的统计结果过期。
 			 */
 			protected boolean mayCountResultOutdated(){
 				if(manager.getStateModel().getCountState().equals(CountState.NOT_START)){
@@ -1320,8 +1350,8 @@ public final class Mh4w {
 			@Override
 			protected void processImpl() {
 				try{
-					if(getState() != RuntimeState.NOT_START){
-						throw new IllegalStateException("程序已经启动或已经结束");
+					if(state != RuntimeState.NOT_START){
+						throw new IllegalStateException("实例已经启动或已经结束");
 					}
 					
 					//更新模型，此时的多语言模型和记录器模型被更新为默认值。
@@ -1334,7 +1364,7 @@ public final class Mh4w {
 						//此时均为默认值，不可能抛出异常。
 					}
 					
-					//加载程序的资源模型
+					//加载实例的资源模型
 					info(LoggerStringKey.Mh4w_FlowProvider_3);
 					
 					XmlResourceLoader resourceLoader = null;
@@ -1347,7 +1377,7 @@ public final class Mh4w {
 						}
 					}
 					
-					//加载程序中的记录器模型。
+					//加载实例中的记录器模型。
 					info(LoggerStringKey.Mh4w_FlowProvider_5);
 					message(LoggerStringKey.Mh4w_FlowProvider_5);
 					if(manager.getLoggerModel().getLoggerContext() != null){
@@ -1396,7 +1426,7 @@ public final class Mh4w {
 						warn(LoggerStringKey.Update_LoggerMutilang_1, e);
 					}
 					
-					//加载程序的核心配置。
+					//加载实例的核心配置。
 					info(LoggerStringKey.Mh4w_FlowProvider_6);
 					message(LoggerStringKey.Mh4w_FlowProvider_6);
 					PropConfigLoader coreConfigLoader = null;
@@ -1532,7 +1562,6 @@ public final class Mh4w {
 					
 					//设置成功消息
 					message(LoggerStringKey.Mh4w_FlowProvider_1);
-					setState(RuntimeState.RUNNING);
 					
 				}catch (Exception e) {
 					setThrowable(e);
@@ -1555,8 +1584,8 @@ public final class Mh4w {
 			@Override
 			protected void processImpl() {
 				try{
-					if(getState() != RuntimeState.RUNNING){
-						throw new IllegalStateException("程序还未启动或已经结束");
+					if(state != RuntimeState.RUNNING){
+						throw new IllegalStateException("实例还未启动或已经结束");
 					}
 					
 					info(LoggerStringKey.Mh4w_FlowProvider_11);
@@ -1584,8 +1613,8 @@ public final class Mh4w {
 			@Override
 			protected void processImpl() {
 				try{
-					if(getState() != RuntimeState.RUNNING){
-						throw new IllegalStateException("程序还未启动或已经结束");
+					if(state != RuntimeState.RUNNING){
+						throw new IllegalStateException("实例还未启动或已经结束");
 					}
 					
 					info(LoggerStringKey.Mh4w_FlowProvider_13);
@@ -1662,8 +1691,8 @@ public final class Mh4w {
 			@Override
 			protected void processImpl() {
 				try{
-					if(getState() != RuntimeState.RUNNING){
-						throw new IllegalStateException("程序还未启动或已经结束");
+					if(state != RuntimeState.RUNNING){
+						throw new IllegalStateException("实例还未启动或已经结束");
 					}
 					
 					info(LoggerStringKey.Mh4w_FlowProvider_13);
@@ -1740,8 +1769,8 @@ public final class Mh4w {
 			@Override
 			protected void processImpl() {
 				try{
-					if(getState() != RuntimeState.RUNNING){
-						throw new IllegalStateException("程序还未启动或已经结束");
+					if(state != RuntimeState.RUNNING){
+						throw new IllegalStateException("实例还未启动或已经结束");
 					}
 					
 					info(LoggerStringKey.Mh4w_FlowProvider_22);
@@ -1793,8 +1822,8 @@ public final class Mh4w {
 			@Override
 			protected void processImpl() {
 				try{
-					if(getState() != RuntimeState.RUNNING){
-						throw new IllegalStateException("程序还未启动或已经结束");
+					if(state != RuntimeState.RUNNING){
+						throw new IllegalStateException("实例还未启动或已经结束");
 					}
 					
 					info(LoggerStringKey.Mh4w_FlowProvider_25);
@@ -1832,8 +1861,8 @@ public final class Mh4w {
 			@Override
 			protected void processImpl() {
 				try{
-					if(getState() != RuntimeState.RUNNING){
-						throw new IllegalStateException("程序还未启动或已经结束");
+					if(state != RuntimeState.RUNNING){
+						throw new IllegalStateException("实例还未启动或已经结束");
 					}
 					
 					info(LoggerStringKey.Mh4w_FlowProvider_27);
@@ -1870,8 +1899,8 @@ public final class Mh4w {
 			@Override
 			protected void processImpl() {
 				try{
-					if(getState() != RuntimeState.RUNNING){
-						throw new IllegalStateException("程序还未启动或已经结束");
+					if(state != RuntimeState.RUNNING){
+						throw new IllegalStateException("实例还未启动或已经结束");
 					}
 					
 					info(LoggerStringKey.Mh4w_FlowProvider_41);
@@ -2051,8 +2080,8 @@ public final class Mh4w {
 			@Override
 			protected void processImpl() {
 				try{
-					if(getState() != RuntimeState.RUNNING){
-						throw new IllegalStateException("程序还未启动或已经结束");
+					if(state != RuntimeState.RUNNING){
+						throw new IllegalStateException("实例还未启动或已经结束");
 					}
 					
 					info(LoggerStringKey.Mh4w_FlowProvider_32);
@@ -2087,8 +2116,8 @@ public final class Mh4w {
 			@Override
 			protected void processImpl() {
 				try{
-					if(getState() != RuntimeState.RUNNING){
-						throw new IllegalStateException("程序还未启动或已经结束");
+					if(state != RuntimeState.RUNNING){
+						throw new IllegalStateException("实例还未启动或已经结束");
 					}
 					
 					info(LoggerStringKey.Mh4w_FlowProvider_35);
@@ -2123,13 +2152,13 @@ public final class Mh4w {
 			@Override
 			protected void processImpl() {
 				try{
-					if(getState() != RuntimeState.RUNNING){
-						throw new IllegalStateException("程序还未启动或已经结束");
+					if(state != RuntimeState.RUNNING){
+						throw new IllegalStateException("实例还未启动或已经结束");
 					}
 					
 					info(LoggerStringKey.Mh4w_FlowProvider_38);
 					
-					//加载程序的核心配置。
+					//加载实例的核心配置。
 					info(LoggerStringKey.Mh4w_FlowProvider_6);
 					message(LoggerStringKey.Mh4w_FlowProvider_6);
 					PropConfigLoader coreConfigLoader = null;
@@ -2239,8 +2268,8 @@ public final class Mh4w {
 			@Override
 			protected void processImpl() {
 				try{
-					if(getState() != RuntimeState.RUNNING){
-						throw new IllegalStateException("程序还未启动或已经结束");
+					if(state != RuntimeState.RUNNING){
+						throw new IllegalStateException("实例还未启动或已经结束");
 					}
 					
 					info(LoggerStringKey.Mh4w_FlowProvider_49);
@@ -2277,8 +2306,8 @@ public final class Mh4w {
 			@Override
 			protected void processImpl() {
 				try{
-					if(getState() != RuntimeState.RUNNING){
-						throw new IllegalStateException("程序还未启动或已经结束");
+					if(state != RuntimeState.RUNNING){
+						throw new IllegalStateException("实例还未启动或已经结束");
 					}
 					
 					info(LoggerStringKey.Mh4w_FlowProvider_56);
@@ -2315,8 +2344,8 @@ public final class Mh4w {
 			@Override
 			protected void processImpl() {
 				try{
-					if(getState() != RuntimeState.RUNNING){
-						throw new IllegalStateException("程序还未启动或已经结束");
+					if(state != RuntimeState.RUNNING){
+						throw new IllegalStateException("实例还未启动或已经结束");
 					}
 					
 					info(LoggerStringKey.Mh4w_FlowProvider_59);
@@ -2351,8 +2380,8 @@ public final class Mh4w {
 			@Override
 			protected void processImpl() {
 				try{
-					if(getState() != RuntimeState.RUNNING){
-						throw new IllegalStateException("程序还未启动或已经结束");
+					if(state != RuntimeState.RUNNING){
+						throw new IllegalStateException("实例还未启动或已经结束");
 					}
 					
 					info(LoggerStringKey.Mh4w_FlowProvider_62);
@@ -2392,8 +2421,8 @@ public final class Mh4w {
 			@Override
 			protected void processImpl() {
 				try{
-					if(getState() != RuntimeState.RUNNING){
-						throw new IllegalStateException("程序还未启动或已经结束");
+					if(state != RuntimeState.RUNNING){
+						throw new IllegalStateException("实例还未启动或已经结束");
 					}
 					
 					info(LoggerStringKey.Mh4w_FlowProvider_65);
@@ -2428,8 +2457,8 @@ public final class Mh4w {
 			@Override
 			protected void processImpl() {
 				try{
-					if(getState() != RuntimeState.RUNNING){
-						throw new IllegalStateException("程序还未启动或已经结束");
+					if(state != RuntimeState.RUNNING){
+						throw new IllegalStateException("实例还未启动或已经结束");
 					}
 					
 					info(LoggerStringKey.Mh4w_FlowProvider_68);
@@ -2461,8 +2490,8 @@ public final class Mh4w {
 			@Override
 			protected void processImpl() {
 				try{
-					if(getState() != RuntimeState.RUNNING){
-						throw new IllegalStateException("程序还未启动或已经结束");
+					if(state != RuntimeState.RUNNING){
+						throw new IllegalStateException("实例还未启动或已经结束");
 					}
 					
 					info(LoggerStringKey.Mh4w_FlowProvider_92);
@@ -2494,8 +2523,8 @@ public final class Mh4w {
 			@Override
 			protected void processImpl() {
 				try{
-					if(getState() != RuntimeState.RUNNING){
-						throw new IllegalStateException("程序还未启动或已经结束");
+					if(state != RuntimeState.RUNNING){
+						throw new IllegalStateException("实例还未启动或已经结束");
 					}
 					
 					info(LoggerStringKey.Mh4w_FlowProvider_71);
@@ -2539,8 +2568,8 @@ public final class Mh4w {
 			@Override
 			protected void processImpl() {
 				try{
-					if(getState() != RuntimeState.RUNNING){
-						throw new IllegalStateException("程序还未启动或已经结束");
+					if(state != RuntimeState.RUNNING){
+						throw new IllegalStateException("实例还未启动或已经结束");
 					}
 					
 					info(LoggerStringKey.Mh4w_FlowProvider_74);
@@ -2599,8 +2628,8 @@ public final class Mh4w {
 			@Override
 			protected void processImpl() {
 				try{
-					if(getState() != RuntimeState.RUNNING){
-						throw new IllegalStateException("程序还未启动或已经结束");
+					if(state != RuntimeState.RUNNING){
+						throw new IllegalStateException("实例还未启动或已经结束");
 					}
 					
 					info(LoggerStringKey.Mh4w_FlowProvider_80);
@@ -2679,8 +2708,8 @@ public final class Mh4w {
 			@Override
 			protected void processImpl() {
 				try{
-					if(getState() != RuntimeState.RUNNING){
-						throw new IllegalStateException("程序还未启动或已经结束");
+					if(state != RuntimeState.RUNNING){
+						throw new IllegalStateException("实例还未启动或已经结束");
 					}
 					
 					info(LoggerStringKey.Mh4w_FlowProvider_85);
@@ -2727,8 +2756,8 @@ public final class Mh4w {
 			@Override
 			protected void processImpl() {
 				try{
-					if(getState() != RuntimeState.RUNNING){
-						throw new IllegalStateException("程序还未启动或已经结束");
+					if(state != RuntimeState.RUNNING){
+						throw new IllegalStateException("实例还未启动或已经结束");
 					}
 					
 					info(LoggerStringKey.Mh4w_FlowProvider_89);
@@ -2761,8 +2790,8 @@ public final class Mh4w {
 			@Override
 			protected void processImpl() {
 				try{
-					if(getState() != RuntimeState.RUNNING){
-						throw new IllegalStateException("程序还未启动或已经结束");
+					if(state != RuntimeState.RUNNING){
+						throw new IllegalStateException("实例还未启动或已经结束");
 					}
 					
 					info(LoggerStringKey.Mh4w_FlowProvider_95);
@@ -2832,8 +2861,8 @@ public final class Mh4w {
 			@Override
 			protected void processImpl() {
 				try{
-					if(getState() != RuntimeState.RUNNING){
-						throw new IllegalStateException("程序还未启动或已经结束");
+					if(state != RuntimeState.RUNNING){
+						throw new IllegalStateException("实例还未启动或已经结束");
 					}
 					
 					info(LoggerStringKey.Mh4w_FlowProvider_98);
@@ -2880,8 +2909,8 @@ public final class Mh4w {
 			@Override
 			protected void processImpl() {
 				try{
-					if(getState() != RuntimeState.RUNNING){
-						throw new IllegalStateException("程序还未启动或已经结束");
+					if(state != RuntimeState.RUNNING){
+						throw new IllegalStateException("实例还未启动或已经结束");
 					}
 					
 					info(LoggerStringKey.Mh4w_FlowProvider_101);
@@ -2915,8 +2944,8 @@ public final class Mh4w {
 			@Override
 			protected void processImpl() {
 				try{
-					if(getState() != RuntimeState.RUNNING){
-						throw new IllegalStateException("程序还未启动或已经结束");
+					if(state != RuntimeState.RUNNING){
+						throw new IllegalStateException("实例还未启动或已经结束");
 					}
 					
 					info(LoggerStringKey.Mh4w_FlowProvider_104);
@@ -2952,7 +2981,7 @@ public final class Mh4w {
 		 * @see java.lang.Runnable#run()
 		 */
 		@Override
-		public void run() {	
+		public void run() {
 			//停止后台模型和工具运行时模型。
 			info(LoggerStringKey.Mh4w_Exitor_2);
 			manager.getBackgroundModel().shutdown();
@@ -3014,6 +3043,10 @@ public final class Mh4w {
 			//解除对象的引用
 			INSTANCES.remove(Mh4w.this);
 			
+			RuntimeState oldValue = state;
+			state = RuntimeState.ENDED;
+			
+			fireStateChanged(oldValue, state);
 		}
 		
 	

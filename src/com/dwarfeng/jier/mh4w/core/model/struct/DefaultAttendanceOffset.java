@@ -6,7 +6,7 @@ import java.util.Objects;
  * 默认考勤补偿。
  * <p> 考勤补偿的默认实现。
  * @author DwArFeng
- * @since 0.0.2-beta
+ * @since 1.0.0
  */
 public final class DefaultAttendanceOffset implements AttendanceOffset {
 
