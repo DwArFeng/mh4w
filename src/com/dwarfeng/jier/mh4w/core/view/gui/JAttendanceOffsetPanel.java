@@ -5,26 +5,22 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.WeakHashMap;
 
 import javax.swing.AbstractAction;
-import javax.swing.DefaultComboBoxModel;
+import javax.swing.AbstractListModel;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -32,9 +28,7 @@ import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.ListCellRenderer;
 import javax.swing.ListSelectionModel;
-import javax.swing.Popup;
-import javax.swing.PopupFactory;
-import javax.swing.SwingUtilities;
+import javax.swing.MutableComboBoxModel;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.plaf.basic.BasicComboBoxEditor;
@@ -42,7 +36,6 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 
-import com.dwarfeng.dutil.basic.gui.swing.MuaListModel;
 import com.dwarfeng.dutil.basic.prog.ObverserSet;
 import com.dwarfeng.jier.mh4w.core.model.cm.DataListModel;
 import com.dwarfeng.jier.mh4w.core.model.eum.LabelStringKey;
@@ -63,6 +56,9 @@ import com.sun.glass.events.KeyEvent;
 
 public class JAttendanceOffsetPanel extends JPanel implements MutilangSupported, ObverserSet<AttendanceOffsetPanelObverser> {
 
+	/**comboBox所允许的最小宽度*/
+	private static final int MIN_COMBOBOX_WIDTH = 150;
+	
 	/**观察器集合*/
 	private final Set<AttendanceOffsetPanelObverser> obversers = Collections.newSetFromMap(new WeakHashMap<>());
 	
@@ -82,12 +78,11 @@ public class JAttendanceOffsetPanel extends JPanel implements MutilangSupported,
 	private final JButton clearButton;
 	private final JButton loadButton;
 	private final JButton saveButton;
-	private final JPersonPopupPanel personPopupPanel;
-
-	/*
-	 * 非 final 域。
+	
+	/**
+	 * 非 final 域
 	 */
-	private Popup personPopup;
+	private int comboBoxWidth = 0;
 	
 	/*
 	 * 各模型。
@@ -120,7 +115,7 @@ public class JAttendanceOffsetPanel extends JPanel implements MutilangSupported,
 			return false;
 		};
 	};
-	private final DefaultComboBoxModel<Person> comboBoxModel = new DefaultComboBoxModel<>();
+	private final InnerComboBoxModel comboBoxModel = new InnerComboBoxModel();
 	private final TableCellRenderer tableRenderer = new DefaultTableCellRenderer(){
 		
 		private static final long serialVersionUID = -2854380488244617595L;
@@ -242,9 +237,11 @@ public class JAttendanceOffsetPanel extends JPanel implements MutilangSupported,
 				public void run() {
 					int size = comboBoxModel.getSize();
 					comboBoxModel.insertElementAt(value.getPerson(), index);
-					if(size == 0){
+					if(size == 0 && comboBoxModel.getSize() == 1){
 						comboBox.setSelectedIndex(0);
 					}
+					checkComboBoxWidth();
+					comboBox.setPreferredSize(new Dimension(Math.max(MIN_COMBOBOX_WIDTH, comboBoxWidth), comboBox.getPreferredSize().height));
 				}
 			});
 		}
@@ -260,6 +257,8 @@ public class JAttendanceOffsetPanel extends JPanel implements MutilangSupported,
 				public void run() {
 					comboBoxModel.removeElementAt(index);
 					comboBoxModel.insertElementAt(newValue.getPerson(), index);
+					checkComboBoxWidth();
+					comboBox.setPreferredSize(new Dimension(Math.max(MIN_COMBOBOX_WIDTH, comboBoxWidth), comboBox.getPreferredSize().height));
 				}
 			});
 		}
@@ -274,6 +273,8 @@ public class JAttendanceOffsetPanel extends JPanel implements MutilangSupported,
 				@Override
 				public void run() {
 					comboBoxModel.removeElementAt(index);
+					checkComboBoxWidth();
+					comboBox.setPreferredSize(new Dimension(Math.max(MIN_COMBOBOX_WIDTH, comboBoxWidth), comboBox.getPreferredSize().height));
 				}
 			});
 		}
@@ -287,7 +288,9 @@ public class JAttendanceOffsetPanel extends JPanel implements MutilangSupported,
 			Mh4wUtil.invokeInEventQueue(new Runnable() {
 				@Override
 				public void run() {
-					comboBoxModel.removeAllElements();
+					comboBoxModel.clear();
+					checkComboBoxWidth();
+					comboBox.setPreferredSize(new Dimension(Math.max(MIN_COMBOBOX_WIDTH, comboBoxWidth), comboBox.getPreferredSize().height));
 				}
 			});
 		}
@@ -386,8 +389,6 @@ public class JAttendanceOffsetPanel extends JPanel implements MutilangSupported,
 		gbc_textField.gridy = 0;
 		panel.add(timeTextField, gbc_textField);
 		timeTextField.setColumns(10);
-		
-		personPopupPanel = new JPersonPopupPanel();
 		
 		submitButton = new JButton();
 		submitButton.setText(getLabel(LabelStringKey.JAttendanceOffsetPanel_4));
@@ -522,6 +523,8 @@ public class JAttendanceOffsetPanel extends JPanel implements MutilangSupported,
 			}finally {
 				countResultModel.getLock().readLock().unlock();
 			}
+			checkComboBoxWidth();
+			comboBox.setPreferredSize(new Dimension(Math.max(MIN_COMBOBOX_WIDTH, comboBoxWidth), comboBox.getPreferredSize().height));
 		}
 		
 		this.countResultModel = countResultModel;
@@ -642,7 +645,7 @@ public class JAttendanceOffsetPanel extends JPanel implements MutilangSupported,
 	 * @param countResultModel the countResultModel to set
 	 */
 	public void setCountResultModel(DataListModel<CountResult> countResultModel) {
-		comboBoxModel.removeAllElements();
+		comboBoxModel.clear();
 		
 		if(Objects.nonNull(this.countResultModel)){
 			this.countResultModel.removeObverser(countResultObverser);
@@ -655,9 +658,12 @@ public class JAttendanceOffsetPanel extends JPanel implements MutilangSupported,
 				for(CountResult countResult : countResultModel){
 					comboBoxModel.addElement(countResult.getPerson());
 				}
+				
 			}finally {
 				countResultModel.getLock().readLock().unlock();
 			}
+			checkComboBoxWidth();
+			comboBox.setPreferredSize(new Dimension(Math.max(MIN_COMBOBOX_WIDTH, comboBoxWidth), comboBox.getPreferredSize().height));
 		}
 		
 		this.countResultModel = countResultModel;
@@ -668,8 +674,6 @@ public class JAttendanceOffsetPanel extends JPanel implements MutilangSupported,
 	 * 释放资源。
 	 */
 	public void dispose() {
-		hidePersonPopup();
-		
 		if(Objects.nonNull(attendanceOffsetModel)){
 			attendanceOffsetModel.removeObverser(attendanceOffsetObverser);
 		}
@@ -712,45 +716,20 @@ public class JAttendanceOffsetPanel extends JPanel implements MutilangSupported,
 		return mutilang.getString(labelStringKey.getName());
 	}
 	
-	private void checkPersonList(String str){
-		personPopupPanel.listModel.clear();
-		for(int i = 0 ; i < comboBoxModel.getSize() ; i ++){
-			Person person = comboBoxModel.getElementAt(i);
-			String workNumber = person.getWorkNumber();
-			String name = person.getName();
-			if(workNumber.indexOf(str) >=0 || name.indexOf(str) >= 0){
-				personPopupPanel.listModel.add(person);
-			}
-			if(personPopupPanel.listModel.size() > 0){
-				personPopupPanel.list.setSelectedIndex(0);
+	private void checkComboBoxWidth(){
+		int max = 0;
+		for(Person person : comboBoxModel.rawList){
+			if(Objects.nonNull(person)){
+				String str = FormatUtil.formatPerson(person);
+				max = Math.max(comboBox.getFontMetrics(comboBox.getFont()).stringWidth(str) + 50, max);
 			}
 		}
-	}
-	
-	private void showPersonPopup(){
-		if(Objects.isNull(personPopup)){
-			Point point = new Point();
-			SwingUtilities.convertPointToScreen(point, comboBox);
-			
-			personPopupPanel.setPreferredSize(new Dimension(comboBox.getPreferredSize().width,
-					personPopupPanel.getPreferredSize().height));
-			personPopup = PopupFactory.getSharedInstance().getPopup(null, personPopupPanel,
-					point.x, point.y - personPopupPanel.getPreferredSize().height);
-			personPopup.show();
-			
-			personPopupPanel.requestFocus();
-		}
-	}
-	
-	private void hidePersonPopup(){
-		if(Objects.nonNull(personPopup)){
-			personPopup.hide();
-			personPopup = null;
-		}
+		comboBoxWidth = max;
 	}
 	
 	private final class InnerComboBoxEditor extends BasicComboBoxEditor{
 
+		private boolean adjustFlag = false;
 		private Person person;
 		
 		public InnerComboBoxEditor() {
@@ -762,10 +741,7 @@ public class JAttendanceOffsetPanel extends JPanel implements MutilangSupported,
 				 */
 				@Override
 				public void removeUpdate(DocumentEvent e) {
-					checkPersonList(editor.getText());
-					if(editor.hasFocus()){
-						showPersonPopup();
-					}
+					action();
 				}
 				
 				/*
@@ -774,10 +750,7 @@ public class JAttendanceOffsetPanel extends JPanel implements MutilangSupported,
 				 */
 				@Override
 				public void insertUpdate(DocumentEvent e) {
-					checkPersonList(editor.getText());
-					if(editor.hasFocus()){
-						showPersonPopup();
-					}
+					action();
 				}
 				
 				/*
@@ -786,18 +759,20 @@ public class JAttendanceOffsetPanel extends JPanel implements MutilangSupported,
 				 */
 				@Override
 				public void changedUpdate(DocumentEvent e) {
-					checkPersonList(editor.getText());
-					if(editor.hasFocus()){
-						showPersonPopup();
+					action();
+				}
+				
+				private void action(){
+					if(! adjustFlag){
+						comboBoxModel.setFilter(editor.getText());
+						checkComboBoxWidth();
+						comboBox.setPreferredSize(new Dimension(Math.max(MIN_COMBOBOX_WIDTH, comboBoxWidth), comboBox.getPreferredSize().height));
+						comboBox.showPopup();
 					}
 				}
 			});
-			editor.addFocusListener(new FocusAdapter() {
-				@Override
-				public void focusLost(FocusEvent e) {
-					hidePersonPopup();
-				}
-			});
+			
+
 			
 		}
 		
@@ -809,7 +784,10 @@ public class JAttendanceOffsetPanel extends JPanel implements MutilangSupported,
 		public void setItem(Object anObject) {
 			if(! (anObject instanceof Person)) return;
 			person = (Person) anObject;
-			editor.setText(Objects.isNull(person) ? "" : FormatUtil.formatPerson(person));
+			adjustFlag = true;
+			checkComboBoxWidth();
+			comboBox.setPreferredSize(new Dimension(Math.max(MIN_COMBOBOX_WIDTH, comboBoxWidth), comboBox.getPreferredSize().height));
+			adjustFlag = false;
 		};
 		
 		/*
@@ -823,58 +801,161 @@ public class JAttendanceOffsetPanel extends JPanel implements MutilangSupported,
 		
 	}
 	
-	private final class JPersonPopupPanel extends JPanel{
-		
-		private final JList<Person> list;
-		
-		private final MuaListModel<Person> listModel = new MuaListModel<>();
-		private final ListCellRenderer<Object> listRenderer = new DefaultListCellRenderer(){
-		
-			private static final long serialVersionUID = 4706002997882975038L;
+	private final class InnerComboBoxModel extends AbstractListModel<Person> implements MutableComboBoxModel<Person>{
 
-			@Override
-			public java.awt.Component getListCellRendererComponent(javax.swing.JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-				super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-				//此处转换是安全的。
-				setText(Objects.isNull(value) ? "" : FormatUtil.formatPerson((Person) value));
-				return this;
-			};
-			
-		};
+		private Person selectedItem;
+		private String filter = "";
 		
-		public JPersonPopupPanel() {
-			
-			addFocusListener(new FocusAdapter() {
-				@Override
-				public void focusLost(FocusEvent e) {
-					hidePersonPopup();
+		private List<Person> filteredList = new ArrayList<>();
+		private List<Person> rawList = new ArrayList<>();
+		
+		/*
+		 * (non-Javadoc)
+		 * @see javax.swing.ComboBoxModel#setSelectedItem(java.lang.Object)
+		 */
+		@Override
+		public void setSelectedItem(Object anItem) {
+			if(! (anItem instanceof Person)) return;
+			this.selectedItem = (Person) anItem;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see javax.swing.ComboBoxModel#getSelectedItem()
+		 */
+		@Override
+		public Object getSelectedItem() {
+			return selectedItem;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see javax.swing.ListModel#getSize()
+		 */
+		@Override
+		public int getSize() {
+			return filteredList.size();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see javax.swing.ListModel#getElementAt(int)
+		 */
+		@Override
+		public Person getElementAt(int index) {
+			return filteredList.get(index);
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see javax.swing.MutableComboBoxModel#addElement(java.lang.Object)
+		 */
+		@Override
+		public void addElement(Person item) {
+			rawList.add(item);
+			if(acceptPerson(item)){
+				int index = filteredList.size();
+				filteredList.add(item);
+				fireIntervalAdded(this, index, index);
+			}
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see javax.swing.MutableComboBoxModel#removeElement(java.lang.Object)
+		 */
+		@Override
+		public void removeElement(Object obj) {
+			rawList.remove(obj);
+			filteredList.remove(obj);
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see javax.swing.MutableComboBoxModel#insertElementAt(java.lang.Object, int)
+		 */
+		@Override
+		public void insertElementAt(Person item, int index) {
+			rawList.add(index, item);
+			if(acceptPerson(item)){
+				if(filteredList.size() == 0){
+					filteredList.add(item);
+					fireIntervalAdded(this, 0, 0);
+					return;
 				}
-			});
-			setLayout(new BorderLayout());
-			
-			JScrollPane scrollPane = new JScrollPane();
-			add(scrollPane, BorderLayout.CENTER);
-			
-			list = new JList<>();
-			list.addMouseListener(new MouseAdapter() {
-				@Override
-				public void mouseClicked(MouseEvent e) {
-					if(e.getClickCount() == 2){
-						Person person = list.getSelectedValue();
-						if(Objects.nonNull(person)){
-							comboBoxEditor.setItem(person);
-							hidePersonPopup();
-						}
+				
+				if(filteredList.size() == 1){
+					filteredList.add(item);
+					fireIntervalAdded(this, 1, 1);
+					return;
+				}
+				for(int i = 0 ; i < filteredList.size() - 1 ; i ++){
+					Person former = filteredList.get(i);
+					Person later = filteredList.get(i + 1);
+					
+					if(rawList.indexOf(former) < index && rawList.indexOf(later) > index){
+						filteredList.add(i, item);
+						fireIntervalAdded(this, i, i);
+						return;
 					}
 				}
-			});
-			list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-			list.setModel(listModel);
-			list.setCellRenderer(listRenderer);
-			list.setModel(listModel);
-			
-			scrollPane.getViewport().setView(list);
+				
+				int i = filteredList.size();
+				filteredList.add(item);
+				fireIntervalAdded(this, i, i);
+			}
 		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see javax.swing.MutableComboBoxModel#removeElementAt(int)
+		 */
+		@Override
+		public void removeElementAt(int index) {
+			Person person = rawList.remove(index);
+			int i = filteredList.indexOf(person);
+			filteredList.remove(person);
+			if(i >= 0){
+				fireIntervalRemoved(this, i, i);
+			}
+		}
+		
+		public void clear(){
+			int size = filteredList.size();
+			rawList.clear();
+			filteredList.clear();
+			if(size > 0){
+				fireIntervalRemoved(this, 0, size - 1);
+			}
+		}
+		
+		public void setFilter(String filter){
+			this.filter = filter;
+			int size = filteredList.size();
+			filteredList.clear();
+			if(size > 0){
+				fireIntervalRemoved(this, 0, size - 1);
+			}
+			
+			for(int i = 0 ; i < rawList.size() ; i ++){
+				Person person = rawList.get(i);
+				if(acceptPerson(person)){
+					size = filteredList.size();
+					filteredList.add(person);
+					fireIntervalAdded(this, size, size);
+				}
+			}
+		}
+		
+		private boolean acceptPerson(Person person){
+			if(Objects.isNull(person)) return false;
+			if(filter == null || filter.equals("")) return true;
+			
+			String name = person.getName();
+			String workNumber = person.getWorkNumber();
+			
+			return name.indexOf(filter) >= 0 || workNumber.indexOf(filter) >= 0;
+ 		}
 		
 	}
 
