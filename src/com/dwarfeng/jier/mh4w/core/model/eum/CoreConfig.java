@@ -31,6 +31,8 @@ public enum CoreConfig implements ConfigEntry{
 	ATTENDANCE_COLUMN_SHIFT("attendance.column.shift", "E", new MatchConfigChecker("[A-Z]+"), LabelStringKey.CoreConfig_8),
 	/**考勤表中记录所在的列*/
 	ATTENDANCE_COLUMN_RECORD("attendance.column.record", "F", new MatchConfigChecker("[A-Z]+"), LabelStringKey.CoreConfig_9),
+	/**考勤表中记录超过一天的关键字*/
+	ATTENDANCE_KEYWORD_OVERDAY("attendance.keyword.overday", "次日", new NonNullConfigChecker(), LabelStringKey.CoreConfig_18),
 	/**工票表的第一行数据行*/
 	WORKTICKET_ROW_START("workticket.row.start", "2", new IntegerConfigChecker(1, Integer.MAX_VALUE), LabelStringKey.CoreConfig_10),
 	/**工票表中部门所在的列*/

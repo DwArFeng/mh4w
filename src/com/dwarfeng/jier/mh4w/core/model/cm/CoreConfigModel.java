@@ -53,6 +53,12 @@ public interface CoreConfigModel extends SyncConfigModel {
 	public int getAttendanceRecordColumn();
 	
 	/**
+	 * 获取出勤表中工作超过一天的关键字。
+	 * @return 出勤表中工作超过一天的关键字。
+	 */
+	public String getAttendanceOverdayKeyword();
+	
+	/**
 	 * 获取工票表的起始列。
 	 * @return 工票表的起始列。
 	 */
@@ -111,5 +117,5 @@ public interface CoreConfigModel extends SyncConfigModel {
 	 * @return 标签多语言接口的当前语言。
 	 */
 	public Locale getLabelMutilangLocale();
-
+	
 }

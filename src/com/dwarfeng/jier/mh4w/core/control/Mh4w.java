@@ -143,9 +143,9 @@ public final class Mh4w implements ObverserSet<Mh4wObverser>{
 	public final static Version VERSION = new DefaultVersion.Builder()
 			.type(VersionType.RELEASE)
 			.firstVersion((byte) 1)
-			.secondVersion((byte) 1)
+			.secondVersion((byte) 2)
 			.thirdVersion((byte) 0)
-			.buildDate("20170304")
+			.buildDate("20170306")
 			.buildVersion('A')
 			.type(VersionType.RELEASE)
 			.build();

@@ -70,6 +70,7 @@ public final class Constants {
 		coreConfigOrder.add(CoreConfig.ATTENDANCE_COLUMN_DATE);
 		coreConfigOrder.add(CoreConfig.ATTENDANCE_COLUMN_SHIFT);
 		coreConfigOrder.add(CoreConfig.ATTENDANCE_COLUMN_RECORD);
+		coreConfigOrder.add(CoreConfig.ATTENDANCE_KEYWORD_OVERDAY);
 		coreConfigOrder.add(CoreConfig.WORKTICKET_ROW_START);
 		coreConfigOrder.add(CoreConfig.WORKTICKET_COLUMN_DEPARTMENT);
 		coreConfigOrder.add(CoreConfig.WORKTICKET_COLUMN_WORKNUMBER);

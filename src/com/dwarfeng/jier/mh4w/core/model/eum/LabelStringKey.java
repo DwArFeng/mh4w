@@ -59,6 +59,7 @@ public enum LabelStringKey implements Name{
 	CoreConfig_15(new DefaultName("CoreConfig.15")),
 	CoreConfig_16(new DefaultName("CoreConfig.16")),
 	CoreConfig_17(new DefaultName("CoreConfig.17")),
+	CoreConfig_18(new DefaultName("CoreConfig.18")),
 
 	JOriginalAttendanceDataPanel_1(new DefaultName("JOriginalAttendanceDataPanel.1")),
 	JOriginalAttendanceDataPanel_2(new DefaultName("JOriginalAttendanceDataPanel.2")),
@@ -69,7 +70,6 @@ public enum LabelStringKey implements Name{
 	
 	JJobPanel_1(new DefaultName("JJobPanel.1")),
 	JJobPanel_2(new DefaultName("JJobPanel.2")),
-	JJobPanel_3(new DefaultName("JJobPanel.3")),
 	
 	JOriginalWorkticketDataPanel_1(new DefaultName("JOriginalWorkticketDataPanel.1")),
 	JOriginalWorkticketDataPanel_2(new DefaultName("JOriginalWorkticketDataPanel.2")),

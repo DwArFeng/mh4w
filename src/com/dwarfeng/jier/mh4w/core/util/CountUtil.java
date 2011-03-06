@@ -170,6 +170,7 @@ public final class CountUtil {
 			double coefficient_extra = coreConfigModel.getExtraCoefficientCount();
 			double coefficient_weekend = coreConfigModel.getWeekendCoefficientCount();
 			double coefficient_holiday = coreConfigModel.getHolidayCoefficientCount();
+			String overdayKeyword = coreConfigModel.getAttendanceOverdayKeyword();
 			
 			String fileName = rawData.getFileName();
 			int row = rawData.getRow();
@@ -178,7 +179,7 @@ public final class CountUtil {
 			Shift shift = transShift(rawData.getShift(), shiftModel);
 			TimeSection attendanceRecord = new TimeSection(0, 0);
 			if(! rawData.getAttendanceRecord().equals("")){
-				attendanceRecord = transTimeSection(rawData.getAttendanceRecord());
+				attendanceRecord = transTimeSection(rawData.getAttendanceRecord(), overdayKeyword);
 			}
 			DateType dateType = dateTypeModel.getOrDefault(countDate, DateType.NORMAL);
 			double equivalentWorkTime = 0;
@@ -336,18 +337,44 @@ public final class CountUtil {
 	/**
 	 * 将指定的字符串转换为时间区间。
 	 * @param string 指定的字符串。
+	 * @param overdayKeyword 代表时间超过一天的关键字。
 	 * @return 由指定的字符串转化而成的时间区间。
 	 * @throws TransException 转换异常。
 	 * @throws NullPointerException 入口参数为 <code>null</code>。
 	 */
-	public static TimeSection transTimeSection(String string) throws TransException{
+	public static TimeSection transTimeSection(String string, String overdayKeyword) throws TransException{
+		Objects.requireNonNull(string, "入口参数 string 不能为 null。");
+		Objects.requireNonNull(overdayKeyword, "入口参数 overdayKeyword 不能为 null。");
+
 		try{
 			String[] strs = string.split("-");
+			
+			boolean fFlag = false;
+			boolean lFlag = false;
+			
+			if(! overdayKeyword.equals("")){
+				int fi = -1;
+				int li = -1;
+				
+				if((fi = strs[0].indexOf(overdayKeyword)) >= 0){
+					fFlag = true;
+					strs[0] = strs[0].substring(0, fi) + strs[0].substring(fi + overdayKeyword.length(), strs[0].length());
+				}
+				
+				if((li = strs[1].indexOf(overdayKeyword)) >= 0){
+					lFlag = true;
+					strs[1] = strs[1].substring(0, li) + strs[1].substring(li + overdayKeyword.length(), strs[1].length());
+				}
+			}
+			
 			String[] f = strs[0].split(":");
 			String[] l = strs[1].split(":");
 			
 			double start = Double.parseDouble(f[0]) + NumberUtil.unitTrans(Double.parseDouble(f[1]), Time.MIN, Time.HOR).doubleValue();
 			double end = Double.parseDouble(l[0]) + NumberUtil.unitTrans(Double.parseDouble(l[1]), Time.MIN, Time.HOR).doubleValue();
+			
+			if(fFlag) start += 24.0;
+			if(lFlag) end += 24.0;
 			
 			if(end < start) throw new IllegalArgumentException("时间区间的结束时间不能小于起始时间");
 			

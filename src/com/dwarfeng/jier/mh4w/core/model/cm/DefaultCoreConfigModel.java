@@ -121,6 +121,20 @@ public class DefaultCoreConfigModel extends DefaultSyncConfigModel implements Co
 
 	/*
 	 * (non-Javadoc)
+	 * @see com.dwarfeng.jier.mh4w.core.model.cm.CoreConfigModel#getAttendanceOverdayKeyword()
+	 */
+	@Override
+	public String getAttendanceOverdayKeyword() {
+		lock.readLock().lock();
+		try{
+			return getValidValue(CoreConfig.ATTENDANCE_KEYWORD_OVERDAY.getConfigKey());
+		}finally {
+			lock.readLock().unlock();
+		}
+	}
+	
+	/*
+	 * (non-Javadoc)
 	 * @see com.dwarfeng.jier.mh4w.core.model.cm.CoreConfigModel#getWorkticketStartRow()
 	 */
 	@Override
