@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+	<Appenders>
+		<Console name="std.all.console" target="SYSTEM_OUT">
+			<PatternLayout pattern="[%d{DEFAULT}] [%p] [%t]: %m%n"/>
+		</Console>
+		<RollingFile name="std.info.rollingfile" fileName="logs/info.log" filePattern="logs/$${date:yyyy-MM}/info-%d{MM-dd-yyyy}-%i.log.gz">
+			<PatternLayout pattern="[%d{DEFAULT}] [%p] [%t]: %m%n"/>
+			<Policies>
+				<TimeBasedTriggeringPolicy interval="168"/>
+			</Policies>
+		</RollingFile>
+		<RollingFile name="std.warn.rollingfile" fileName="logs/warn.log" filePattern="logs/$${date:yyyy-MM}/error-%d{MM-dd-yyyy}-%i.log.gz">
+			<PatternLayout pattern="[%d{DEFAULT}] [%p] [%t]: %m%n"/>
+			<Policies>
+				<TimeBasedTriggeringPolicy interval="168"/>
+			</Policies>
+		</RollingFile>
+		<RollingFile name="std.error.rollingfile" fileName="logs/error.log" filePattern="logs/$${date:yyyy-MM}/error-%d{MM-dd-yyyy}-%i.log.gz">
+			<PatternLayout pattern="[%d{DEFAULT}] [%p] [%t]: %m%n"/>
+			<Policies>
+				<TimeBasedTriggeringPolicy interval="168"/>
+			</Policies>
+		</RollingFile>
+	</Appenders>
+	<Loggers>
+		<Logger name="std.all" level="trace" additivity="false">
+			<appender-ref ref="std.all.console"/>
+		</Logger>
+		<Logger name="std.info" level="info" additivity="false">
+			<appender-ref ref="std.info.rollingfile"/>
+		</Logger>
+		<Logger name="std.warn" level="warn" additivity="false">
+			<appender-ref ref="std.warn.rollingfile"/>
+		</Logger>
+		<Logger name="std.error" level="error" additivity="false">
+			<appender-ref ref="std.error.rollingfile"/>
+		</Logger>
+	</Loggers>
+</Configuration>

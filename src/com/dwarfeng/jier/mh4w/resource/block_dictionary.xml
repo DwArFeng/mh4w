@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+	<key value="initialize">
+	</key>
+	<key value="load_lib">
+		<dictionary value="initialize"/>
+		<dictionary value="check_lib"/>
+		<dictionary value="closing"/>
+	</key>
+</root>
