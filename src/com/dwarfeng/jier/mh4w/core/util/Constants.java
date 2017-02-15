@@ -14,6 +14,7 @@ import com.dwarfeng.dutil.basic.str.Name;
 import com.dwarfeng.jier.mh4w.core.model.eum.LabelStringKey;
 import com.dwarfeng.jier.mh4w.core.model.eum.LoggerStringKey;
 import com.dwarfeng.jier.mh4w.core.model.struct.LoggerInfo;
+import com.dwarfeng.jier.mh4w.core.model.struct.Mutilang;
 import com.dwarfeng.jier.mh4w.core.model.struct.MutilangInfo;
 import com.dwarfeng.jier.mh4w.core.model.struct.ProcessException;
 
@@ -30,6 +31,8 @@ public final class Constants {
 	"com.dwarfeng.jier.mh4w.resource.defaultres.mutilang.label.default");
 	private final static MutilangInfo defaultLoggerMutilangInfo;
 	private final static MutilangInfo defaultLabelMutilangInfo;
+	private final static Mutilang defaultLoggerMutilang = new DefaultLoggerMutilang();
+	private final static Mutilang defaultLabelMutilang = new DefaultLabelMutilang();
 
 	static{
 		
@@ -92,6 +95,8 @@ public final class Constants {
 	public final static MutilangInfo getDefaultLabelMutilangInfo(){
 		return defaultLabelMutilangInfo;
 	}
+	
+	
 
 	/**
 	 * 获取记录器多语言接口的支持键集合。
@@ -118,6 +123,22 @@ public final class Constants {
 			return null;
 		}
 	}
+	
+	/**
+	 * 获取默认的记录器多语言接口。
+	 * @return 默认的记录器多语言接口。
+	 */
+	public static Mutilang getDefaultLoggerMutilang(){
+		return defaultLoggerMutilang;
+	}
+	
+	/**
+	 * 获取默认的标签多语言接口。
+	 * @return 默认的标签多语言接口。
+	 */
+	public static Mutilang getDefaultLabelMutilang(){
+		return defaultLabelMutilang;
+	}
 
 	/**
 	 * 内部多语言信息。
@@ -140,7 +161,7 @@ public final class Constants {
 	
 		/*
 		 * (non-Javadoc)
-		 * @see com.dwarfeng.jier.mh4w.core.model.struct.MutilangInfo#getLabel()
+		 * @see com.dwarfeng.tp.core.model.struct.MutilangInfo#getLabel()
 		 */
 		@Override
 		public String getLabel() {
@@ -149,7 +170,7 @@ public final class Constants {
 	
 		/*
 		 * (non-Javadoc)
-		 * @see com.dwarfeng.jier.mh4w.core.model.struct.MutilangInfo#getMutilangMap()
+		 * @see com.dwarfeng.tp.core.model.struct.MutilangAttribute#getMutilangMap()
 		 */
 		@Override
 		public Map<String, String> getMutilangMap() {
@@ -175,11 +196,65 @@ public final class Constants {
 		
 		/*
 		 * (non-Javadoc)
-		 * @see com.dwarfeng.jier.mh4w.core.model.struct.LoggerInfo#getName()
+		 * @see com.dwarfeng.tp.core.model.struct.LoggerInfo#getName()
 		 */
 		@Override
 		public String getName() {
 			return name;
+		}
+		
+	}
+	
+	/**
+	 * 默认记录器多语言接口。
+	 * <p> 使用程序中内置的简体中文。
+	 * @author  DwArFeng
+	 * @since 0.0.0-alpha
+	 */
+	private static final class DefaultLoggerMutilang implements Mutilang {
+		
+		/*
+		 * (non-Javadoc)
+		 * @see com.dwarfeng.tp.core.model.struct.Mutilang#getString(java.lang.String)
+		 */
+		@Override
+		public String getString(String key) {
+			try {
+				if(! getDefaultLoggerMutilangInfo().getMutilangMap().containsKey(key)){
+					throw new IllegalArgumentException("此多语言接口不支持该键");
+				}
+				return getDefaultLoggerMutilangInfo().getMutilangMap().getOrDefault(key, getDefaultMissingString());
+			} catch (ProcessException ignore) {
+				//不会抛出异常
+				return getDefaultMissingString();
+			}
+		}
+		
+	}
+	
+	/**
+	 * 默认记录器多语言接口。
+	 * <p> 使用程序中内置的简体中文。
+	 * @author DwArFeng
+	 * @since 0.0.0-alpha
+	 */
+	private static final class DefaultLabelMutilang implements Mutilang{
+
+		/*
+		 * (non-Javadoc)
+		 * @see com.dwarfeng.tp.core.model.struct.Mutilang#getString(java.lang.String)
+		 */
+		@Override
+		public String getString(String key) {
+			try {
+				if(! getDefaultLabelMutilangInfo().getMutilangMap().containsKey(key)){
+					throw new IllegalArgumentException("此多语言接口不支持该键");
+				}
+				return getDefaultLabelMutilangInfo().getMutilangMap().getOrDefault(key, getDefaultMissingString());
+			} catch (ProcessException ignore) {
+				//不会抛出异常
+				return getDefaultMissingString();
+			}
 		}
 		
 	}

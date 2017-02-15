@@ -1,4 +1,4 @@
-package com.dwarfeng.jier.mh4w.core.view.struct;
+package com.dwarfeng.jier.mh4w.core.view.ctrl;
 
 import java.awt.Component;
 import java.util.Objects;

@@ -56,6 +56,10 @@ import com.dwarfeng.jier.mh4w.core.model.struct.ProcessException;
 import com.dwarfeng.jier.mh4w.core.model.struct.Resource;
 import com.dwarfeng.jier.mh4w.core.util.Constants;
 import com.dwarfeng.jier.mh4w.core.util.Mh4wUtil;
+import com.dwarfeng.jier.mh4w.core.view.ctrl.AbstractMainFrameController;
+import com.dwarfeng.jier.mh4w.core.view.ctrl.MainFrameController;
+import com.dwarfeng.jier.mh4w.core.view.gui.MainFrame;
+import com.dwarfeng.jier.mh4w.core.view.obv.MainFrameObverser;
 
 /**
  * 工时统计软件。
@@ -184,6 +188,47 @@ public final class Mh4w {
 				}
 			}
 		};
+		//GuiControllers
+		private MainFrameController mainFrameController = new AbstractMainFrameController() {
+			
+			/*
+			 * (non-Javadoc)
+			 * @see com.dwarfeng.jier.mh4w.core.view.ctrl.AbstractGuiController#newInstanceImpl()
+			 */
+			@Override
+			protected MainFrame newInstanceImpl() {
+				MainFrame mainFrame = new MainFrame(
+						labelMutilangModel.getMutilang()
+				);
+				mainFrame.addObverser(mainFrameObverser);
+				return mainFrame;
+			}
+			
+			/*
+			 * (non-Javadoc)
+			 * @see com.dwarfeng.jier.mh4w.core.view.ctrl.AbstractGuiController#disposeImpl(java.awt.Component)
+			 */
+			@Override
+			protected void disposeImpl(MainFrame component) {
+				component.removeObverser(mainFrameObverser);
+				component.dispose();
+			}
+		};
+		//GUI obversers
+		private final MainFrameObverser mainFrameObverser = new MainFrameObverser() {
+			
+			/*
+			 * (non-Javadoc)
+			 * @see com.dwarfeng.jier.mh4w.core.view.obv.MainFrameObverser#fireWindowClosing()
+			 */
+			@Override
+			public void fireWindowClosing() {
+				// TODO Auto-generated method stub
+				
+			}
+		};
+		
+		
 		public Manager() {
 			coreConfigModel.addAll(Arrays.asList(CoreConfig.values()));
 			loggerMutilangModel.setDefaultMutilangInfo(Constants.getDefaultLoggerMutilangInfo());
@@ -261,6 +306,13 @@ public final class Mh4w {
 		public FinishedFlowTaker getFinishedFlowTaker() {
 			return finishedFlowTaker;
 		}
+
+		/**
+		 * @return the mainFrameController
+		 */
+		public MainFrameController getMainFrameController() {
+			return mainFrameController;
+		}
 		
 	}
 	
@@ -324,18 +376,18 @@ public final class Mh4w {
 			protected void process() {
 				manager.getBlockModel().getBlock().block(blockKey);
 				try{
-					subProcess();
+					processImpl();
 				}finally {
 					manager.getBlockModel().getBlock().unblock(blockKey);
 				}
 			}
 			
 			/**
-			 * 子处理方法。
+			 * 处理方法实现方法。
 			 * <p> 该方法是主要的处理方法。
 			 * <p> 该方法不允许抛出任何异常。
 			 */
-			protected abstract void subProcess();
+			protected abstract void processImpl();
 			
 			/**
 			 * 返回指定的记录器键所对应的字符串。
@@ -422,7 +474,7 @@ public final class Mh4w {
 			 * @see com.dwarfeng.jier.mh4w.core.control.Mh4w.FlowProvider.AbstractInnerFlow#subProcess()
 			 */
 			@Override
-			protected void subProcess() {
+			protected void processImpl() {
 				try{
 					if(getState() != RuntimeState.NOT_START){
 						throw new IllegalStateException("程序已经启动或已经结束");
@@ -553,6 +605,17 @@ public final class Mh4w {
 					}catch (ProcessException e) {
 						warn(LoggerStringKey.Update_LabelMutilang_1, e);
 					}
+					
+					//生成视图，并使其可见。
+					info(LoggerStringKey.Mh4w_FlowProvider_8);
+					message(LoggerStringKey.Mh4w_FlowProvider_8);
+					Mh4wUtil.invokeInEventQueue(new Runnable() {
+						@Override
+						public void run() {
+							manager.getMainFrameController().newInstance();
+							manager.getMainFrameController().setVisible(true);
+						}
+					});
 					
 					//设置成功消息
 					message(LoggerStringKey.Mh4w_FlowProvider_1);

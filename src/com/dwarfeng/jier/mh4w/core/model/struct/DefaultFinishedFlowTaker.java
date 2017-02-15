@@ -8,6 +8,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import com.dwarfeng.dutil.basic.threads.NumberedThreadFactory;
 import com.dwarfeng.jier.mh4w.core.model.cm.BackgroundModel;
 import com.dwarfeng.jier.mh4w.core.model.eum.LoggerStringKey;
+import com.dwarfeng.jier.mh4w.core.util.Constants;
 import com.dwarfeng.jier.mh4w.core.util.Mh4wUtil;
 
 /**
@@ -36,7 +37,7 @@ public class DefaultFinishedFlowTaker implements FinishedFlowTaker {
 	 * @throws NullPointerException 入口参数为 <code>null</code>。
 	 */
 	public DefaultFinishedFlowTaker(BackgroundModel backgroundModel) {
-		this(backgroundModel, Mh4wUtil.newDefaultLogger(), Mh4wUtil.newDefaultLoggerMutilang());
+		this(backgroundModel, Mh4wUtil.newDefaultLogger(), Constants.getDefaultLoggerMutilang());
 	}
 	
 	/**
@@ -207,7 +208,7 @@ public class DefaultFinishedFlowTaker implements FinishedFlowTaker {
 						try{
 							str = mutilang.getString(LoggerStringKey.FinishedFlowTaker_3.getName());
 						}catch (Exception e1) {
-							Mutilang tempMutilang = Mh4wUtil.newDefaultLoggerMutilang();
+							Mutilang tempMutilang = Constants.getDefaultLoggerMutilang();
 							str = tempMutilang.getString(LoggerStringKey.FinishedFlowTaker_4.getName());
 							logger.warn(str, e1);
 							str = tempMutilang.getString(LoggerStringKey.FinishedFlowTaker_3.getName());

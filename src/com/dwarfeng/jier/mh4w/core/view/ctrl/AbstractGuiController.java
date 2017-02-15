@@ -1,4 +1,4 @@
-package com.dwarfeng.jier.mh4w.core.view.struct;
+package com.dwarfeng.jier.mh4w.core.view.ctrl;
 
 import java.awt.Component;
 import java.util.Objects;
@@ -88,7 +88,7 @@ public abstract class AbstractGuiController<T extends Component> implements GuiC
 		lock.writeLock().lock();
 		try{
 			if(Objects.isNull(component)){
-				component = subNewInstance();
+				component = newInstanceImpl();
 				if(component == null) return;
 				component.setVisible(true);
 			}else{
@@ -108,7 +108,7 @@ public abstract class AbstractGuiController<T extends Component> implements GuiC
 		lock.writeLock().lock();
 		try{
 			if(Objects.nonNull(component)) return false;
-			component = subNewInstance();
+			component = newInstanceImpl();
 			return component != null;
 		}finally {
 			lock.writeLock().unlock();
@@ -116,11 +116,11 @@ public abstract class AbstractGuiController<T extends Component> implements GuiC
 	}
 
 	/**
-	 *生成新实例。
+	 *生成新实例实现方法。
 	 *<p> 只有控制器中没有实例且调用了 {@link #newInstance()} 方法时，才会调用此方法。
 	 * @return 实例有没有被生成。
 	 */
-	protected abstract T subNewInstance();
+	protected abstract T newInstanceImpl();
 
 	/*
 	 * (non-Javadoc)
@@ -131,7 +131,7 @@ public abstract class AbstractGuiController<T extends Component> implements GuiC
 		lock.writeLock().lock();
 		try{
 			if(Objects.isNull(component)) return false;
-			subDispose(component);
+			disposeImpl(component);
 			this.component = null;
 			return true;
 		}finally {
@@ -140,10 +140,10 @@ public abstract class AbstractGuiController<T extends Component> implements GuiC
 	}
 
 	/**
-	 * 释放实例。
+	 * 释放实例实现方法。
 	 * <p> 只有控制器中有实例且调用了 {@link #dispose()} 方法时，才会调用此方法。
 	 * <p> 该方法中传入的入口参数保证不为 <code>null</code>。
 	 */
-	protected abstract void subDispose(T component);
+	protected abstract void disposeImpl(T component);
 	
 }

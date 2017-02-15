@@ -1,4 +1,4 @@
-package com.dwarfeng.jier.mh4w.core.view.struct;
+package com.dwarfeng.jier.mh4w.core.view.ctrl;
 
 import com.dwarfeng.jier.mh4w.core.view.gui.MainFrame;
 
