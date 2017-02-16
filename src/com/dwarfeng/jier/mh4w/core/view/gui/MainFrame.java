@@ -1,6 +1,7 @@
 package com.dwarfeng.jier.mh4w.core.view.gui;
 
 import java.awt.Font;
+import java.awt.Image;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.Set;
@@ -14,18 +15,23 @@ import javax.swing.SwingConstants;
 
 import com.dwarfeng.dutil.basic.gui.swing.JImagePanel;
 import com.dwarfeng.dutil.basic.prog.ObverserSet;
-import com.dwarfeng.jier.mh4w.core.model.cm.FileSelectorModel;
+import com.dwarfeng.jier.mh4w.core.model.cm.FileSelectModel;
+import com.dwarfeng.jier.mh4w.core.model.eum.ImageKey;
+import com.dwarfeng.jier.mh4w.core.model.eum.ImageSize;
 import com.dwarfeng.jier.mh4w.core.model.eum.LabelStringKey;
-import com.dwarfeng.jier.mh4w.core.model.obv.FileSelectorAdapter;
-import com.dwarfeng.jier.mh4w.core.model.obv.FileSelectorObverser;
+import com.dwarfeng.jier.mh4w.core.model.obv.FileSelectAdapter;
+import com.dwarfeng.jier.mh4w.core.model.obv.FileSelectObverser;
 import com.dwarfeng.jier.mh4w.core.model.struct.Mutilang;
 import com.dwarfeng.jier.mh4w.core.model.struct.MutilangSupported;
 import com.dwarfeng.jier.mh4w.core.util.Constants;
+import com.dwarfeng.jier.mh4w.core.util.ImageUtil;
 import com.dwarfeng.jier.mh4w.core.view.obv.MainFrameObverser;
-import java.awt.Toolkit;
 import java.io.File;
-import java.awt.Component;
-import javax.swing.Box;
+import java.awt.Cursor;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 /**
  * 程序的主界面。
@@ -43,87 +49,117 @@ public final class MainFrame extends JFrame implements MutilangSupported, Obvers
 	/*
 	 * final 域。
 	 */
-	private JImagePanel attendanceFilePanel;
-	private JImagePanel workticketFilePanel;
-	
+	private final Image xls_red;
+	private final Image xls_green;
+	private final JImagePanel attendanceFilePanel;
+	private final JImagePanel workticketFilePanel;
+	private final JLabel attendanceLabel;
+	private final JLabel workticketLabel;
+
 	/*
 	 * 各模型。
 	 */
-	private FileSelectorModel fileSelectorModel;
+	private FileSelectModel fileSelectModel;
 	
 	/*
 	 * 各模型的观察器。
 	 */
-	private final FileSelectorObverser fileSelectorObverser = new FileSelectorAdapter() {
+	private final FileSelectObverser fileSelectObverser = new FileSelectAdapter() {
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.dwarfeng.jier.mh4w.core.model.obv.FileSelectorAdapter#fireAttendanceFileChanged(java.io.File, java.io.File)
+		 * @see com.dwarfeng.jier.mh4w.core.model.obv.FileSelectAdapter#fireAttendanceFileChanged(java.io.File, java.io.File)
 		 */
 		@Override
 		public void fireAttendanceFileChanged(File oldValue, File newValue) {
-			// TODO Auto-generated method stub
-			super.fireAttendanceFileChanged(oldValue, newValue);
+			if(Objects.nonNull(newValue)){
+				attendanceFilePanel.setImage(xls_green);
+				attendanceFilePanel.setToolTipText(newValue.getAbsolutePath());
+			}else {
+				attendanceFilePanel.setImage(xls_red);
+				attendanceFilePanel.setToolTipText(getLabel(LabelStringKey.MainFrame_3));
+			}
 		}
 
 		/*
 		 * (non-Javadoc)
-		 * @see com.dwarfeng.jier.mh4w.core.model.obv.FileSelectorAdapter#fireWorkticketFileChanged(java.io.File, java.io.File)
+		 * @see com.dwarfeng.jier.mh4w.core.model.obv.FileSelectAdapter#fireWorkticketFileChanged(java.io.File, java.io.File)
 		 */
 		@Override
 		public void fireWorkticketFileChanged(File oldValue, File newValue) {
-			// TODO Auto-generated method stub
-			super.fireWorkticketFileChanged(oldValue, newValue);
+			if(Objects.nonNull(newValue)){
+				workticketFilePanel.setImage(xls_green);
+				workticketFilePanel.setToolTipText(newValue.getAbsolutePath());
+			}else {
+				workticketFilePanel.setImage(xls_red);
+				workticketFilePanel.setToolTipText(getLabel(LabelStringKey.MainFrame_3));
+			}
 		}
-
-		/*
-		 * (non-Javadoc)
-		 * @see com.dwarfeng.jier.mh4w.core.model.obv.FileSelectorAdapter#fireReadyChanged(boolean)
-		 */
-		@Override
-		public void fireReadyChanged(boolean isReady) {
-			// TODO Auto-generated method stub
-			super.fireReadyChanged(isReady);
-		}
-		
-		
 		
 	};
-	
 	/**
 	 * 新实例。
 	 */
 	public MainFrame() {
-		this(Constants.getDefaultLabelMutilang());
+		this(Constants.getDefaultLabelMutilang(), null);
 	}
 	
 	/**
 	 * 新实例。
 	 * @param mutilang
 	 */
-	public MainFrame(Mutilang mutilang) {
+	public MainFrame(Mutilang mutilang, FileSelectModel fileSelectModel) {
+		Objects.requireNonNull(mutilang, "入口参数 mutilang 不能为 null。");
+		
+		this.mutilang = mutilang;
+		
+		xls_green = ImageUtil.getImage(ImageKey.XLS_GREEN, ImageSize.XLS_ICON);
+		xls_red = ImageUtil.getImage(ImageKey.XLS_RED, ImageSize.XLS_ICON);
+		
+		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		
+		addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent e) {
+				fireFireWindowClosing();
+			}
+		});
+		
 		setResizable(false);
 		setBounds(100, 100, 427, 295);
 		
 		getContentPane().setLayout(null);
 		
 		attendanceFilePanel = new JImagePanel();
-		attendanceFilePanel.setAutoResize(true);
-		attendanceFilePanel.setOpaque(false);
+		attendanceFilePanel.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				fireSelectAttendanceFile();
+			}
+		});
+		attendanceFilePanel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		attendanceFilePanel.setImage(xls_red);
 		attendanceFilePanel.setBounds(25, 17, 150, 150);
 		getContentPane().add(attendanceFilePanel);
 		
 		workticketFilePanel = new JImagePanel();
-		workticketFilePanel.setAutoResize(true);
+		workticketFilePanel.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				fireSelectWorkticketFile();
+			}
+		});
+		workticketFilePanel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		workticketFilePanel.setImage(xls_red);
 		workticketFilePanel.setBounds(245, 17, 150, 150);
 		getContentPane().add(workticketFilePanel);
 		
-		JLabel label = new JLabel();
-		label.setText("123321");
-		label.setHorizontalAlignment(SwingConstants.CENTER);
-		label.setFont(new Font("Dialog", Font.BOLD, 16));
-		label.setBounds(245, 167, 150, 25);
-		getContentPane().add(label);
+		workticketLabel = new JLabel();
+		workticketLabel.setText(getLabel(LabelStringKey.MainFrame_2));
+		workticketLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		workticketLabel.setFont(new Font("Dialog", Font.BOLD, 16));
+		workticketLabel.setBounds(245, 167, 150, 25);
+		getContentPane().add(workticketLabel);
 		
 		JButton button = new JButton();
 		button.setText((String) null);
@@ -136,12 +172,12 @@ public final class MainFrame extends JFrame implements MutilangSupported, Obvers
 		toggleButton.setBounds(190, 200, 40, 40);
 		getContentPane().add(toggleButton);
 		
-		JLabel label_1 = new JLabel();
-		label_1.setText("123321");
-		label_1.setHorizontalAlignment(SwingConstants.CENTER);
-		label_1.setFont(new Font("Dialog", Font.BOLD, 16));
-		label_1.setBounds(25, 167, 150, 25);
-		getContentPane().add(label_1);
+		attendanceLabel = new JLabel();
+		attendanceLabel.setText(getLabel(LabelStringKey.MainFrame_1));
+		attendanceLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		attendanceLabel.setFont(new Font("Dialog", Font.BOLD, 16));
+		attendanceLabel.setBounds(25, 167, 150, 25);
+		getContentPane().add(attendanceLabel);
 		
 		JButton button_1 = new JButton();
 		button_1.setToolTipText((String) null);
@@ -164,8 +200,26 @@ public final class MainFrame extends JFrame implements MutilangSupported, Obvers
 		button_3.setBounds(135, 200, 40, 40);
 		getContentPane().add(button_3);
 		
+		//设置文件选择模型
+		if(Objects.nonNull(fileSelectModel)){
+			fileSelectModel.addObverser(fileSelectObverser);
+			if(Objects.nonNull(fileSelectModel.getAttendanceFile())){
+				attendanceFilePanel.setImage(xls_green);
+				attendanceFilePanel.setToolTipText(fileSelectModel.getAttendanceFile().getAbsolutePath());
+			}else{
+				attendanceFilePanel.setImage(xls_red);
+				attendanceFilePanel.setToolTipText(getLabel(LabelStringKey.MainFrame_3));
+			}
+			if(Objects.nonNull(fileSelectModel.getWorkticketFile())){
+				workticketFilePanel.setImage(xls_green);
+				workticketFilePanel.setToolTipText(fileSelectModel.getWorkticketFile().getAbsolutePath());
+			}else{
+				workticketFilePanel.setImage(xls_red);
+				workticketFilePanel.setToolTipText(getLabel(LabelStringKey.MainFrame_3));
+			}
+		}
 		
-		
+		this.fileSelectModel = fileSelectModel;
 	}
 
 	/*
@@ -183,10 +237,14 @@ public final class MainFrame extends JFrame implements MutilangSupported, Obvers
 	 */
 	@Override
 	public boolean setMutilang(Mutilang mutilang) {
-		Objects.requireNonNull(mutilang , "入口参数 mutilang 不能为 null。");
-		
+		if(Objects.isNull(mutilang)) return false;
 		if(Objects.equals(mutilang, this.mutilang)) return false;
 		this.mutilang = mutilang;
+		
+		//更新各标签的文本。
+		attendanceLabel.setText(getLabel(LabelStringKey.MainFrame_1));
+		workticketLabel.setText(getLabel(LabelStringKey.MainFrame_2));
+
 		return true;
 	}
 
@@ -236,22 +294,55 @@ public final class MainFrame extends JFrame implements MutilangSupported, Obvers
 	}
 
 	/**
-	 * @return the fileSelectorModel
+	 * @return the fileSelectModel
 	 */
-	public FileSelectorModel getFileSelectorModel() {
-		return fileSelectorModel;
+	public FileSelectModel getFileSelectModel() {
+		return fileSelectModel;
 	}
 
 	/**
-	 * @param fileSelectorModel the fileSelectorModel to set
+	 * @param fileSelectModel the fileSelectModel to set
 	 */
-	public void setFileSelectorModel(FileSelectorModel fileSelectorModel) {
-		this.fileSelectorModel = fileSelectorModel;
+	public void setFileSelectModel(FileSelectModel fileSelectModel) {
+		if(Objects.nonNull(this.fileSelectModel)){
+			this.fileSelectModel.removeObverser(fileSelectObverser);
+		}
+		if(Objects.nonNull(fileSelectModel)){
+			fileSelectModel.addObverser(fileSelectObverser);
+			if(Objects.nonNull(fileSelectModel.getAttendanceFile())){
+				attendanceFilePanel.setImage(xls_green);
+				attendanceFilePanel.setToolTipText(fileSelectModel.getAttendanceFile().getAbsolutePath());
+			}else{
+				attendanceFilePanel.setImage(xls_red);
+				attendanceFilePanel.setToolTipText(getLabel(LabelStringKey.MainFrame_3));
+			}
+			if(Objects.nonNull(fileSelectModel.getWorkticketFile())){
+				workticketFilePanel.setImage(xls_green);
+				workticketFilePanel.setToolTipText(fileSelectModel.getWorkticketFile().getAbsolutePath());
+			}else{
+				workticketFilePanel.setImage(xls_red);
+				workticketFilePanel.setToolTipText(getLabel(LabelStringKey.MainFrame_3));
+			}
+		}
+		
+		this.fileSelectModel = fileSelectModel;
 	}
 
 	private void fireFireWindowClosing() {
 		for(MainFrameObverser obverser : obversers){
 			if(Objects.nonNull(obverser)) obverser.fireWindowClosing();
+		}
+	}
+
+	private void fireSelectAttendanceFile() {
+		for(MainFrameObverser obverser : obversers){
+			if(Objects.nonNull(obverser)) obverser.fireSelectAttendanceFile();
+		}
+	}
+
+	private void fireSelectWorkticketFile() {
+		for(MainFrameObverser obverser : obversers){
+			if(Objects.nonNull(obverser)) obverser.fireSelectWorkticketFile();
 		}
 	}
 

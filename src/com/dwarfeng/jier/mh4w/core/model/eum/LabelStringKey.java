@@ -14,24 +14,6 @@ public enum LabelStringKey implements Name{
 	MainFrame_1(new DefaultName("MainFrame.1")),
 	MainFrame_2(new DefaultName("MainFrame.2")),
 	MainFrame_3(new DefaultName("MainFrame.3")),
-	MainFrame_4(new DefaultName("MainFrame.4")),
-	MainFrame_5(new DefaultName("MainFrame.5")),
-	MainFrame_6(new DefaultName("MainFrame.6")),
-	MainFrame_7(new DefaultName("MainFrame.7")),
-
-	JTpconsole_1(new DefaultName("JTpconsole.1")),
-	JTpconsole_2(new DefaultName("JTpconsole.2")),
-	JTpconsole_3(new DefaultName("JTpconsole.3")),
-	
-	JToolRuntimePanel_1(new DefaultName("JToolRuntimePanel.1")),
-	JToolRuntimePanel_2(new DefaultName("JToolRuntimePanel.2")),
-	JToolRuntimePanel_3(new DefaultName("JToolRuntimePanel.3")),
-	JToolRuntimePanel_4(new DefaultName("JToolRuntimePanel.4")),
-
-	JToolHistoryPanel_1(new DefaultName("JToolHistoryPanel.1")),
-	JToolHistoryPanel_2(new DefaultName("JToolHistoryPanel.2")),
-	JToolHistoryPanel_3(new DefaultName("JToolHistoryPanel.3")),
-	JToolHistoryPanel_4(new DefaultName("JToolHistoryPanel.4")),
 
 	;
 

@@ -1,149 +1,207 @@
 package com.dwarfeng.jier.mh4w.core.view.ctrl;
 
-import java.awt.Component;
+import java.io.File;
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-public abstract class AbstractGuiController<T extends Component> implements GuiController<T>{
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileFilter;
 
+import com.dwarfeng.dutil.basic.io.CT;
+import com.dwarfeng.jier.mh4w.core.model.struct.Mutilang;
+import com.dwarfeng.jier.mh4w.core.view.gui.MainFrame;
+
+/**
+ * 抽象主界面控制器。
+ * <p> 主界面控制器的抽象实现。
+ * @author DwArFeng
+ * @since 0.0.0-alpha
+ */
+public abstract class AbstractGuiController implements GuiController {
+	
 	protected final ReadWriteLock lock = new ReentrantReadWriteLock();
-	protected T component = null;
+	
+	protected MainFrame mainFrame = null;
 
 	
-	/*
+	
+	/* 
 	 * (non-Javadoc)
 	 * @see com.dwarfeng.dutil.basic.threads.ExternalReadWriteThreadSafe#getLock()
 	 */
 	@Override
 	public ReadWriteLock getLock() {
-		return this.lock;
+		return lock;
 	}
 
-	/*
+	/* 
 	 * (non-Javadoc)
-	 * @see com.dwarfeng.jier.mh4w.core.view.struct.GuiController#hasInstance()
+	 * @see com.dwarfeng.jier.mh4w.core.view.ctrl.GuiController#newMainFrame()
 	 */
 	@Override
-	public boolean hasInstance() {
-		lock.readLock().lock();
-		try{
-			return Objects.nonNull(null);
-		}finally {
-			lock.readLock().unlock();
-		}
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.dwarfeng.jier.mh4w.core.view.struct.GuiController#getInstance()
-	 */
-	@Override
-	public T getInstance() {
-		lock.readLock().lock();
-		try{
-			return component;
-		}finally {
-			lock.readLock().unlock();
-		}
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.dwarfeng.jier.mh4w.core.view.struct.GuiController#isVisible()
-	 */
-	@Override
-	public boolean isVisible() {
-		lock.readLock().lock();
-		try{
-			if(Objects.isNull(component)) return false;
-			return component.isVisible();
-		}finally {
-			lock.readLock().unlock();
-		}
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see com.dwarfeng.jier.mh4w.core.view.struct.GuiController#setVisible(boolean)
-	 */
-	@Override
-	public boolean setVisible(boolean aFlag) {
+	public boolean newMainFrame() {
 		lock.writeLock().lock();
 		try{
-			if(Objects.isNull(component)) return false;
-			component.setVisible(aFlag);
-			return true;
+			if(Objects.isNull(mainFrame)){
+				mainFrame = newMainFrameImpl();
+				return Objects.nonNull(mainFrame);
+			}else{
+				return false;
+			}
 		}finally {
 			lock.writeLock().unlock();
 		}
 	}
+	
+	/**
+	 * 新建主面板的实现方法。
+	 * <p> 该方法已经在调用方法处上锁，不用单独上锁。
+	 * @return 新的主界面。
+	 */
+	 protected abstract MainFrame newMainFrameImpl();
 
-	/*
+	/* 
 	 * (non-Javadoc)
-	 * @see com.dwarfeng.jier.mh4w.core.view.struct.GuiController#show()
+	 * @see com.dwarfeng.jier.mh4w.core.view.ctrl.GuiController#disposeMainFrame()
 	 */
 	@Override
-	public void show() {
+	public boolean disposeMainFrame() {
 		lock.writeLock().lock();
 		try{
-			if(Objects.isNull(component)){
-				component = newInstanceImpl();
-				if(component == null) return;
-				component.setVisible(true);
-			}else{
-				component.setVisible(true);
+			if(Objects.nonNull(mainFrame)){
+				if(disposeMainFrameImpl()){
+					mainFrame = null;
+					return true;
+				}else{
+					return false;
+				}
+			}else {
+				return false;
 			}
 		}finally {
 			lock.writeLock().unlock();
 		}
 	}
 
+	/**
+	 * 释放主面板的实现方法。
+	 * <p> 该方法已在调用方法处上锁，不用单独上锁。
+	 * @return 是否释放成功。
+	 */
+	protected abstract boolean disposeMainFrameImpl();
+
 	/*
 	 * (non-Javadoc)
-	 * @see com.dwarfeng.jier.mh4w.core.view.struct.GuiController#newInstance()
+	 * @see com.dwarfeng.jier.mh4w.core.view.ctrl.GuiController#hasMainFrame()
 	 */
 	@Override
-	public boolean newInstance() {
-		lock.writeLock().lock();
+	public boolean hasMainFrame() {
+		lock.readLock().lock();
 		try{
-			if(Objects.nonNull(component)) return false;
-			component = newInstanceImpl();
-			return component != null;
+			return Objects.nonNull(mainFrame);
 		}finally {
-			lock.writeLock().unlock();
+			lock.readLock().unlock();
+		}
+	}
+	
+	/* 
+	 * (non-Javadoc)
+	 * @see com.dwarfeng.jier.mh4w.core.view.ctrl.GuiController#getMainFrameVisible()
+	 */
+	@Override
+	public boolean getMainFrameVisible() {
+		lock.readLock().lock();
+		try{
+			if(Objects.isNull(mainFrame)) return false;
+			return mainFrame.isVisible();
+		}finally {
+			lock.readLock().unlock();
 		}
 	}
 
-	/**
-	 *生成新实例实现方法。
-	 *<p> 只有控制器中没有实例且调用了 {@link #newInstance()} 方法时，才会调用此方法。
-	 * @return 实例有没有被生成。
-	 */
-	protected abstract T newInstanceImpl();
-
-	/*
+	/* 
 	 * (non-Javadoc)
-	 * @see com.dwarfeng.jier.mh4w.core.view.struct.GuiController#dispose()
+	 * @see com.dwarfeng.jier.mh4w.core.view.ctrl.GuiController#setMainFrameVisible(boolean)
 	 */
 	@Override
-	public boolean dispose() {
+	public boolean setMainFrameVisible(boolean aFlag) {
 		lock.writeLock().lock();
 		try{
-			if(Objects.isNull(component)) return false;
-			disposeImpl(component);
-			this.component = null;
+			if(Objects.isNull(mainFrame)) return false;
+			mainFrame.setVisible(aFlag);
 			return true;
 		}finally {
 			lock.writeLock().unlock();
 		}
 	}
 
-	/**
-	 * 释放实例实现方法。
-	 * <p> 只有控制器中有实例且调用了 {@link #dispose()} 方法时，才会调用此方法。
-	 * <p> 该方法中传入的入口参数保证不为 <code>null</code>。
+	/*
+	 * (non-Javadoc)
+	 * @see com.dwarfeng.jier.mh4w.core.view.ctrl.GuiController#getMainFrameMutilang()
 	 */
-	protected abstract void disposeImpl(T component);
+	@Override
+	public Mutilang getMainFrameMutilang() {
+		lock.readLock().lock();
+		try{
+			if(Objects.isNull(mainFrame)) return null;
+			return mainFrame.getMutilang();
+		}finally {
+			lock.readLock().unlock();
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.dwarfeng.jier.mh4w.core.view.ctrl.GuiController#setMainFrameMutilang(com.dwarfeng.jier.mh4w.core.model.struct.Mutilang)
+	 */
+	@Override
+	public boolean setMainFrameMutilang(Mutilang mutilang) {
+		lock.writeLock().lock();
+		try{
+			if(Objects.isNull(mainFrame)) return false;
+			return mainFrame.setMutilang(mutilang);
+		}finally {
+			lock.writeLock().unlock();
+		}
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see com.dwarfeng.jier.mh4w.core.view.ctrl.GuiController#askFile()
+	 */
+	@Override
+	public File[] askFile(File directory, FileFilter[] fileFilters, boolean acceptAllFileFilter, boolean mutiSelectionEnabled,
+			int fileSelectionMode) {
+		lock.writeLock().lock();
+		try{
+			if(Objects.isNull(mainFrame)) return null;
+			JFileChooser chooser = new JFileChooser();
+			chooser.setCurrentDirectory(directory);
+			chooser.setAcceptAllFileFilterUsed(acceptAllFileFilter);
+			chooser.setMultiSelectionEnabled(mutiSelectionEnabled);
+			chooser.setFileSelectionMode(fileSelectionMode);
+			if(Objects.nonNull(fileFilters)){
+				for(FileFilter fileFilter : fileFilters){
+					chooser.setFileFilter(fileFilter);
+				}
+			}
+
+			int status = chooser.showOpenDialog(mainFrame);
+			CT.trace(status);
+			if(status == JFileChooser.APPROVE_OPTION){
+				if(mutiSelectionEnabled){
+					return chooser.getSelectedFiles();
+				}else{
+					return new File[]{chooser.getSelectedFile()};
+				}
+			}else{
+				return new File[0];
+			}
+		}finally {
+			lock.writeLock().unlock();
+		}
+	}
 	
 }

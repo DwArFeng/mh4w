@@ -1,67 +1,75 @@
 package com.dwarfeng.jier.mh4w.core.view.ctrl;
 
-import java.awt.Component;
+import java.io.File;
+
+import javax.swing.filechooser.FileFilter;
 
 import com.dwarfeng.dutil.basic.threads.ExternalReadWriteThreadSafe;
+import com.dwarfeng.jier.mh4w.core.model.struct.Mutilang;
 
 /**
- * 图形交互界面控制器。
- * <p> 用于控制图形交互界面。
- * @author  DwArFeng
+ * 主界面控制器。
+ * @author DwArFeng
  * @since 0.0.0-alpha
  */
-public interface GuiController<T extends Component> extends ExternalReadWriteThreadSafe{
-
-	/**
-	 * 生成一个新实例。
-	 * <p> 如果前一个实例还没有被释放，则不进行任何操作，返回 <code>false</code>。
-	 * <p> 该方法需要在 Swing 事件队列中运行。
-	 * @return 该操作是否生成了一个新实例。
-	 */
-	public boolean newInstance();
+public interface GuiController extends ExternalReadWriteThreadSafe{
 	
 	/**
-	 * 返回该控制器是否已经拥有了一个实例。
-	 * @return 是否已经拥有了一个实例。
+	 * 新建一个主面板。
+	 * @return 是否成功新建。
 	 */
-	public boolean hasInstance();
+	public boolean newMainFrame();
 	
 	/**
-	 * 获取该控制器的实例。
-	 * <p> 如果没有实例，则返回 <code>null</code>。
-	 * @return 该控制器的实例。
+	 * 释放控制器中的主面板。
+	 * @return 是否成功释放。
 	 */
-	public T getInstance();
+	public boolean disposeMainFrame();
 	
 	/**
-	 * 释放实例。
-	 * <p> 释放实例后，将实例设置为 <code>null</code>， 同时 {@link #hasInstance()} 方法将返回 <code>false</code>。
-	 * <p> 如果此时控制器中的实例已经被释放了，则什么也不做并且返回 <code>false</code>。
-	 * @return 实例是否被释放。
+	 * 返回该控制器中是否拥有主面板实例。
+	 * @return 是否拥有主面板实例。
 	 */
-	public boolean dispose();
+	public boolean hasMainFrame();
 	
 	/**
-	 * 返回该控制器实例中的对象是否为可见的。
-	 * <p> 如果此时控制器中没有实例，则返回 <code>false</code>。
-	 * @return 该控制器实例中的对象是否为可见的。
+	 * 获取主界面是否可见。
+	 * @return 主界面是否可见。
 	 */
-	public boolean isVisible();
+	public boolean getMainFrameVisible();
 	
 	/**
-	 * 设置控制器中的实例是否可见。
-	 * <p> 如果控制器中没有实例，则什么也不做并且返回 <code>false</code>。
-	 * <p> 该方法需要在 Swing 事件队列中运行。
-	 * @return 是否成功的设置。
+	 * 设置主界面是否可见。
+	 * @param aFlag 主界面是否可见。
+	 * @return 是否设置成功。
 	 */
-	public boolean setVisible(boolean aFlag);
+	public boolean setMainFrameVisible(boolean aFlag);
 	
 	/**
-	 * 展示该控制器中的实例。
-	 * <p> 如果该控制器中没有实例，则新建一个实例，然后将此实例设为可见；
-	 * 如果控制器中有实例，则直接将其设为可见。
-	 * <p> 该方法需要在 Swing 事件队列中运行。
+	 * 获取该控制器中主面板的多语言接口。
+	 * @return 该控制器中主面板的多语言接口。
 	 */
-	public void show();
+	public Mutilang getMainFrameMutilang();
+	
+	/**
+	 * 设置该控制器中主面板的多语言接口。
+	 * @param mutilang 指定的多语言接口。
+	 * @return 该操作是否对该对象造成了改变。
+	 */
+	public boolean setMainFrameMutilang(Mutilang mutilang);
+	
+	/**
+	 * 向用户询问一个或数个文件。
+	 * <p> 该方法是阻塞式的，在用户选择完文件之前，会一直阻塞。
+	 * 因此，请不要在 EventQueue 线程中调用这个方法。
+	 * @param directory 指定的根目录的位置。
+	 * @param fileFilters 指定的文件筛选器。
+	 * @param acceptAllFileFilter 是否允许选择全部文件。
+	 * @param  mutiSelectionEnabled 是否允许选择多个文件。
+	 * @param fileSelectionMode 文件选择模式。
+	 * @return 用户选择的文件。
+	 */
+	public File[] askFile(File directory, FileFilter[] fileFilters, boolean acceptAllFileFilter, boolean mutiSelectionEnabled,
+			int fileSelectionMode);
 	
 }

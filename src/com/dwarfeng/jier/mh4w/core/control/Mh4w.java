@@ -1,6 +1,8 @@
 package com.dwarfeng.jier.mh4w.core.control;
 
+import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -11,8 +13,11 @@ import java.util.Set;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicReference;
 
+import javax.swing.JFileChooser;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 
 import com.dwarfeng.dutil.basic.prog.DefaultVersion;
@@ -24,15 +29,18 @@ import com.dwarfeng.dutil.develop.cfg.ConfigAdapter;
 import com.dwarfeng.dutil.develop.cfg.ConfigKey;
 import com.dwarfeng.dutil.develop.cfg.ConfigObverser;
 import com.dwarfeng.dutil.develop.cfg.io.PropConfigLoader;
+import com.dwarfeng.dutil.develop.cfg.io.PropConfigSaver;
 import com.dwarfeng.jier.mh4w.core.model.cm.BackgroundModel;
 import com.dwarfeng.jier.mh4w.core.model.cm.BlockModel;
 import com.dwarfeng.jier.mh4w.core.model.cm.CoreConfigModel;
 import com.dwarfeng.jier.mh4w.core.model.cm.DefaultBackgroundModel;
 import com.dwarfeng.jier.mh4w.core.model.cm.DefaultBlockModel;
 import com.dwarfeng.jier.mh4w.core.model.cm.DefaultCoreConfigModel;
+import com.dwarfeng.jier.mh4w.core.model.cm.DefaultFileSelectModel;
 import com.dwarfeng.jier.mh4w.core.model.cm.DefaultLoggerModel;
 import com.dwarfeng.jier.mh4w.core.model.cm.DefaultMutilangModel;
 import com.dwarfeng.jier.mh4w.core.model.cm.DefaultResourceModel;
+import com.dwarfeng.jier.mh4w.core.model.cm.FileSelectModel;
 import com.dwarfeng.jier.mh4w.core.model.cm.LoggerModel;
 import com.dwarfeng.jier.mh4w.core.model.cm.MutilangModel;
 import com.dwarfeng.jier.mh4w.core.model.cm.ResourceModel;
@@ -56,8 +64,8 @@ import com.dwarfeng.jier.mh4w.core.model.struct.ProcessException;
 import com.dwarfeng.jier.mh4w.core.model.struct.Resource;
 import com.dwarfeng.jier.mh4w.core.util.Constants;
 import com.dwarfeng.jier.mh4w.core.util.Mh4wUtil;
-import com.dwarfeng.jier.mh4w.core.view.ctrl.AbstractMainFrameController;
-import com.dwarfeng.jier.mh4w.core.view.ctrl.MainFrameController;
+import com.dwarfeng.jier.mh4w.core.view.ctrl.AbstractGuiController;
+import com.dwarfeng.jier.mh4w.core.view.ctrl.GuiController;
 import com.dwarfeng.jier.mh4w.core.view.gui.MainFrame;
 import com.dwarfeng.jier.mh4w.core.view.obv.MainFrameObverser;
 
@@ -144,6 +152,19 @@ public final class Mh4w {
 	private void setState(RuntimeState state){
 		this.state.set(state);
 	}
+	
+	/**
+	 * 尝试关闭本程序。
+	 * <p> 调用该方法后，会尝试关闭程序。如果程序满足关闭的条件，则关闭，否则，会询问用户。
+	 * 就像是用户点击关闭按钮那样。
+	 */
+	public void tryExit(){
+		manager.getBackgroundModel().submit(flowProvider.newClosingFlow());
+	}
+
+	private void exit(){
+		THREAD_FACTORY.newThread(new Exitor()).start();
+	}
 
 
 
@@ -160,6 +181,7 @@ public final class Mh4w {
 		private BlockModel blockModel = new DefaultBlockModel();
 		private MutilangModel loggerMutilangModel = new DefaultMutilangModel();
 		private MutilangModel labelMutilangModel = new DefaultMutilangModel();
+		private FileSelectModel fileSelectModel = new DefaultFileSelectModel();
 		//structs
 		private FinishedFlowTaker finishedFlowTaker = new DefaultFinishedFlowTaker(backgroundModel);
 		//obvs
@@ -189,29 +211,31 @@ public final class Mh4w {
 			}
 		};
 		//GuiControllers
-		private MainFrameController mainFrameController = new AbstractMainFrameController() {
-			
+		private GuiController guiController = new AbstractGuiController() {
+
 			/*
 			 * (non-Javadoc)
-			 * @see com.dwarfeng.jier.mh4w.core.view.ctrl.AbstractGuiController#newInstanceImpl()
+			 * @see com.dwarfeng.jier.mh4w.core.view.ctrl.AbstractGuiController#newMainFrameImpl()
 			 */
 			@Override
-			protected MainFrame newInstanceImpl() {
+			protected MainFrame newMainFrameImpl() {
 				MainFrame mainFrame = new MainFrame(
-						labelMutilangModel.getMutilang()
+						labelMutilangModel.getMutilang(),
+						fileSelectModel
 				);
 				mainFrame.addObverser(mainFrameObverser);
 				return mainFrame;
 			}
-			
+
 			/*
 			 * (non-Javadoc)
-			 * @see com.dwarfeng.jier.mh4w.core.view.ctrl.AbstractGuiController#disposeImpl(java.awt.Component)
+			 * @see com.dwarfeng.jier.mh4w.core.view.ctrl.AbstractGuiController#disposeMainFrameImpl()
 			 */
 			@Override
-			protected void disposeImpl(MainFrame component) {
-				component.removeObverser(mainFrameObverser);
-				component.dispose();
+			protected boolean disposeMainFrameImpl() {
+				mainFrame.removeObverser(mainFrameObverser);
+				mainFrame.dispose();
+				return true;
 			}
 		};
 		//GUI obversers
@@ -223,8 +247,25 @@ public final class Mh4w {
 			 */
 			@Override
 			public void fireWindowClosing() {
-				// TODO Auto-generated method stub
-				
+				manager.getBackgroundModel().submit(flowProvider.newClosingFlow());
+			}
+			
+			/*
+			 * (non-Javadoc)
+			 * @see com.dwarfeng.jier.mh4w.core.view.obv.MainFrameObverser#fireSelectAttendanceFile()
+			 */
+			@Override
+			public void fireSelectAttendanceFile() {
+				manager.getBackgroundModel().submit(flowProvider.newSelectAttendanceFileFlow());
+			}
+
+			/*
+			 * (non-Javadoc)
+			 * @see com.dwarfeng.jier.mh4w.core.view.obv.MainFrameObverser#fireSelectWorkticketFile()
+			 */
+			@Override
+			public void fireSelectWorkticketFile() {
+				manager.getBackgroundModel().submit(flowProvider.newSelectWorkticketFileFlow());
 			}
 		};
 		
@@ -249,6 +290,14 @@ public final class Mh4w {
 				//未初始化之前，多语言模型使用的是固化在程序中的数据，不可能出现异常。
 				e.printStackTrace();
 			}
+		}
+
+		/**
+		 * 释放资源。
+		 */
+		public void dispose() {
+			// TODO Auto-generated method stub
+			
 		}
 
 		/**
@@ -301,6 +350,13 @@ public final class Mh4w {
 		}
 
 		/**
+		 * @return the fileSelectModel
+		 */
+		public FileSelectModel getFileSelectModel() {
+			return fileSelectModel;
+		}
+
+		/**
 		 * @return the finishedFlowTaker
 		 */
 		public FinishedFlowTaker getFinishedFlowTaker() {
@@ -308,10 +364,10 @@ public final class Mh4w {
 		}
 
 		/**
-		 * @return the mainFrameController
+		 * @return the guiController
 		 */
-		public MainFrameController getMainFrameController() {
-			return mainFrameController;
+		public GuiController getGuiController() {
+			return guiController;
 		}
 		
 	}
@@ -329,6 +385,30 @@ public final class Mh4w {
 		 */
 		public Flow newInitializeFlow() {
 			return new InitializeFlow();
+		}
+		
+		/**
+		 * 获取一个新的程序关闭流。
+		 * @return 新的程序关闭流。
+		 */
+		public Flow newClosingFlow() {
+			return new WindowClosingFlow();
+		}
+
+		/**
+		 * 获取一个新的选择出勤文件流。
+		 * @return 新的出勤文件流。
+		 */
+		public Flow newSelectAttendanceFileFlow() {
+			return new SelectAttendanceFileFlow();
+		}
+
+		/**
+		 * 获取一个新的选择工票文件流。
+		 * @return 新的选择工票文件流。
+		 */
+		public Flow newSelectWorkticketFileFlow() {
+			return new SelectWorkticketFileFlow();
 		}
 
 		/**
@@ -612,8 +692,8 @@ public final class Mh4w {
 					Mh4wUtil.invokeInEventQueue(new Runnable() {
 						@Override
 						public void run() {
-							manager.getMainFrameController().newInstance();
-							manager.getMainFrameController().setVisible(true);
+							manager.getGuiController().newMainFrame();
+							manager.getGuiController().setMainFrameVisible(true);
 						}
 					});
 					
@@ -628,7 +708,278 @@ public final class Mh4w {
 			}
 			
 		}
+
+		private final class WindowClosingFlow extends AbstractInnerFlow{
+		
+			public WindowClosingFlow() {
+				super(BlockKey.CLOSING,manager.getLoggerMutilangModel().getMutilang().getString(LoggerStringKey.Mh4w_FlowProvider_11.getName()));
+			}
+		
+			/*
+			 * (non-Javadoc)
+			 * @see com.dwarfeng.tp.core.control.Mh4w.FlowProvider.AbstractInnerFlow#processImpl()
+			 */
+			@Override
+			protected void processImpl() {
+				try{
+					if(getState() != RuntimeState.RUNNING){
+						throw new IllegalStateException("程序还未启动或已经结束");
+					}
+					
+					info(LoggerStringKey.Mh4w_FlowProvider_11);
+					exit();
+					
+				}catch (Exception e) {
+					message(LoggerStringKey.Mh4w_FlowProvider_12);
+				}
+			}
+			
+		}
+
+		private final class SelectAttendanceFileFlow extends AbstractInnerFlow{
+		
+			public SelectAttendanceFileFlow() {
+				super(BlockKey.SELECT_ATTENDANCE_FILE,manager.getLoggerMutilangModel().getMutilang().getString(LoggerStringKey.Mh4w_FlowProvider_13.getName()));
+			}
+		
+			/*
+			 * (non-Javadoc)
+			 * @see com.dwarfeng.tp.core.control.Mh4w.FlowProvider.AbstractInnerFlow#processImpl()
+			 */
+			@Override
+			protected void processImpl() {
+				try{
+					if(getState() != RuntimeState.RUNNING){
+						throw new IllegalStateException("程序还未启动或已经结束");
+					}
+					
+					//决定根目录
+					File directory = new File(System.getProperty("user.dir"));
+					manager.getFileSelectModel().getLock().writeLock().lock();
+					try{
+						if(Objects.nonNull(manager.getFileSelectModel().getWorkticketFile())){
+							directory = manager.getFileSelectModel().getWorkticketFile().getParentFile();
+						}else if (Objects.nonNull(manager.getFileSelectModel().getAttendanceFile())) {
+							directory = manager.getFileSelectModel().getAttendanceFile().getParentFile();
+						}
+					}finally {
+						manager.getFileSelectModel().getLock().writeLock().unlock();
+					}
+
+					//决定文件筛选器
+					FileFilter[] fileFilters = new FileFilter[]{
+							new FileNameExtensionFilter(getLabel(LoggerStringKey.Mh4w_FlowProvider_15), "xls")
+					};
+					
+					//不接受所有文件筛选器
+					boolean acceptAllFileFilter = false;
+					
+					//不接受文件多选
+					boolean mutiSelectionEnabled = false;
+					
+					//只允许选择文件
+					int fileSelectionMode = JFileChooser.FILES_ONLY;
+					
+					//获得文件
+					File[] files = manager.getGuiController().askFile(directory, fileFilters, acceptAllFileFilter, mutiSelectionEnabled, fileSelectionMode);
+					
+					//将获取的文件设置在模型中并输出记录
+					if(files.length == 0){
+						info(LoggerStringKey.Mh4w_FlowProvider_17);
+					}else{
+						manager.getFileSelectModel().setAttendanceFile(files[0]);
+						formatInfo(LoggerStringKey.Mh4w_FlowProvider_18, files[0].getAbsolutePath());
+					}
+					
+					message(LoggerStringKey.Mh4w_FlowProvider_16);
+					
+				}catch (Exception e) {
+					message(LoggerStringKey.Mh4w_FlowProvider_14);
+				}
+			}
+			
+		}
+
+		private final class SelectWorkticketFileFlow extends AbstractInnerFlow{
+		
+			public SelectWorkticketFileFlow() {
+				super(BlockKey.SELECT_WORKTICKET_FILE,manager.getLoggerMutilangModel().getMutilang().getString(LoggerStringKey.Mh4w_FlowProvider_19.getName()));
+			}
+		
+			/*
+			 * (non-Javadoc)
+			 * @see com.dwarfeng.tp.core.control.Mh4w.FlowProvider.AbstractInnerFlow#processImpl()
+			 */
+			@Override
+			protected void processImpl() {
+				try{
+					if(getState() != RuntimeState.RUNNING){
+						throw new IllegalStateException("程序还未启动或已经结束");
+					}
+					
+					//决定根目录
+					File directory = new File(System.getProperty("user.dir"));
+					manager.getFileSelectModel().getLock().writeLock().lock();
+					try{
+						if (Objects.nonNull(manager.getFileSelectModel().getAttendanceFile())) {
+							directory = manager.getFileSelectModel().getAttendanceFile().getParentFile();
+						}else if(Objects.nonNull(manager.getFileSelectModel().getWorkticketFile())){
+							directory = manager.getFileSelectModel().getWorkticketFile().getParentFile();
+						}
+					}finally {
+						manager.getFileSelectModel().getLock().writeLock().unlock();
+					}
+
+					//决定文件筛选器
+					FileFilter[] fileFilters = new FileFilter[]{
+							new FileNameExtensionFilter(getLabel(LoggerStringKey.Mh4w_FlowProvider_15), "xls")
+					};
+					
+					//不接受所有文件筛选器
+					boolean acceptAllFileFilter = false;
+					
+					//不接受文件多选
+					boolean mutiSelectionEnabled = false;
+					
+					//只允许选择文件
+					int fileSelectionMode = JFileChooser.FILES_ONLY;
+					
+					//获得文件
+					File[] files = manager.getGuiController().askFile(directory, fileFilters, acceptAllFileFilter, mutiSelectionEnabled, fileSelectionMode);
+					
+					//将获取的文件设置在模型中并输出记录
+					if(files.length == 0){
+						info(LoggerStringKey.Mh4w_FlowProvider_17);
+					}else{
+						manager.getFileSelectModel().setAttendanceFile(files[0]);
+						formatInfo(LoggerStringKey.Mh4w_FlowProvider_18, files[0].getAbsolutePath());
+					}
+					
+					message(LoggerStringKey.Mh4w_FlowProvider_20);
+					
+				}catch (Exception e) {
+					message(LoggerStringKey.Mh4w_FlowProvider_21);
+				}
+			}
+			
+		}
 	
+	}
+
+
+
+
+
+
+	private final class Exitor implements Runnable{
+	
+		/*
+		 * (non-Javadoc)
+		 * @see java.lang.Runnable#run()
+		 */
+		@Override
+		public void run() {	
+			//停止后台模型和工具运行时模型。
+			info(LoggerStringKey.Mh4w_Exitor_2);
+			manager.getBackgroundModel().shutdown();
+			manager.getFinishedFlowTaker().shutdown();
+			
+			//等待50毫秒，此时后台模型和工具运行时模型中的执行器应该会自然终结。
+			try {
+				Thread.sleep(50);
+			} catch (InterruptedException ignore) {
+				//中断也要按照基本法。
+			}
+			
+			boolean waitFlag = false;
+			if(! manager.getBackgroundModel().getExecutorService().isTerminated()){
+				warn(LoggerStringKey.Mh4w_Exitor_1);
+				waitFlag = true;
+			}
+			
+			if(waitFlag){
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException ignore) {
+					//中断也要按照基本法。
+				}
+				
+				if(! manager.getBackgroundModel().getExecutorService().isTerminated()){
+					warn(LoggerStringKey.Mh4w_Exitor_3);
+				}
+			}
+
+			//保存核心配置
+			info(LoggerStringKey.Mh4w_Exitor_6);
+			PropConfigSaver coreConfigSaver = null;
+			try{
+				try{
+					coreConfigSaver = new PropConfigSaver(getResource(ResourceKey.CONFIGURATION_CORE).openOutputStream());
+					coreConfigSaver.save(manager.getCoreConfigModel());
+				}catch (IOException e) {
+					warn(LoggerStringKey.Mh4w_Exitor_5, e);
+					getResource(ResourceKey.CONFIGURATION_CORE).reset();
+					coreConfigSaver = new PropConfigSaver(getResource(ResourceKey.CONFIGURATION_CORE).openOutputStream());
+					coreConfigSaver.save(manager.getCoreConfigModel());
+				}finally{
+					if(Objects.nonNull(coreConfigSaver)){
+						coreConfigSaver.close();
+					}
+				}
+				
+			}catch (Exception e) {
+				warn(LoggerStringKey.Mh4w_Exitor_7, e);
+			}
+			
+			//释放界面
+			info(LoggerStringKey.Mh4w_Exitor_4);
+			try {
+				Mh4wUtil.invokeAndWaitInEventQueue(new Runnable() {
+					@Override
+					public void run() {
+						manager.getGuiController().disposeMainFrame();
+					}
+				});
+			} catch (InvocationTargetException ignore) {
+			} catch (InterruptedException ignore) {
+				//中断也要按照基本法。
+			}
+			
+			//释放模型
+			manager.dispose();
+			
+			//解除对象的引用
+			INSTANCES.remove(Mh4w.this);
+	
+		}
+		
+	
+		private void info(LoggerStringKey loggerStringKey){
+			manager.getLoggerModel().getLogger().info(getLabel(loggerStringKey));
+		}
+	
+		private void warn(LoggerStringKey loggerStringKey){
+			manager.getLoggerModel().getLogger().warn(getLabel(loggerStringKey));
+		}
+		
+		private void warn(LoggerStringKey loggerStringKey, Throwable e){
+			manager.getLoggerModel().getLogger().warn(getLabel(loggerStringKey), e);
+		}
+	
+	
+		private String getLabel(LoggerStringKey loggerStringKey){
+			return manager.getLoggerMutilangModel().getMutilang().getString(loggerStringKey.getName());
+		}
+	
+		/**
+		 * 获取指定键对应的资源。
+		 * @param resourceKey 指定的键。
+		 * @return 指定的键对应的资源。
+		 */
+		private Resource getResource(ResourceKey resourceKey){
+			return manager.getResourceModel().get(resourceKey.getName());
+		}
+		
 	}
 
 }

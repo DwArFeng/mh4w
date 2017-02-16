@@ -14,4 +14,14 @@ public interface MainFrameObverser extends Obverser{
 	 */
 	public void fireWindowClosing();
 	
+	/**
+	 * 通知选择出勤文件。
+	 */
+	public void fireSelectAttendanceFile();
+	
+	/**
+	 * 通知选择工票文件。
+	 */
+	public void fireSelectWorkticketFile();
+	
 }

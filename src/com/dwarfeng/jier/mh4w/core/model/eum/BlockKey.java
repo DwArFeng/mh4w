@@ -12,12 +12,9 @@ public enum BlockKey implements Name{
 	
 	INITIALIZE(new DefaultName("initialize")),
 	LOAD_LIB(new DefaultName("load_lib")),
-	CHECK_LIB(new DefaultName("check_lib")),
-	LOAD_TOOLINFO(new DefaultName("load_toolinfo")),
-	RUN_TOOL(new DefaultName("run_tool")),
 	CLOSING(new DefaultName("closing")),
-	LOG_RUNNINGTOOL(new DefaultName("log_runningtool")),
-	REMOVE_EXITED_RUNNINGTOOL(new DefaultName("remove_exited_runningtool")),
+	SELECT_ATTENDANCE_FILE(new DefaultName("select_attendance_file")),
+	SELECT_WORKTICKET_FILE(new DefaultName("select_workticket_file")),
 	;
 
 	private Name name;

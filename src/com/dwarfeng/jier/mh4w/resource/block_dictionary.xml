@@ -7,4 +7,13 @@
 		<dictionary value="check_lib"/>
 		<dictionary value="closing"/>
 	</key>
+	<key value="closing">
+		<dictionary value="initialize"/>
+	</key>
+	<key value="select_attendance_file">
+		<dictionary value="initialize"/>
+	</key>
+	<key value="select_workticket_file">
+		<dictionary value="initialize"/>
+	</key>
 </root>

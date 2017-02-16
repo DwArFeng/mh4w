@@ -26,6 +26,8 @@ public enum ImageKey implements Name {
 	UNKNOWN(new DefaultName("/com/dwarfeng/jier/mh4w/resource/image/unknown.png")),
 	REMOVE(new DefaultName("/com/dwarfeng/jier/mh4w/resource/image/remove.png")),
 	CLEAR(new DefaultName("/com/dwarfeng/jier/mh4w/resource/image/clear.png")),
+	XLS_GREEN(new DefaultName("/com/dwarfeng/jier/mh4w/resource/image/xls_green.png")),
+	XLS_RED(new DefaultName("/com/dwarfeng/jier/mh4w/resource/image/xls_red.png")),
 
 	;
 

@@ -7,13 +7,11 @@ import java.io.File;
  * @author DwArFeng
  * @since 0.0.0-alpha
  */
-public abstract class FileSelectorAdapter implements FileSelectorObverser{
+public abstract class FileSelectAdapter implements FileSelectObverser{
 
 	@Override
 	public void fireAttendanceFileChanged(File oldValue, File newValue) {}
 	@Override
 	public void fireWorkticketFileChanged(File oldValue, File newValue) {}
-	@Override
-	public void fireReadyChanged(boolean isReady) {}
 	
 }

@@ -4,15 +4,15 @@ import java.io.File;
 
 import com.dwarfeng.dutil.basic.prog.ObverserSet;
 import com.dwarfeng.dutil.basic.threads.ExternalReadWriteThreadSafe;
-import com.dwarfeng.jier.mh4w.core.model.obv.FileSelectorObverser;
+import com.dwarfeng.jier.mh4w.core.model.obv.FileSelectObverser;
 
 /**
- * 文件选择器模型。
+ * 文件选择模型。
  * <p> 模型中数据的读写均应该是线程安全的。
  * @author DwArFeng
  * @since 0.0.0-alpha
  */
-public interface FileSelectorModel extends ExternalReadWriteThreadSafe, ObverserSet<FileSelectorObverser>{
+public interface FileSelectModel extends ExternalReadWriteThreadSafe, ObverserSet<FileSelectObverser>{
 	
 	/**
 	 * 返回模型中的出勤文件。
@@ -39,12 +39,5 @@ public interface FileSelectorModel extends ExternalReadWriteThreadSafe, Obverser
 	 * @return 该操作是否对模型造成了改动。
 	 */
 	public boolean setWorkticketFile(File file);
-	
-	/**
-	 * 返回该模型是否就绪。
-	 * <p> 当两个文件都不为 <code>null</code>的时候，认为模型就绪。
-	 * @return 该模型是否就绪。
-	 */
-	public boolean isReady();
 
 }
