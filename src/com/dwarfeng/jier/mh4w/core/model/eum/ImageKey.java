@@ -28,6 +28,13 @@ public enum ImageKey implements Name {
 	CLEAR(new DefaultName("/com/dwarfeng/jier/mh4w/resource/image/clear.png")),
 	XLS_GREEN(new DefaultName("/com/dwarfeng/jier/mh4w/resource/image/xls_green.png")),
 	XLS_RED(new DefaultName("/com/dwarfeng/jier/mh4w/resource/image/xls_red.png")),
+	DETAIL_GREEN(new DefaultName("/com/dwarfeng/jier/mh4w/resource/image/detail_green.png")),
+	DETAIL_RED(new DefaultName("/com/dwarfeng/jier/mh4w/resource/image/detail_red.png")),
+	DETAIL_YELLOW(new DefaultName("/com/dwarfeng/jier/mh4w/resource/image/detail_yellow.png")),
+	DETAIL_PURPLE(new DefaultName("/com/dwarfeng/jier/mh4w/resource/image/detail_purple.png")),
+	DETAIL_GRAY(new DefaultName("/com/dwarfeng/jier/mh4w/resource/image/detail_gray.png")),
+	RESET_BLUE(new DefaultName("/com/dwarfeng/jier/mh4w/resource/image/reset_blue.png")),
+	CALENDAR_BLUE(new DefaultName("/com/dwarfeng/jier/mh4w/resource/image/calendar_blue.png")),
 
 	;
 

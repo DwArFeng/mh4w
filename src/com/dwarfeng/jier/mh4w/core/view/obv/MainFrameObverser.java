@@ -24,4 +24,9 @@ public interface MainFrameObverser extends Obverser{
 	 */
 	public void fireSelectWorkticketFile();
 	
+	/**
+	 * 通知统计被重置。
+	 */
+	public void fireCountReset();
+	
 }

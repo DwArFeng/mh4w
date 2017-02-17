@@ -48,6 +48,7 @@ import com.dwarfeng.jier.mh4w.core.model.cm.ResourceModel;
 import com.dwarfeng.jier.mh4w.core.model.cm.StateModel;
 import com.dwarfeng.jier.mh4w.core.model.eum.BlockKey;
 import com.dwarfeng.jier.mh4w.core.model.eum.CoreConfig;
+import com.dwarfeng.jier.mh4w.core.model.eum.CountState;
 import com.dwarfeng.jier.mh4w.core.model.eum.LoggerStringKey;
 import com.dwarfeng.jier.mh4w.core.model.eum.ResourceKey;
 import com.dwarfeng.jier.mh4w.core.model.io.XmlBlockLoader;
@@ -168,15 +169,6 @@ public final class Mh4w {
 		THREAD_FACTORY.newThread(new Exitor()).start();
 	}
 
-	private boolean isReadyForCount(){
-		if(Objects.isNull(manager.getFileSelectModel().getAttendanceFile())) return false;
-		if(Objects.isNull(manager.getFileSelectModel().getWorkticketFile())) return false;
-		
-		return true;
-	}
-
-
-
 	private final class Manager {
 
 		//model
@@ -274,6 +266,15 @@ public final class Mh4w {
 			@Override
 			public void fireSelectWorkticketFile() {
 				manager.getBackgroundModel().submit(flowProvider.newSelectWorkticketFileFlow());
+			}
+
+			/*
+			 * (non-Javadoc)
+			 * @see com.dwarfeng.jier.mh4w.core.view.obv.MainFrameObverser#fireCountReset()
+			 */
+			@Override
+			public void fireCountReset() {
+				manager.getBackgroundModel().submit(flowProvider.newCountResetFlow());
 			}
 		};
 		
@@ -428,6 +429,14 @@ public final class Mh4w {
 		}
 
 		/**
+		 * 获取一个新的统计复位流。
+		 * @return 新的统计复位流。
+		 */
+		public Flow newCountResetFlow() {
+			return new CountResetFlow();
+		}
+
+		/**
 		 * 内部抽象过程。
 		 * <p> 定义常用的内部用方法。
 		 * @author DwArFeng
@@ -559,6 +568,45 @@ public final class Mh4w {
 			
 		}
 
+		/**
+		 * 可能会改变程序的状态的流。
+		 * <p> 封装了常用的状态监测的方法。
+		 * @author DwArFeng
+		 * @since 0.0.0-alpha
+		 */
+		private abstract class AbstractMayChangeStateFlow extends AbstractInnerFlow{
+
+			public AbstractMayChangeStateFlow(BlockKey blockKey, String initMessage) {
+				super(blockKey, initMessage);
+			}
+
+			/**
+			 * 检查程序是否可以进行统计了。
+			 * @return 程序是否可以进行统计了。
+			 */
+			protected boolean isReadyForCount(){
+				if(Objects.isNull(manager.getFileSelectModel().getAttendanceFile())) return false;
+				if(Objects.isNull(manager.getFileSelectModel().getWorkticketFile())) return false;
+				
+				return true;
+			}
+
+			/**
+			 * 可能会导致程序的统计结果过期。
+			 * <p> 该方法会检查程序的统计状态，如果状态不是还未统计，则令统计结果过期。
+			 * @return 该操作是否造成了程序的统计结果过期。
+			 */
+			protected boolean mayCountResultOutdated(){
+				if(manager.getStateModel().getCountState().equals(CountState.NOT_START)){
+					return false;
+				}else{
+					manager.getStateModel().setCountResultOutdated(true);
+					return true;
+				}
+			}
+			
+		}
+		
 		private final class InitializeFlow extends AbstractInnerFlow{
 			
 			public InitializeFlow() {
@@ -752,7 +800,7 @@ public final class Mh4w {
 			
 		}
 
-		private final class SelectAttendanceFileFlow extends AbstractInnerFlow{
+		private final class SelectAttendanceFileFlow extends AbstractMayChangeStateFlow{
 		
 			public SelectAttendanceFileFlow() {
 				super(BlockKey.SELECT_ATTENDANCE_FILE,manager.getLoggerMutilangModel().getMutilang().getString(LoggerStringKey.Mh4w_FlowProvider_13.getName()));
@@ -826,7 +874,7 @@ public final class Mh4w {
 			
 		}
 
-		private final class SelectWorkticketFileFlow extends AbstractInnerFlow{
+		private final class SelectWorkticketFileFlow extends AbstractMayChangeStateFlow{
 		
 			public SelectWorkticketFileFlow() {
 				super(BlockKey.SELECT_WORKTICKET_FILE,manager.getLoggerMutilangModel().getMutilang().getString(LoggerStringKey.Mh4w_FlowProvider_19.getName()));
@@ -888,6 +936,45 @@ public final class Mh4w {
 					
 				}catch (Exception e) {
 					message(LoggerStringKey.Mh4w_FlowProvider_21);
+				}finally {
+					Mh4wUtil.invokeInEventQueue(new Runnable() {
+						@Override
+						public void run() {
+							manager.getGuiController().workticketClickUnlock();
+						}
+					});
+				}
+			}
+			
+		}
+
+		private final class CountResetFlow extends AbstractInnerFlow{
+		
+			public CountResetFlow() {
+				super(BlockKey.RESET_COUNT,manager.getLoggerMutilangModel().getMutilang().getString(LoggerStringKey.Mh4w_FlowProvider_22.getName()));
+			}
+		
+			/*
+			 * (non-Javadoc)
+			 * @see com.dwarfeng.tp.core.control.Mh4w.FlowProvider.AbstractInnerFlow#processImpl()
+			 */
+			@Override
+			protected void processImpl() {
+				try{
+					if(getState() != RuntimeState.RUNNING){
+						throw new IllegalStateException("程序还未启动或已经结束");
+					}
+					
+					manager.getFileSelectModel().setAttendanceFile(null);
+					manager.getFileSelectModel().setWorkticketFile(null);
+					manager.getStateModel().setCountResultOutdated(false);
+					manager.getStateModel().setCountState(CountState.NOT_START);
+					manager.getStateModel().setReadyForCount(false);
+					
+					message(LoggerStringKey.Mh4w_FlowProvider_23);
+					
+				}catch (Exception e) {
+					message(LoggerStringKey.Mh4w_FlowProvider_24);
 				}finally {
 					Mh4wUtil.invokeInEventQueue(new Runnable() {
 						@Override

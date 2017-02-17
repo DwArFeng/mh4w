@@ -16,4 +16,9 @@
 	<key value="select_workticket_file">
 		<dictionary value="initialize"/>
 	</key>
+	<key value="reset_count">
+		<dictionary value="initialize"/>
+		<dictionary value="select_attendance_file"/>
+		<dictionary value="select_workticket_file"/>
+	</key>
 </root>

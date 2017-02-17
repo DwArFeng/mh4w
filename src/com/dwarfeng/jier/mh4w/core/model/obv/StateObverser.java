@@ -29,4 +29,6 @@ public interface StateObverser extends Obverser{
 	 */
 	public void fireCountResultOutdatedChanged(boolean newValue);
 	
+	 
+	
 }

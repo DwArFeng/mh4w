@@ -22,6 +22,9 @@ public enum ImageSize {
 	/**程序用超大图标*/
 	ICON_SUPER_LARGE(128, 128),
 	
+	/**控制面板按钮专用大小*/
+	CONTROL_AREA_ICON(26, 26),
+	
 	;
 	
 	private final int height;

@@ -13,6 +13,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.WeakHashMap;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -23,6 +24,7 @@ import com.dwarfeng.dutil.basic.gui.swing.JImagePanel;
 import com.dwarfeng.dutil.basic.prog.ObverserSet;
 import com.dwarfeng.jier.mh4w.core.model.cm.FileSelectModel;
 import com.dwarfeng.jier.mh4w.core.model.cm.StateModel;
+import com.dwarfeng.jier.mh4w.core.model.eum.CountState;
 import com.dwarfeng.jier.mh4w.core.model.eum.ImageKey;
 import com.dwarfeng.jier.mh4w.core.model.eum.ImageSize;
 import com.dwarfeng.jier.mh4w.core.model.eum.LabelStringKey;
@@ -36,6 +38,8 @@ import com.dwarfeng.jier.mh4w.core.util.Constants;
 import com.dwarfeng.jier.mh4w.core.util.ImageUtil;
 import com.dwarfeng.jier.mh4w.core.util.Mh4wUtil;
 import com.dwarfeng.jier.mh4w.core.view.obv.MainFrameObverser;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 /**
  * 程序的主界面。
@@ -55,12 +59,22 @@ public final class MainFrame extends JFrame implements MutilangSupported, Obvers
 	 */
 	private final Image xls_red;
 	private final Image xls_green;
+	private final Image detail_green;
+	private final Image detail_red;
+	private final Image detail_yellow;
+	private final Image detail_purple;
+	private final Image detail_gray;
+	private final Image reset_blue;
+	private final Image calendar_blue;
+
 	private final JImagePanel attendanceFilePanel;
 	private final JImagePanel workticketFilePanel;
 	private final JLabel attendanceLabel;
 	private final JButton countButton;
-
 	private final JLabel workticketLabel;
+	private final JToggleButton detailButton;
+	private final JButton resetButton;
+	private final JButton calendarButton;
 	
 	/*
 	 * 非 final 域。
@@ -137,9 +151,41 @@ public final class MainFrame extends JFrame implements MutilangSupported, Obvers
 			});
 		};
 		
+		/*
+		 * (non-Javadoc)
+		 * @see com.dwarfeng.jier.mh4w.core.model.obv.StateAdapter#fireCountStateChanged(com.dwarfeng.jier.mh4w.core.model.eum.CountState, com.dwarfeng.jier.mh4w.core.model.eum.CountState)
+		 */
+		@Override
+		public void fireCountStateChanged(CountState oldValue, CountState newValue) {
+			Mh4wUtil.invokeInEventQueue(new Runnable() {
+				@Override
+				public void run() {
+					boolean countResultOutdated = stateModel.isCountResultOutdated();
+					if(newValue.equals(CountState.NOT_START)){
+						detailButton.setIcon(new ImageIcon(detail_purple));
+					}else if(countResultOutdated){
+						detailButton.setIcon(new ImageIcon(detail_gray));
+					}else{
+						switch (newValue) {
+						case NOT_START:
+							detailButton.setIcon(new ImageIcon(detail_purple));
+							break;
+						case STARTED_ERROR:
+							detailButton.setIcon(new ImageIcon(detail_red));
+							break;
+						case STARTED_EXPORTED:
+							detailButton.setIcon(new ImageIcon(detail_green));
+							break;
+						case STARTED_WAITING:
+							detailButton.setIcon(new ImageIcon(detail_yellow));
+							break;
+						}
+					}
+				}
+			});
+		};
+		
 	};
-	
-	
 	/**
 	 * 新实例。
 	 */
@@ -162,7 +208,14 @@ public final class MainFrame extends JFrame implements MutilangSupported, Obvers
 		
 		xls_green = ImageUtil.getImage(ImageKey.XLS_GREEN, ImageSize.XLS_ICON);
 		xls_red = ImageUtil.getImage(ImageKey.XLS_RED, ImageSize.XLS_ICON);
-		
+		detail_green = ImageUtil.getImage(ImageKey.DETAIL_GREEN, ImageSize.CONTROL_AREA_ICON);
+		detail_red = ImageUtil.getImage(ImageKey.DETAIL_RED, ImageSize.CONTROL_AREA_ICON);
+		detail_yellow = ImageUtil.getImage(ImageKey.DETAIL_YELLOW, ImageSize.CONTROL_AREA_ICON);
+		detail_purple = ImageUtil.getImage(ImageKey.DETAIL_PURPLE, ImageSize.CONTROL_AREA_ICON);
+		detail_gray = ImageUtil.getImage(ImageKey.DETAIL_GRAY, ImageSize.CONTROL_AREA_ICON);
+		reset_blue =  ImageUtil.getImage(ImageKey.RESET_BLUE, ImageSize.CONTROL_AREA_ICON);
+		calendar_blue =  ImageUtil.getImage(ImageKey.CALENDAR_BLUE, ImageSize.CONTROL_AREA_ICON);
+
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		
 		addWindowListener(new WindowAdapter() {
@@ -220,10 +273,10 @@ public final class MainFrame extends JFrame implements MutilangSupported, Obvers
 		countButton.setBounds(245, 200, 150, 40);
 		getContentPane().add(countButton);
 		
-		JToggleButton toggleButton = new JToggleButton();
-		toggleButton.setToolTipText((String) null);
-		toggleButton.setBounds(190, 200, 40, 40);
-		getContentPane().add(toggleButton);
+		detailButton = new JToggleButton();
+		detailButton.setToolTipText((String) null);
+		detailButton.setBounds(190, 200, 40, 40);
+		getContentPane().add(detailButton);
 		
 		attendanceLabel = new JLabel();
 		attendanceLabel.setText(getLabel(LabelStringKey.MainFrame_1));
@@ -232,10 +285,16 @@ public final class MainFrame extends JFrame implements MutilangSupported, Obvers
 		attendanceLabel.setBounds(25, 167, 150, 25);
 		getContentPane().add(attendanceLabel);
 		
-		JButton button_1 = new JButton();
-		button_1.setToolTipText((String) null);
-		button_1.setBounds(80, 200, 40, 40);
-		getContentPane().add(button_1);
+		calendarButton = new JButton();
+		calendarButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
+		calendarButton.setIcon(new ImageIcon(calendar_blue));
+		calendarButton.setToolTipText((String) null);
+		calendarButton.setBounds(80, 200, 40, 40);
+		getContentPane().add(calendarButton);
 		
 		JButton button_2 = new JButton();
 		button_2.setToolTipText((String) null);
@@ -248,10 +307,17 @@ public final class MainFrame extends JFrame implements MutilangSupported, Obvers
 		lblNewLabel.setBounds(25, 250, 370, 15);
 		getContentPane().add(lblNewLabel);
 		
-		JButton button_3 = new JButton();
-		button_3.setToolTipText((String) null);
-		button_3.setBounds(135, 200, 40, 40);
-		getContentPane().add(button_3);
+		resetButton = new JButton();
+		resetButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				fireCountReset();
+			}
+		});
+		resetButton.setIcon(new ImageIcon(reset_blue));
+		resetButton.setToolTipText((String) null);
+		resetButton.setBounds(135, 200, 40, 40);
+		getContentPane().add(resetButton);
 		
 		//设置文件选择模型
 		if(Objects.nonNull(fileSelectModel)){
@@ -278,8 +344,32 @@ public final class MainFrame extends JFrame implements MutilangSupported, Obvers
 		if(Objects.nonNull(stateModel)){
 			stateModel.addObverser(countReadyObverser);
 			countButton.setEnabled(stateModel.isReadyForCount());
+			
+			CountState countState = stateModel.getCountState();
+			boolean countResultOutdated = stateModel.isCountResultOutdated();
+			if(countState.equals(CountState.NOT_START)){
+				detailButton.setIcon(new ImageIcon(detail_purple));
+			}else if(countResultOutdated){
+				detailButton.setIcon(new ImageIcon(detail_gray));
+			}else{
+				switch (countState) {
+				case NOT_START:
+					detailButton.setIcon(new ImageIcon(detail_purple));
+					break;
+				case STARTED_ERROR:
+					detailButton.setIcon(new ImageIcon(detail_red));
+					break;
+				case STARTED_EXPORTED:
+					detailButton.setIcon(new ImageIcon(detail_green));
+					break;
+				case STARTED_WAITING:
+					detailButton.setIcon(new ImageIcon(detail_yellow));
+					break;
+				}
+			}
 		}else{
 			countButton.setEnabled(false);
+			detailButton.setIcon(new ImageIcon(detail_purple));
 		}
 		
 		this.stateModel = stateModel;
@@ -401,7 +491,7 @@ public final class MainFrame extends JFrame implements MutilangSupported, Obvers
 	/**
 	 * @param stateModel the stateModel to set
 	 */
-	public void setCountReadyModel(StateModel stateModel) {
+	public void setStateModel(StateModel stateModel) {
 		if(Objects.nonNull(this.stateModel)){
 			this.stateModel.removeObverser(countReadyObverser);
 		}
@@ -409,8 +499,32 @@ public final class MainFrame extends JFrame implements MutilangSupported, Obvers
 		if(Objects.nonNull(stateModel)){
 			stateModel.addObverser(countReadyObverser);
 			countButton.setEnabled(stateModel.isReadyForCount());
+			
+			CountState countState = stateModel.getCountState();
+			boolean countResultOutdated = stateModel.isCountResultOutdated();
+			if(countState.equals(CountState.NOT_START)){
+				detailButton.setIcon(new ImageIcon(detail_purple));
+			}else if(countResultOutdated){
+				detailButton.setIcon(new ImageIcon(detail_gray));
+			}else{
+				switch (countState) {
+				case NOT_START:
+					detailButton.setIcon(new ImageIcon(detail_purple));
+					break;
+				case STARTED_ERROR:
+					detailButton.setIcon(new ImageIcon(detail_red));
+					break;
+				case STARTED_EXPORTED:
+					detailButton.setIcon(new ImageIcon(detail_green));
+					break;
+				case STARTED_WAITING:
+					detailButton.setIcon(new ImageIcon(detail_yellow));
+					break;
+				}
+			}
 		}else{
 			countButton.setEnabled(false);
+			detailButton.setIcon(new ImageIcon(detail_purple));
 		}
 		
 		this.stateModel = stateModel;
@@ -445,6 +559,12 @@ public final class MainFrame extends JFrame implements MutilangSupported, Obvers
 	private void fireSelectWorkticketFile() {
 		for(MainFrameObverser obverser : obversers){
 			if(Objects.nonNull(obverser)) obverser.fireSelectWorkticketFile();
+		}
+	}
+
+	private void fireCountReset() {
+		for(MainFrameObverser obverser : obversers){
+			if(Objects.nonNull(obverser)) obverser.fireCountReset();
 		}
 	}
 

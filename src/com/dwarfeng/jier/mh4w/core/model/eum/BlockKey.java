@@ -15,6 +15,7 @@ public enum BlockKey implements Name{
 	CLOSING(new DefaultName("closing")),
 	SELECT_ATTENDANCE_FILE(new DefaultName("select_attendance_file")),
 	SELECT_WORKTICKET_FILE(new DefaultName("select_workticket_file")),
+	RESET_COUNT(new DefaultName("reset_count")),
 	;
 
 	private Name name;
