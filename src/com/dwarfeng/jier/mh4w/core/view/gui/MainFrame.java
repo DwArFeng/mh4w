@@ -21,7 +21,9 @@ import javax.swing.JToggleButton;
 import javax.swing.SwingConstants;
 
 import com.dwarfeng.dutil.basic.gui.swing.JImagePanel;
+import com.dwarfeng.dutil.basic.prog.DefaultVersion;
 import com.dwarfeng.dutil.basic.prog.ObverserSet;
+import com.dwarfeng.dutil.basic.prog.Version;
 import com.dwarfeng.jier.mh4w.core.model.cm.FileSelectModel;
 import com.dwarfeng.jier.mh4w.core.model.cm.StateModel;
 import com.dwarfeng.jier.mh4w.core.model.eum.CountState;
@@ -193,7 +195,7 @@ public final class MainFrame extends JFrame implements MutilangSupported, Obvers
 	 * 新实例。
 	 */
 	public MainFrame() {
-		this(Constants.getDefaultLabelMutilang(), null, null);
+		this(Constants.getDefaultLabelMutilang(), new DefaultVersion.Builder().build(), null, null);
 	}
 	
 	/**
@@ -202,11 +204,13 @@ public final class MainFrame extends JFrame implements MutilangSupported, Obvers
 	 */
 	public MainFrame(
 			Mutilang mutilang, 
+			Version version,
 			FileSelectModel fileSelectModel,
 			StateModel stateModel
 			) {
 		Objects.requireNonNull(mutilang, "入口参数 mutilang 不能为 null。");
-		
+		Objects.requireNonNull(version, "入口参数 version 不能为 null。");
+
 		this.mutilang = mutilang;
 		
 		xls_green = ImageUtil.getImage(ImageKey.XLS_GREEN, ImageSize.XLS_ICON);
@@ -219,6 +223,8 @@ public final class MainFrame extends JFrame implements MutilangSupported, Obvers
 		reset_blue =  ImageUtil.getImage(ImageKey.RESET_BLUE, ImageSize.CONTROL_AREA_ICON);
 		calendar_blue =  ImageUtil.getImage(ImageKey.CALENDAR_BLUE, ImageSize.CONTROL_AREA_ICON);
 
+		setTitle(getLabel(LabelStringKey.MainFrame_5));
+		
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		
 		addWindowListener(new WindowAdapter() {
@@ -323,10 +329,10 @@ public final class MainFrame extends JFrame implements MutilangSupported, Obvers
 		button_2.setBounds(25, 200, 40, 40);
 		getContentPane().add(button_2);
 		
-		JLabel lblNewLabel = new JLabel("New label");
-		lblNewLabel.setHorizontalAlignment(SwingConstants.RIGHT);
-		lblNewLabel.setBounds(25, 250, 370, 15);
-		getContentPane().add(lblNewLabel);
+		JLabel versionLabel = new JLabel(version.getLongName());
+		versionLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+		versionLabel.setBounds(25, 250, 370, 15);
+		getContentPane().add(versionLabel);
 		
 		resetButton = new JButton();
 		resetButton.addActionListener(new ActionListener() {

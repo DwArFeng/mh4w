@@ -99,8 +99,9 @@ public final class Mh4w {
 			.firstVersion((byte) 0)
 			.secondVersion((byte) 0)
 			.thirdVersion((byte) 0)
-			.buildDate("20161222")
+			.buildDate("20170215")
 			.buildVersion('A')
+			.type(VersionType.ALPHA)
 			.build();
 	
 	/**程序的实例列表，用于持有引用*/
@@ -224,6 +225,7 @@ public final class Mh4w {
 			protected MainFrame newMainFrameImpl() {
 				MainFrame mainFrame = new MainFrame(
 						labelMutilangModel.getMutilang(),
+						VERSION,
 						fileSelectModel,
 						stateModel
 				);
