@@ -8,7 +8,7 @@ import java.util.Objects;
  * @author DwArFeng
  * @since 0.0.0-alpha
  */
-public class DefaultAttendanceData implements AttendanceData{
+public final class DefaultAttendanceData implements AttendanceData{
 	
 	private final Staff staff;
 	private final CountDate countDate;

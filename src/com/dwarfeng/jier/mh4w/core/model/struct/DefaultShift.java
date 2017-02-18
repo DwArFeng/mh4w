@@ -8,7 +8,7 @@ import java.util.Objects;
  * @author DwArFeng
  * @since 0.0.0-alpha
  */
-public class DefaultShift implements Shift{
+public final class DefaultShift implements Shift{
 	
 	private final String name;
 	private final TimeSection[] shiftSections;

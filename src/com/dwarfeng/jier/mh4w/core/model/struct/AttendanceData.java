@@ -5,7 +5,7 @@ package com.dwarfeng.jier.mh4w.core.model.struct;
  * @author DwArFeng
  * @since 0.0.0-alpha
  */
-public interface AttendanceData {
+public interface AttendanceData extends DataWithStaff{
 	
 	/**
 	 * 获得出勤数据中的工号（主键）。
@@ -14,12 +14,6 @@ public interface AttendanceData {
 	public default String getWorkNumber(){
 		return getStaff().getWorkNumber();
 	}
-	
-	/**
-	 * 获得数据中的员工信息。
-	 * @return 数据中的员工信息。
-	 */
-	public Staff getStaff();
 	
 	/**
 	 * 获取数据中的统计日期。
