@@ -5,7 +5,7 @@ package com.dwarfeng.jier.mh4w.core.model.struct;
  * @author DwArFeng
  * @since 0.0.0-alpha
  */
-public interface OriginalAttendanceData extends OriginalDataWithStaff {
+public interface OriginalAttendanceData extends OriginalDataWithStaff, DataFromXls {
 
 	/**
 	 * 获取记录的日期。
