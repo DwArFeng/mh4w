@@ -8,22 +8,22 @@ import java.util.ListIterator;
 import java.util.Objects;
 
 import com.dwarfeng.jier.mh4w.core.model.obv.ListOperateObverser;
-import com.dwarfeng.jier.mh4w.core.model.struct.OriginalWorkticketData;
 
 /**
- * 默认原始工票模型。
- * <p> 原始工票模型的默认实现。
+ * 默认列表模型。
+ * <p> 列表模型的默认实现。
+ * <p> 该模型中的数据的读写均是线程安全的。
  * @author DwArFeng
  * @since 0.0.0-alpha
  */
-public final class DefaultOriginalWorkticketDataModel extends AbstractOriginalWorkticketModel {
+public class DefaultDataListModel<E> extends AbstarctDataListModel<E> {
 	
-	private final List<OriginalWorkticketData> delegate = new ArrayList<>();
+	private final List<E> delegate = new ArrayList<>();
 
 	/**
 	 * 新实例。
 	 */
-	public DefaultOriginalWorkticketDataModel() {
+	public DefaultDataListModel() {
 		this(new ArrayList<>());
 	}
 	
@@ -32,7 +32,7 @@ public final class DefaultOriginalWorkticketDataModel extends AbstractOriginalWo
 	 * @param c 指定的初始化数据。
 	 * @throws NullPointerException 入口参数为 null。
 	 */
-	public DefaultOriginalWorkticketDataModel(Collection<OriginalWorkticketData> c) {
+	public DefaultDataListModel(Collection<E> c) {
 		Objects.requireNonNull(c, "入口参数 c 不能为 null。");
 		delegate.addAll(c);
 	}
@@ -80,13 +80,13 @@ public final class DefaultOriginalWorkticketDataModel extends AbstractOriginalWo
 	}
 
 	/**
-	 * 返回该原始工票模型的过程迭代器。
+	 * 返回该原始考勤模型的过程迭代器。
 	 * <p> 注意，该迭代器不是线程安全的，如果要实现线程安全，请使模型中提供的读写锁
 	 * {@link #getLock()}进行外部同步。
-	 * @return 该原始工票模型的过程迭代器。
+	 * @return 该原始考勤模型的过程迭代器。
 	 */
 	@Override
-	public Iterator<OriginalWorkticketData> iterator() {
+	public Iterator<E> iterator() {
 		lock.readLock().lock();
 		try{
 			return delegate.iterator();
@@ -128,7 +128,7 @@ public final class DefaultOriginalWorkticketDataModel extends AbstractOriginalWo
 	 * @see java.util.List#add(java.lang.Object)
 	 */
 	@Override
-	public boolean add(OriginalWorkticketData e) {
+	public boolean add(E e) {
 		lock.writeLock().lock();
 		try{
 			if(Objects.isNull(e)) return false;
@@ -139,15 +139,15 @@ public final class DefaultOriginalWorkticketDataModel extends AbstractOriginalWo
 		}
 	}
 
-	private boolean notLockAdd(OriginalWorkticketData e) {
+	private boolean notLockAdd(E e) {
 		int index = delegate.size();
 		boolean aFlag = delegate.add(e);
 		if(aFlag) fireAdded(index, e);
 		return aFlag;
 	}
-	
-	private void fireAdded(int index, OriginalWorkticketData e) {
-		for(ListOperateObverser<OriginalWorkticketData> obverser : obversers){
+
+	private void fireAdded(int index, E e) {
+		for(ListOperateObverser<E> obverser : obversers){
 			if(Objects.nonNull(obverser)) obverser.fireAdded(index, e);
 		}
 	}
@@ -165,7 +165,7 @@ public final class DefaultOriginalWorkticketDataModel extends AbstractOriginalWo
 			lock.writeLock().unlock();
 		}
 	}
-	
+
 	private boolean notLockRemove(Object o) {
 		int index = delegate.indexOf(o);
 		boolean aFlag = delegate.remove(o);
@@ -174,11 +174,11 @@ public final class DefaultOriginalWorkticketDataModel extends AbstractOriginalWo
 	}
 
 	private void fireRemoved(int index) {
-		for(ListOperateObverser<OriginalWorkticketData> obverser : obversers){
+		for(ListOperateObverser<E> obverser : obversers){
 			if(Objects.nonNull(obverser)) obverser.fireRemoved(index);
 		}
 	}
-	
+
 	/*
 	 * (non-Javadoc)
 	 * @see java.util.List#containsAll(java.util.Collection)
@@ -207,9 +207,9 @@ public final class DefaultOriginalWorkticketDataModel extends AbstractOriginalWo
 			lock.writeLock().unlock();
 		}
 	}
-	
+
 	private void fireCleared() {
-		for(ListOperateObverser<OriginalWorkticketData> obverser : obversers){
+		for(ListOperateObverser<E> obverser : obversers){
 			if(Objects.nonNull(obverser)) obverser.fireCleared();
 		}
 	}
@@ -219,7 +219,7 @@ public final class DefaultOriginalWorkticketDataModel extends AbstractOriginalWo
 	 * @see java.util.List#get(int)
 	 */
 	@Override
-	public OriginalWorkticketData get(int index) {
+	public E get(int index) {
 		lock.readLock().lock();
 		try{
 			return delegate.get(index);
@@ -233,31 +233,31 @@ public final class DefaultOriginalWorkticketDataModel extends AbstractOriginalWo
 	 * @see java.util.List#set(int, java.lang.Object)
 	 */
 	@Override
-	public OriginalWorkticketData set(int index, OriginalWorkticketData element) {
+	public E set(int index, E element) {
 		Objects.requireNonNull(element, "入口参数 element 不能为 null。");
 		
 		lock.writeLock().lock();
 		try{
-			OriginalWorkticketData oldValue = delegate.set(index, element);
+			E oldValue = delegate.set(index, element);
 			fireChanged(index, oldValue, element);
 			return oldValue;
 		}finally {
 			lock.writeLock().unlock();
 		}
 	}
-	
-	private void fireChanged(int index, OriginalWorkticketData oldValue, OriginalWorkticketData newValue) {
-		for(ListOperateObverser<OriginalWorkticketData> obverser : obversers){
+
+	private void fireChanged(int index, E oldValue, E newValue) {
+		for(ListOperateObverser<E> obverser : obversers){
 			if(Objects.nonNull(obverser)) obverser.fireChanged(index, oldValue, newValue);
 		}
 	}
-
+	
 	/*
 	 * (non-Javadoc)
 	 * @see java.util.List#add(int, java.lang.Object)
 	 */
 	@Override
-	public void add(int index, OriginalWorkticketData element) {
+	public void add(int index, E element) {
 		Objects.requireNonNull(element, "入口参数 element 不能为 null。");
 		
 		lock.writeLock().lock();
@@ -267,19 +267,18 @@ public final class DefaultOriginalWorkticketDataModel extends AbstractOriginalWo
 			lock.writeLock().unlock();
 		}
 	}
-	
-	private void notLockAdd(int index, OriginalWorkticketData element) {
+
+	private void notLockAdd(int index, E element) {
 		delegate.add(index, element);
 		fireAdded(index, element);
 	}
-
 
 	/*
 	 * (non-Javadoc)
 	 * @see java.util.List#remove(int)
 	 */
 	@Override
-	public OriginalWorkticketData remove(int index) {
+	public E remove(int index) {
 		lock.writeLock().lock();
 		try{
 			return notLockRemove(index);
@@ -287,14 +286,13 @@ public final class DefaultOriginalWorkticketDataModel extends AbstractOriginalWo
 			lock.writeLock().unlock();
 		}
 	}
-
-	private OriginalWorkticketData notLockRemove(int index){
-		OriginalWorkticketData originalAttendanceData = delegate.remove(index);
+	
+	private E notLockRemove(int index){
+		E originalAttendanceData = delegate.remove(index);
 		fireRemoved(index);
 		return originalAttendanceData;
 	}
 
-	
 	/*
 	 * (non-Javadoc)
 	 * @see java.util.List#indexOf(java.lang.Object)
@@ -324,13 +322,13 @@ public final class DefaultOriginalWorkticketDataModel extends AbstractOriginalWo
 	}
 
 	/**
-	 * 返回该原始工票模型的过程迭代器。
+	 * 返回该原始考勤模型的过程迭代器。
 	 * <p> 注意，该迭代器不是线程安全的，如果要实现线程安全，请使模型中提供的读写锁
 	 * {@link #getLock()}进行外部同步。
-	 * @return 该原始工票模型的过程迭代器。
+	 * @return 该原始考勤模型的过程迭代器。
 	 */
 	@Override
-	public ListIterator<OriginalWorkticketData> listIterator() {
+	public ListIterator<E> listIterator() {
 		lock.readLock().lock();
 		try{
 			return delegate.listIterator();
@@ -340,14 +338,14 @@ public final class DefaultOriginalWorkticketDataModel extends AbstractOriginalWo
 	}
 
 	/**
-	 * 返回该原始工票模型的过程迭代器。
+	 * 返回该原始考勤模型的过程迭代器。
 	 * <p> 注意，该迭代器不是线程安全的，如果要实现线程安全，请使模型中提供的读写锁
 	 * {@link #getLock()}进行外部同步。
 	 * @param index 起始的位置。
-	 * @return 该原始工票模型的过程迭代器。
+	 * @return 该原始考勤模型的过程迭代器。
 	 */
 	@Override
-	public ListIterator<OriginalWorkticketData> listIterator(int index) {
+	public ListIterator<E> listIterator(int index) {
 		lock.readLock().lock();
 		try{
 			return delegate.listIterator(index);
@@ -361,7 +359,7 @@ public final class DefaultOriginalWorkticketDataModel extends AbstractOriginalWo
 	 * @see java.util.List#subList(int, int)
 	 */
 	@Override
-	public List<OriginalWorkticketData> subList(int fromIndex, int toIndex) {
+	public List<E> subList(int fromIndex, int toIndex) {
 		lock.readLock().lock();
 		try{
 			return delegate.subList(fromIndex, toIndex);
@@ -369,13 +367,13 @@ public final class DefaultOriginalWorkticketDataModel extends AbstractOriginalWo
 			lock.readLock().unlock();
 		}
 	}
-	
+
 	@Override
-	public boolean addAll(Collection<? extends OriginalWorkticketData> c) {
+	public boolean addAll(Collection<? extends E> c) {
 		throw new UnsupportedOperationException("不支持此方法");
 	}
 	@Override
-	public boolean addAll(int index, Collection<? extends OriginalWorkticketData> c) {
+	public boolean addAll(int index, Collection<? extends E> c) {
 		throw new UnsupportedOperationException("不支持此方法");
 	}
 	@Override
@@ -386,5 +384,5 @@ public final class DefaultOriginalWorkticketDataModel extends AbstractOriginalWo
 	public boolean retainAll(Collection<?> c) {
 		throw new UnsupportedOperationException("不支持此方法");
 	}
-
+	
 }

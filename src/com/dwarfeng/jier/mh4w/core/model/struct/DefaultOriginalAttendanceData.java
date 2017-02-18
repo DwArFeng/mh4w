@@ -23,6 +23,7 @@ public final class DefaultOriginalAttendanceData implements OriginalAttendanceDa
 	 * @param date 考勤日期。
 	 * @param shift 出勤班次。
 	 * @param attendanceRecord 打脸记录。
+	 * @throws NullPointerException 入口参数为 <code>null</code>。
 	 */
 	public DefaultOriginalAttendanceData(String fileName, int row, String workNumber, String department, String name, String date, String shift, String attendanceRecord) {
 		Objects.requireNonNull(fileName, "入口参数 fileName 不能为 null。");

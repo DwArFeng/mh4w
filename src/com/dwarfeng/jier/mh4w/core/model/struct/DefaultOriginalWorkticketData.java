@@ -25,6 +25,7 @@ public final class DefaultOriginalWorkticketData implements OriginalWorkticketDa
 	 * @param department 部门。
 	 * @param name 姓名。
 	 * @param workticket 工票。
+	 * @throws NullPointerException 入口参数为 <code>null</code>。
 	 */
 	public DefaultOriginalWorkticketData(String fileName, int row, String workNumber, String department, String name,
 			String workticket) {
