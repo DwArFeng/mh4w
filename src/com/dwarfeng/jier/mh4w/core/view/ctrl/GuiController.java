@@ -124,4 +124,35 @@ public interface GuiController extends ExternalReadWriteThreadSafe{
 	 */
 	public boolean setDetailFrameVisible(boolean aFlag);
 	
+	/**
+	 * 新建一个属性界面。
+	 * @return 是否执行成功。
+	 */
+	public boolean newAttrFrame();
+	
+	/**
+	 * 释放属性界面。
+	 * @return 是否执行成功。
+	 */
+	public boolean disposeAttrFrame();
+	
+	/**
+	 * 是否已经拥有属性界面。
+	 * @return 是否已经拥有属性界面。
+	 */
+	public boolean hasAttrFrame();
+	
+	/**
+	 * 返回属性界面是否可见。
+	 * @return 属性界面是否可见。
+	 */
+	public boolean getAttrFrameVisible();
+	
+	/**
+	 * 设置属性界面的可见性。
+	 * @param aFlag 属性界面。
+	 * @return 是否执行成功。
+	 */
+	public boolean setAttrFrameVisible(boolean aFlag);
+	
 }

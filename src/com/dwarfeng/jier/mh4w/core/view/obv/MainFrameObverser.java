@@ -43,5 +43,10 @@ public interface MainFrameObverser extends Obverser{
 	 * 通知开始统计。
 	 */
 	public void fireCount();
+
+	/**
+	 * 通知显示属性面板。
+	 */
+	public void fireShowAttrFrame();
 	
 }

@@ -35,6 +35,7 @@ public enum ImageKey implements Name {
 	DETAIL_GRAY(new DefaultName("/com/dwarfeng/jier/mh4w/resource/image/detail_gray.png")),
 	RESET_BLUE(new DefaultName("/com/dwarfeng/jier/mh4w/resource/image/reset_blue.png")),
 	CALENDAR_BLUE(new DefaultName("/com/dwarfeng/jier/mh4w/resource/image/calendar_blue.png")),
+	ATTR_BLUE(new DefaultName("/com/dwarfeng/jier/mh4w/resource/image/attr_blue.png")),
 
 	;
 

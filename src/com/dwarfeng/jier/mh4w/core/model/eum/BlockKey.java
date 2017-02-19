@@ -18,6 +18,8 @@ public enum BlockKey implements Name{
 	SHOW_DETAIL_FRAME(new DefaultName("show_detail_frame")),
 	HIDE_DETAIL_FRAME(new DefaultName("hide_detail_frame")),
 	COUNT(new DefaultName("count")),
+	SHOW_ATTR_FRAME(new DefaultName("show_attr_frame")),
+	DISPOSE_ATTR_FRAME(new DefaultName("dispose_attr_frame")),
 
 	;
 

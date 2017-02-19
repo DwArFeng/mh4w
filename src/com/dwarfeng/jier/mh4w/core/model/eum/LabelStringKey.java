@@ -16,6 +16,15 @@ public enum LabelStringKey implements Name{
 	MainFrame_3(new DefaultName("MainFrame.3")),
 	MainFrame_4(new DefaultName("MainFrame.4")),
 	MainFrame_5(new DefaultName("MainFrame.5")),
+	MainFrame_6(new DefaultName("MainFrame.6")),
+
+	AttrFrame_1(new DefaultName("AttrFrame.1")),
+	AttrFrame_2(new DefaultName("AttrFrame.2")),
+	AttrFrame_3(new DefaultName("AttrFrame.3")),
+	AttrFrame_4(new DefaultName("AttrFrame.4")),
+
+	JShiftPanel_1(new DefaultName("JShiftPanel.1")),
+	JShiftPanel_2(new DefaultName("JShiftPanel.2")),
 
 	;
 

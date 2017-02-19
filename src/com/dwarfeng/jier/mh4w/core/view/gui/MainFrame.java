@@ -3,6 +3,10 @@ package com.dwarfeng.jier.mh4w.core.view.gui;
 import java.awt.Cursor;
 import java.awt.Font;
 import java.awt.Image;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
@@ -40,10 +44,6 @@ import com.dwarfeng.jier.mh4w.core.util.Constants;
 import com.dwarfeng.jier.mh4w.core.util.ImageUtil;
 import com.dwarfeng.jier.mh4w.core.util.Mh4wUtil;
 import com.dwarfeng.jier.mh4w.core.view.obv.MainFrameObverser;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-import java.awt.event.ItemListener;
-import java.awt.event.ItemEvent;
 
 /**
  * 程序的主界面。
@@ -70,6 +70,7 @@ public final class MainFrame extends JFrame implements MutilangSupported, Obvers
 	private final Image detail_gray;
 	private final Image reset_blue;
 	private final Image calendar_blue;
+	private final Image attr_blue;
 
 	private final JImagePanel attendanceFilePanel;
 	private final JImagePanel workticketFilePanel;
@@ -79,7 +80,8 @@ public final class MainFrame extends JFrame implements MutilangSupported, Obvers
 	private final JToggleButton detailButton;
 	private final JButton resetButton;
 	private final JButton calendarButton;
-	
+	private JButton attrButton;
+
 	/*
 	 * 非 final 域。
 	 */
@@ -222,8 +224,9 @@ public final class MainFrame extends JFrame implements MutilangSupported, Obvers
 		detail_gray = ImageUtil.getImage(ImageKey.DETAIL_GRAY, ImageSize.CONTROL_AREA_ICON);
 		reset_blue =  ImageUtil.getImage(ImageKey.RESET_BLUE, ImageSize.CONTROL_AREA_ICON);
 		calendar_blue =  ImageUtil.getImage(ImageKey.CALENDAR_BLUE, ImageSize.CONTROL_AREA_ICON);
+		attr_blue =  ImageUtil.getImage(ImageKey.ATTR_BLUE, ImageSize.CONTROL_AREA_ICON);
 
-		setTitle(getLabel(LabelStringKey.MainFrame_5));
+		setTitle(getLabel(LabelStringKey.MainFrame_5) + " - 丰沛_211618");
 		
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		
@@ -323,11 +326,19 @@ public final class MainFrame extends JFrame implements MutilangSupported, Obvers
 		calendarButton.setBounds(80, 200, 40, 40);
 		getContentPane().add(calendarButton);
 		
-		JButton button_2 = new JButton();
-		button_2.setToolTipText((String) null);
-		button_2.setOpaque(true);
-		button_2.setBounds(25, 200, 40, 40);
-		getContentPane().add(button_2);
+		attrButton = new JButton();
+		attrButton.setToolTipText(getLabel(LabelStringKey.MainFrame_6));
+		attrButton.setIcon(new ImageIcon(attr_blue));
+		attrButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				fireShowAttrFrame();
+			}
+		});
+		attrButton.setToolTipText((String) null);
+		attrButton.setOpaque(true);
+		attrButton.setBounds(25, 200, 40, 40);
+		getContentPane().add(attrButton);
 		
 		JLabel versionLabel = new JLabel(version.getLongName());
 		versionLabel.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -422,9 +433,21 @@ public final class MainFrame extends JFrame implements MutilangSupported, Obvers
 		this.mutilang = mutilang;
 		
 		//更新各标签的文本。
+		setTitle(getLabel(LabelStringKey.MainFrame_5));
+		
 		attendanceLabel.setText(getLabel(LabelStringKey.MainFrame_1));
 		workticketLabel.setText(getLabel(LabelStringKey.MainFrame_2));
-
+		
+		if(Objects.isNull(fileSelectModel.getAttendanceFile())){
+			attendanceFilePanel.setToolTipText(getLabel(LabelStringKey.MainFrame_3));
+		}
+		if(Objects.isNull(fileSelectModel.getWorkticketFile())){
+			workticketFilePanel.setToolTipText(getLabel(LabelStringKey.MainFrame_3));
+		}
+		
+		countButton.setText(getLabel(LabelStringKey.MainFrame_4));
+		attrButton.setToolTipText(getLabel(LabelStringKey.MainFrame_6));
+		
 		return true;
 	}
 
@@ -626,8 +649,15 @@ public final class MainFrame extends JFrame implements MutilangSupported, Obvers
 			if(Objects.nonNull(obverser)) obverser.fireCount();
 		}
 	}
+	
+	private void fireShowAttrFrame(){
+		for(MainFrameObverser obverser : obversers){
+			if(Objects.nonNull(obverser)) obverser.fireShowAttrFrame();
+		}
+	}
 
 	private String getLabel(LabelStringKey labelStringKey){
 		return mutilang.getString(labelStringKey.getName());
 	}
+	
 }

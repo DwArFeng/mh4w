@@ -11,6 +11,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileFilter;
 
 import com.dwarfeng.jier.mh4w.core.model.struct.Mutilang;
+import com.dwarfeng.jier.mh4w.core.view.gui.AttrFrame;
 import com.dwarfeng.jier.mh4w.core.view.gui.DetailFrame;
 import com.dwarfeng.jier.mh4w.core.view.gui.MainFrame;
 
@@ -26,7 +27,7 @@ public abstract class AbstractGuiController implements GuiController {
 	
 	protected MainFrame mainFrame = null;
 	protected DetailFrame detailFrame = null;
-	
+	protected AttrFrame attrFrame = null;
 	
 	/* 
 	 * (non-Javadoc)
@@ -352,6 +353,107 @@ public abstract class AbstractGuiController implements GuiController {
 				detailFrame.setBounds(dest.x + mainFrame.getWidth(), dest.y, 700, 800);
 			}
 			detailFrame.setVisible(aFlag);
+			return true;
+		}finally {
+			lock.writeLock().unlock();
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.dwarfeng.jier.mh4w.core.view.ctrl.GuiController#newAttrFrame()
+	 */
+	@Override
+	public boolean newAttrFrame() {
+		lock.writeLock().lock();
+		try{
+			if(Objects.isNull(attrFrame)){
+				attrFrame = newAttrFrameImpl();
+				return Objects.nonNull(attrFrame);
+			}else{
+				return false;
+			}
+		}finally {
+			lock.writeLock().unlock();
+		}
+	}
+	
+	/**
+	 * 新建属性面板的实现方法。
+	 * <p> 该方法已经在调用方法处上锁，不用单独上锁。
+	 * @return 新的主界面。
+	 */
+	 protected abstract AttrFrame newAttrFrameImpl();
+
+	 /*
+	  * (non-Javadoc)
+	  * @see com.dwarfeng.jier.mh4w.core.view.ctrl.GuiController#disposeAttrFrame()
+	  */
+	@Override
+	public boolean disposeAttrFrame() {
+		lock.writeLock().lock();
+		try{
+			if(Objects.nonNull(attrFrame)){
+				if(disposeAttrFrameImpl()){
+					attrFrame = null;
+					return true;
+				}else{
+					return false;
+				}
+			}else {
+				return false;
+			}
+		}finally {
+			lock.writeLock().unlock();
+		}
+	}
+
+	/**
+	 * 释放属性面板的实现方法。
+	 * <p> 该方法已在调用方法处上锁，不用单独上锁。
+	 * @return 是否释放成功。
+	 */
+	protected abstract boolean disposeAttrFrameImpl();
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.dwarfeng.jier.mh4w.core.view.ctrl.GuiController#hasAttrFrame()
+	 */
+	@Override
+	public boolean hasAttrFrame() {
+		lock.readLock().lock();
+		try{
+			return Objects.nonNull(attrFrame);
+		}finally {
+			lock.readLock().unlock();
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.dwarfeng.jier.mh4w.core.view.ctrl.GuiController#getAttrFrameVisible()
+	 */
+	@Override
+	public boolean getAttrFrameVisible() {
+		lock.readLock().lock();
+		try{
+			if(Objects.isNull(attrFrame)) return false;
+			return attrFrame.isVisible();
+		}finally {
+			lock.readLock().unlock();
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.dwarfeng.jier.mh4w.core.view.ctrl.GuiController#setAttrFrameVisible(boolean)
+	 */
+	@Override
+	public boolean setAttrFrameVisible(boolean aFlag) {
+		lock.writeLock().lock();
+		try{
+			if(Objects.isNull(attrFrame)) return false;
+			attrFrame.setVisible(aFlag);
 			return true;
 		}finally {
 			lock.writeLock().unlock();

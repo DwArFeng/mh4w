@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -40,11 +41,13 @@ import com.dwarfeng.jier.mh4w.core.model.cm.DefaultFileSelectModel;
 import com.dwarfeng.jier.mh4w.core.model.cm.DefaultLoggerModel;
 import com.dwarfeng.jier.mh4w.core.model.cm.DefaultMutilangModel;
 import com.dwarfeng.jier.mh4w.core.model.cm.DefaultResourceModel;
+import com.dwarfeng.jier.mh4w.core.model.cm.DefaultShiftModel;
 import com.dwarfeng.jier.mh4w.core.model.cm.DefaultStateModel;
 import com.dwarfeng.jier.mh4w.core.model.cm.FileSelectModel;
 import com.dwarfeng.jier.mh4w.core.model.cm.LoggerModel;
 import com.dwarfeng.jier.mh4w.core.model.cm.MutilangModel;
 import com.dwarfeng.jier.mh4w.core.model.cm.ResourceModel;
+import com.dwarfeng.jier.mh4w.core.model.cm.ShiftModel;
 import com.dwarfeng.jier.mh4w.core.model.cm.StateModel;
 import com.dwarfeng.jier.mh4w.core.model.eum.BlockKey;
 import com.dwarfeng.jier.mh4w.core.model.eum.CoreConfig;
@@ -55,22 +58,30 @@ import com.dwarfeng.jier.mh4w.core.model.io.XmlBlockLoader;
 import com.dwarfeng.jier.mh4w.core.model.io.XmlLoggerLoader;
 import com.dwarfeng.jier.mh4w.core.model.io.XmlMutilangLoader;
 import com.dwarfeng.jier.mh4w.core.model.io.XmlResourceLoader;
+import com.dwarfeng.jier.mh4w.core.model.io.XmlShiftLoader;
 import com.dwarfeng.jier.mh4w.core.model.obv.LoggerAdapter;
 import com.dwarfeng.jier.mh4w.core.model.obv.LoggerObverser;
 import com.dwarfeng.jier.mh4w.core.model.obv.MutilangAdapter;
 import com.dwarfeng.jier.mh4w.core.model.obv.MutilangObverser;
 import com.dwarfeng.jier.mh4w.core.model.struct.AbstractFlow;
 import com.dwarfeng.jier.mh4w.core.model.struct.DefaultFinishedFlowTaker;
+import com.dwarfeng.jier.mh4w.core.model.struct.DefaultShift;
 import com.dwarfeng.jier.mh4w.core.model.struct.FinishedFlowTaker;
 import com.dwarfeng.jier.mh4w.core.model.struct.Flow;
 import com.dwarfeng.jier.mh4w.core.model.struct.ProcessException;
 import com.dwarfeng.jier.mh4w.core.model.struct.Resource;
+import com.dwarfeng.jier.mh4w.core.model.struct.Shift;
+import com.dwarfeng.jier.mh4w.core.model.struct.TimeSection;
+import com.dwarfeng.jier.mh4w.core.model.struct.UnsafeShift;
 import com.dwarfeng.jier.mh4w.core.util.Constants;
 import com.dwarfeng.jier.mh4w.core.util.Mh4wUtil;
 import com.dwarfeng.jier.mh4w.core.view.ctrl.AbstractGuiController;
 import com.dwarfeng.jier.mh4w.core.view.ctrl.GuiController;
+import com.dwarfeng.jier.mh4w.core.view.gui.AttrFrame;
 import com.dwarfeng.jier.mh4w.core.view.gui.DetailFrame;
 import com.dwarfeng.jier.mh4w.core.view.gui.MainFrame;
+import com.dwarfeng.jier.mh4w.core.view.obv.AttrFrameAdapter;
+import com.dwarfeng.jier.mh4w.core.view.obv.AttrFrameObverser;
 import com.dwarfeng.jier.mh4w.core.view.obv.DetailFrameAdapter;
 import com.dwarfeng.jier.mh4w.core.view.obv.DetailFrameObverser;
 import com.dwarfeng.jier.mh4w.core.view.obv.MainFrameAdapter;
@@ -186,6 +197,7 @@ public final class Mh4w {
 		private MutilangModel labelMutilangModel = new DefaultMutilangModel();
 		private FileSelectModel fileSelectModel = new DefaultFileSelectModel();
 		private StateModel stateModel = new DefaultStateModel();
+		private ShiftModel shiftModel = new DefaultShiftModel();
 		//structs
 		private FinishedFlowTaker finishedFlowTaker = new DefaultFinishedFlowTaker(backgroundModel);
 		//obvs
@@ -265,6 +277,35 @@ public final class Mh4w {
 				detailFrame.dispose();
 				return true;
 			}
+
+			/*
+			 * (non-Javadoc)
+			 * @see com.dwarfeng.jier.mh4w.core.view.ctrl.AbstractGuiController#newAttrFrameImpl()
+			 */
+			@Override
+			protected AttrFrame newAttrFrameImpl() {
+				if(Objects.isNull(mainFrame)) return null;
+				
+				AttrFrame attrFrame = new AttrFrame(
+						mainFrame,
+						labelMutilangModel.getMutilang(),
+						shiftModel
+				);
+				attrFrame.setLocationRelativeTo(mainFrame);
+				attrFrame.addObverser(attrFrameObverser);
+				return attrFrame;
+			}
+
+			/*
+			 * (non-Javadoc)
+			 * @see com.dwarfeng.jier.mh4w.core.view.ctrl.AbstractGuiController#disposeAttrFrameImpl()
+			 */
+			@Override
+			protected boolean disposeAttrFrameImpl() {
+				attrFrame.removeObverser(attrFrameObverser);
+				attrFrame.dispose();
+				return true;
+			}
 		};
 		//GUI obversers
 		private final MainFrameObverser mainFrameObverser = new MainFrameAdapter() {
@@ -332,14 +373,34 @@ public final class Mh4w {
 				manager.getBackgroundModel().submit(flowProvider.newCountFlow());
 			};
 			
+			/*
+			 * (non-Javadoc)
+			 * @see com.dwarfeng.jier.mh4w.core.view.obv.MainFrameAdapter#fireShowAttributes()
+			 */
+			@Override
+			public void fireShowAttrFrame() {
+				manager.getBackgroundModel().submit(flowProvider.newShowAttrFrameFlow());
+			};
+			
 		};
 		private final DetailFrameObverser detailFrameObverser = new DetailFrameAdapter() {
+		};
+		private final AttrFrameObverser attrFrameObverser = new AttrFrameAdapter() {
 			
-			
+			/*
+			 * (non-Javadoc)
+			 * @see com.dwarfeng.jier.mh4w.core.view.obv.AttrFrameAdapter#fireAttrFrameClosing()
+			 */
+			@Override
+			public void fireAttrFrameClosing() {
+				manager.getBackgroundModel().submit(flowProvider.newDisposeAttrFrameFlow());
+			};
 			
 		};
 		
-		
+		/**
+		 * 新实例。
+		 */
 		public Manager() {
 			coreConfigModel.addAll(Arrays.asList(CoreConfig.values()));
 			loggerMutilangModel.setDefaultMutilangInfo(Constants.getDefaultLoggerMutilangInfo());
@@ -434,6 +495,10 @@ public final class Mh4w {
 			return stateModel;
 		}
 
+		public ShiftModel getShiftModel() {
+			return shiftModel;
+		}
+
 		/**
 		 * @return the finishedFlowTaker
 		 */
@@ -522,6 +587,22 @@ public final class Mh4w {
 		}
 
 		/**
+		 * 获取一个新的显示属性面板流。
+		 * @return 新的显示属性面板流。
+		 */
+		public Flow newShowAttrFrameFlow() {
+			return new ShowAttrFrameFlow();
+		}
+		
+		/**
+		 * 获取一个新的关闭属性面板流。
+		 * @return 新的关闭属性面板流。
+		 */
+		public Flow newDisposeAttrFrameFlow() {
+			return new DisposeAttrFrameFlow();
+		}
+
+		/**
 		 * 内部抽象过程。
 		 * <p> 定义常用的内部用方法。
 		 * @author DwArFeng
@@ -534,28 +615,24 @@ public final class Mh4w {
 			/**
 			 * 新实例。
 			 * @param blockKey 阻挡键, 不能为 <code>null</code>。
-			 * @param initMessage 初始的信息，不能为 <code>null</code>。
 			 * @throws NullPointerException 入口参数为 <code>null</code>。
 			 */
-			public AbstractInnerFlow(BlockKey blockKey, String initMessage) {
-				this(blockKey, initMessage, 0, 0, false, false);
+			public AbstractInnerFlow(BlockKey blockKey) {
+				this(blockKey, 0, 0, false, false);
 			}
 			
 			/**
 			 * 新实例。
 			 * @param blockKey 阻挡键，不能为 <code>null</code>。
-			 * @param initMessage 初始的信息，不能为 <code>null</code>。
 			 * @param progress 当前进度。
 			 * @param totleProgress 总进度。
 			 * @param determinateFlag 是否为进度已知的流程。
 			 * @param cancelableFlag 是否能够被取消。
 			 */
-			public AbstractInnerFlow(BlockKey blockKey, String initMessage, int progress, int totleProgress, boolean determinateFlag, boolean cancelableFlag ){
+			public AbstractInnerFlow(BlockKey blockKey, int progress, int totleProgress, boolean determinateFlag, boolean cancelableFlag ){
 				super(progress, totleProgress, determinateFlag, cancelableFlag);
 				Objects.requireNonNull(blockKey, "入口参数 blockKey 不能为 null。");
-				Objects.requireNonNull(initMessage, "入口参数 initMessage 不能为 null。");
 				this.blockKey = blockKey.getName();
-				setMessage(initMessage);
 			}
 		
 			/*
@@ -661,8 +738,25 @@ public final class Mh4w {
 		 */
 		private abstract class AbstractMayChangeStateFlow extends AbstractInnerFlow{
 
-			public AbstractMayChangeStateFlow(BlockKey blockKey, String initMessage) {
-				super(blockKey, initMessage);
+			/**
+			 * 
+			 * @param blockKey
+			 */
+			public AbstractMayChangeStateFlow(BlockKey blockKey) {
+				super(blockKey);
+			}
+			
+			/**
+			 * @param blockKey
+			 * @param progress
+			 * @param totleProgress
+			 * @param determinateFlag
+			 * @param cancelableFlag
+			 */
+			public AbstractMayChangeStateFlow(BlockKey blockKey, int progress, int totleProgress,
+					boolean determinateFlag, boolean cancelableFlag) {
+				super(blockKey, progress, totleProgress, determinateFlag, cancelableFlag);
+				// TODO Auto-generated constructor stub
 			}
 
 			/**
@@ -695,7 +789,7 @@ public final class Mh4w {
 		private final class InitializeFlow extends AbstractInnerFlow{
 			
 			public InitializeFlow() {
-				super(BlockKey.INITIALIZE, manager.getLoggerMutilangModel().getMutilang().getString(LoggerStringKey.Mh4w_FlowProvider_3.getName()));
+				super(BlockKey.INITIALIZE);
 			}
 		
 			/*
@@ -835,6 +929,35 @@ public final class Mh4w {
 						warn(LoggerStringKey.Update_LabelMutilang_1, e);
 					}
 					
+					//加载班次信息。
+					info(LoggerStringKey.Mh4w_FlowProvider_31);
+					message(LoggerStringKey.Mh4w_FlowProvider_31);
+					Set<UnsafeShift> unsafeShifts = new LinkedHashSet<>();
+					XmlShiftLoader shiftLoader = null;
+					try{
+						shiftLoader = new XmlShiftLoader(getResource(ResourceKey.SHIFT_SHIFTS).openInputStream());
+						shiftLoader.load(unsafeShifts);
+					}catch(IOException e){
+						warn(LoggerStringKey.Mh4w_FlowProvider_4, e);
+						getResource(ResourceKey.SHIFT_SHIFTS).reset();
+						shiftLoader = new XmlShiftLoader(getResource(ResourceKey.SHIFT_SHIFTS).openInputStream());
+						shiftLoader.load(unsafeShifts);
+					}finally{
+						if(Objects.nonNull(labelMutilangLoader)){
+							shiftLoader.close();
+						}
+					}
+					
+					for(UnsafeShift unsafeShift : unsafeShifts){
+						String name = unsafeShift.getName();
+						TimeSection[] shiftSections = unsafeShift.getShiftSections();
+						TimeSection[] restSections = unsafeShift.getRestSections();
+						TimeSection[] extraShiftSections = unsafeShift.getExtraShiftSections();
+						
+						Shift shift = new DefaultShift(name, shiftSections, restSections, extraShiftSections);
+						manager.getShiftModel().add(shift);
+					}
+					
 					//生成视图，并使其可见。
 					info(LoggerStringKey.Mh4w_FlowProvider_8);
 					message(LoggerStringKey.Mh4w_FlowProvider_8);
@@ -862,7 +985,7 @@ public final class Mh4w {
 		private final class WindowClosingFlow extends AbstractInnerFlow{
 		
 			public WindowClosingFlow() {
-				super(BlockKey.CLOSING,manager.getLoggerMutilangModel().getMutilang().getString(LoggerStringKey.Mh4w_FlowProvider_11.getName()));
+				super(BlockKey.CLOSING);
 			}
 		
 			/*
@@ -889,7 +1012,7 @@ public final class Mh4w {
 		private final class SelectAttendanceFileFlow extends AbstractMayChangeStateFlow{
 		
 			public SelectAttendanceFileFlow() {
-				super(BlockKey.SELECT_ATTENDANCE_FILE,manager.getLoggerMutilangModel().getMutilang().getString(LoggerStringKey.Mh4w_FlowProvider_13.getName()));
+				super(BlockKey.SELECT_ATTENDANCE_FILE);
 			}
 		
 			/*
@@ -963,7 +1086,7 @@ public final class Mh4w {
 		private final class SelectWorkticketFileFlow extends AbstractMayChangeStateFlow{
 		
 			public SelectWorkticketFileFlow() {
-				super(BlockKey.SELECT_WORKTICKET_FILE,manager.getLoggerMutilangModel().getMutilang().getString(LoggerStringKey.Mh4w_FlowProvider_19.getName()));
+				super(BlockKey.SELECT_WORKTICKET_FILE);
 			}
 		
 			/*
@@ -1037,7 +1160,7 @@ public final class Mh4w {
 		private final class CountResetFlow extends AbstractInnerFlow{
 		
 			public CountResetFlow() {
-				super(BlockKey.RESET_COUNT,manager.getLoggerMutilangModel().getMutilang().getString(LoggerStringKey.Mh4w_FlowProvider_22.getName()));
+				super(BlockKey.RESET_COUNT);
 			}
 		
 			/*
@@ -1076,7 +1199,7 @@ public final class Mh4w {
 		private final class ShowDetailFrameFlow extends AbstractInnerFlow{
 		
 			public ShowDetailFrameFlow() {
-				super(BlockKey.SHOW_DETAIL_FRAME,manager.getLoggerMutilangModel().getMutilang().getString(LoggerStringKey.Mh4w_FlowProvider_25.getName()));
+				super(BlockKey.SHOW_DETAIL_FRAME);
 			}
 		
 			/*
@@ -1110,7 +1233,7 @@ public final class Mh4w {
 		private final class HideDetailFrameFlow extends AbstractInnerFlow{
 		
 			public HideDetailFrameFlow() {
-				super(BlockKey.HIDE_DETAIL_FRAME,manager.getLoggerMutilangModel().getMutilang().getString(LoggerStringKey.Mh4w_FlowProvider_27.getName()));
+				super(BlockKey.HIDE_DETAIL_FRAME);
 			}
 		
 			/*
@@ -1144,7 +1267,7 @@ public final class Mh4w {
 		private final class CountFlow extends AbstractMayChangeStateFlow{
 		
 			public CountFlow() {
-				super(BlockKey.SELECT_ATTENDANCE_FILE,manager.getLoggerMutilangModel().getMutilang().getString(LoggerStringKey.Mh4w_FlowProvider_13.getName()));
+				super(BlockKey.SELECT_ATTENDANCE_FILE);
 			}
 		
 			/*
@@ -1158,7 +1281,7 @@ public final class Mh4w {
 						throw new IllegalStateException("程序还未启动或已经结束");
 					}
 					
-					
+					//TODO 实现统计算法
 					
 					message(LoggerStringKey.Mh4w_FlowProvider_16);
 					
@@ -1171,6 +1294,75 @@ public final class Mh4w {
 							manager.getGuiController().attendanceClickUnlock();
 						}
 					});
+				}
+			}
+			
+		}
+
+		private final class ShowAttrFrameFlow extends AbstractInnerFlow{
+		
+			public ShowAttrFrameFlow() {
+				super(BlockKey.SHOW_ATTR_FRAME);
+			}
+		
+			/*
+			 * (non-Javadoc)
+			 * @see com.dwarfeng.tp.core.control.Mh4w.FlowProvider.AbstractInnerFlow#processImpl()
+			 */
+			@Override
+			protected void processImpl() {
+				try{
+					if(getState() != RuntimeState.RUNNING){
+						throw new IllegalStateException("程序还未启动或已经结束");
+					}
+					
+					info(LoggerStringKey.Mh4w_FlowProvider_32);
+					Mh4wUtil.invokeInEventQueue(new Runnable() {
+						@Override
+						public void run() {
+							manager.guiController.newAttrFrame();
+							manager.guiController.setAttrFrameVisible(true);
+						}
+					});
+					
+					message(LoggerStringKey.Mh4w_FlowProvider_33);
+					
+				}catch (Exception e) {
+					message(LoggerStringKey.Mh4w_FlowProvider_34);
+				}
+			}
+			
+		}
+
+		private final class DisposeAttrFrameFlow extends AbstractInnerFlow{
+		
+			public DisposeAttrFrameFlow() {
+				super(BlockKey.DISPOSE_ATTR_FRAME);
+			}
+		
+			/*
+			 * (non-Javadoc)
+			 * @see com.dwarfeng.tp.core.control.Mh4w.FlowProvider.AbstractInnerFlow#processImpl()
+			 */
+			@Override
+			protected void processImpl() {
+				try{
+					if(getState() != RuntimeState.RUNNING){
+						throw new IllegalStateException("程序还未启动或已经结束");
+					}
+					
+					info(LoggerStringKey.Mh4w_FlowProvider_35);
+					Mh4wUtil.invokeInEventQueue(new Runnable() {
+						@Override
+						public void run() {
+							manager.guiController.disposeAttrFrame();
+						}
+					});
+					
+					message(LoggerStringKey.Mh4w_FlowProvider_36);
+					
+				}catch (Exception e) {
+					message(LoggerStringKey.Mh4w_FlowProvider_37);
 				}
 			}
 			

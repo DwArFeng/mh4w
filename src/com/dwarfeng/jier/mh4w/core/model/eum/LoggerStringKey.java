@@ -46,6 +46,13 @@ public enum LoggerStringKey implements Name{
 	Mh4w_FlowProvider_28(new DefaultName("Mh4w.FlowProvider.28")),
 	Mh4w_FlowProvider_29(new DefaultName("Mh4w.FlowProvider.29")),
 	Mh4w_FlowProvider_30(new DefaultName("Mh4w.FlowProvider.30")),
+	Mh4w_FlowProvider_31(new DefaultName("Mh4w.FlowProvider.31")),
+	Mh4w_FlowProvider_32(new DefaultName("Mh4w.FlowProvider.32")),
+	Mh4w_FlowProvider_33(new DefaultName("Mh4w.FlowProvider.33")),
+	Mh4w_FlowProvider_34(new DefaultName("Mh4w.FlowProvider.34")),
+	Mh4w_FlowProvider_35(new DefaultName("Mh4w.FlowProvider.35")),
+	Mh4w_FlowProvider_36(new DefaultName("Mh4w.FlowProvider.36")),
+	Mh4w_FlowProvider_37(new DefaultName("Mh4w.FlowProvider.37")),
 
 	Update_LoggerMutilang_1(new DefaultName("Update.LoggerMutilang.1")),
 	Update_LabelMutilang_1(new DefaultName("Update.LabelMutilang.1")),

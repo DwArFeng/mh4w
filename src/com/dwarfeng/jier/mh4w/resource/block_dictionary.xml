@@ -31,4 +31,10 @@
 				<dictionary value="show_detail_frame"/>
 				<dictionary value="hide_detail_frame"/>
 	</key>
+	<key value="show_attr_frame">
+		<dictionary value="initialize"/>
+	</key>
+	<key value="dispose_attr_frame">
+		<dictionary value="initialize"/>
+	</key>
 </root>
