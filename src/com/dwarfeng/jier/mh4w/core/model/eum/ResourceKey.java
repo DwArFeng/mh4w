@@ -36,6 +36,9 @@ public enum ResourceKey implements Name{
 	/**工具历史*/
 	TOOL_HISTORY("tool.history"),
 	
+	/**班次信息*/
+	SHIFT_SHIFTS("shift.shifts")
+	
 	;
 
 	private final String name;

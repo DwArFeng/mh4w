@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root >
+	<shift>
+		<name value="智能班(白班)"/>
+		<extra_shift_section start="00:00" end="08:00"/>
+		<shift_section start="08:00" end="12:00"/>
+		<rest_section start="12:00" end="13:00"/>
+		<shift_section start="13:00" end="17:00"/>
+		<extra_shift_section start="17:00" end="32:00"/>
+	</shift>
+</root>
