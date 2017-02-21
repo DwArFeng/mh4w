@@ -20,6 +20,7 @@ public enum LabelStringKey implements Name{
 	
 	DetailFrame_1(new DefaultName("DetailFrame.1")),
 	DetailFrame_2(new DefaultName("DetailFrame.2")),
+	DetailFrame_3(new DefaultName("DetailFrame.3")),
 
 	AttrFrame_1(new DefaultName("AttrFrame.1")),
 	AttrFrame_2(new DefaultName("AttrFrame.2")),

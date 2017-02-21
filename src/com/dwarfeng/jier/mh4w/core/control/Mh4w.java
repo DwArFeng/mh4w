@@ -22,6 +22,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 
 import com.dwarfeng.dutil.basic.io.CT;
+import com.dwarfeng.dutil.basic.mea.TimeMeasurer;
 import com.dwarfeng.dutil.basic.prog.DefaultVersion;
 import com.dwarfeng.dutil.basic.prog.RuntimeState;
 import com.dwarfeng.dutil.basic.prog.Version;
@@ -303,6 +304,7 @@ public final class Mh4w {
 			protected DetailFrame newDetailFrameImpl() {
 				DetailFrame detailFrame = new DetailFrame(
 						labelMutilangModel.getMutilang(),
+						stateModel,
 						originalAttendanceDataModel,
 						originalWorkticketDataModel
 				);
@@ -1313,6 +1315,8 @@ public final class Mh4w {
 					
 					manager.getFileSelectModel().setAttendanceFile(null);
 					manager.getFileSelectModel().setWorkticketFile(null);
+					manager.getOriginalAttendanceDataModel().clear();
+					manager.getOriginalWorkticketDataModel().clear();
 					manager.getStateModel().setCountResultOutdated(false);
 					manager.getStateModel().setCountState(CountState.NOT_START);
 					manager.getStateModel().setReadyForCount(false);
@@ -1420,6 +1424,8 @@ public final class Mh4w {
 					 * -------------------------- 统计算法 -------------------------
 					 * start：
 					 * 清除错误模型
+					 * 清除原始考勤数据模型
+					 * 清除原始工票数据模型
 					 * 读取原始考勤数据
 					 * 读取原始工票数据
 					 * 转换原始数据，并将发生的问题记录在错误模型中
@@ -1432,8 +1438,16 @@ public final class Mh4w {
 					 *  设置状态模型为 统计_错误，并显示错误面板。
 					 *  退出
 					 */
+					TimeMeasurer tm = new TimeMeasurer();
+					tm.start();
 					
 					info(LoggerStringKey.Mh4w_FlowProvider_41);
+					
+					//读取原始考勤数据
+					info(LoggerStringKey.Mh4w_FlowProvider_47);
+					message(LoggerStringKey.Mh4w_FlowProvider_47);
+					manager.getOriginalAttendanceDataModel().clear();
+					manager.getOriginalWorkticketDataModel().clear();
 					
 					//读取原始考勤数据
 					info(LoggerStringKey.Mh4w_FlowProvider_42);
@@ -1450,8 +1464,8 @@ public final class Mh4w {
 					}
 					
 					//读取原始工票数据
-					info(LoggerStringKey.Mh4w_FlowProvider_42);
-					message(LoggerStringKey.Mh4w_FlowProvider_42);
+					info(LoggerStringKey.Mh4w_FlowProvider_46);
+					message(LoggerStringKey.Mh4w_FlowProvider_46);
 					XlsOriginalWorkticketDataLoader originalWorkticketDataLoader = null;
 					try{
 						originalWorkticketDataLoader = CountUtil.newXlsOriginalWorkticketDataLoader(
@@ -1463,10 +1477,12 @@ public final class Mh4w {
 						}
 					}
 					
-					CT.trace(manager.getOriginalWorkticketDataModel().size());
 					//TODO 实现统计算法
 					
 					message(LoggerStringKey.Mh4w_FlowProvider_16);
+					
+					tm.stop();
+					CT.trace(tm.formatStringMs());
 					
 				}catch (Exception e) {
 					setThrowable(e);

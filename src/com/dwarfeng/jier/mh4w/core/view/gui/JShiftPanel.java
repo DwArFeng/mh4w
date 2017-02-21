@@ -1,11 +1,29 @@
 package com.dwarfeng.jier.mh4w.core.view.gui;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Image;
 import java.util.Objects;
 
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.ListCellRenderer;
+import javax.swing.ListSelectionModel;
+import javax.swing.SwingConstants;
+import javax.swing.border.BevelBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
+import com.dwarfeng.dutil.basic.cna.ArrayUtil;
+import com.dwarfeng.dutil.basic.cna.CollectionUtil;
 import com.dwarfeng.dutil.basic.gui.swing.MuaListModel;
 import com.dwarfeng.jier.mh4w.core.model.cm.ShiftModel;
+import com.dwarfeng.jier.mh4w.core.model.eum.ImageKey;
+import com.dwarfeng.jier.mh4w.core.model.eum.ImageSize;
 import com.dwarfeng.jier.mh4w.core.model.eum.LabelStringKey;
 import com.dwarfeng.jier.mh4w.core.model.obv.ShiftAdapter;
 import com.dwarfeng.jier.mh4w.core.model.obv.ShiftObverser;
@@ -13,20 +31,14 @@ import com.dwarfeng.jier.mh4w.core.model.struct.Mutilang;
 import com.dwarfeng.jier.mh4w.core.model.struct.MutilangSupported;
 import com.dwarfeng.jier.mh4w.core.model.struct.Shift;
 import com.dwarfeng.jier.mh4w.core.model.struct.TimeSection;
+import com.dwarfeng.jier.mh4w.core.model.struct.TimeSectionComparator;
 import com.dwarfeng.jier.mh4w.core.util.Constants;
+import com.dwarfeng.jier.mh4w.core.util.ImageUtil;
 import com.dwarfeng.jier.mh4w.core.util.Mh4wUtil;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import javax.swing.JScrollPane;
-import javax.swing.ListCellRenderer;
-import javax.swing.DefaultListCellRenderer;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.border.BevelBorder;
-import javax.swing.SwingConstants;
-
 public class JShiftPanel extends JPanel implements MutilangSupported{
+
+	private static final long serialVersionUID = -4233720215313562929L;
 
 	/**多语言接口*/
 	private Mutilang mutilang;
@@ -39,9 +51,16 @@ public class JShiftPanel extends JPanel implements MutilangSupported{
 	private final JList<Shift> shiftsList;
 	private final JList<TimeSection> timeSectionsList;
 	
+	private final Image shiftSectionImage;
+	private final Image extraShiftSectionImage;
+	private final Image restSectionImage;
+	
 	/*
 	 * 非 final 域。
 	 */
+	private TimeSection[] shiftSections = new TimeSection[0];
+	private TimeSection[] extraShiftSections = new TimeSection[0];
+	private TimeSection[] restSections = new TimeSection[0];
 	
 	/*
 	 * 各模型。
@@ -51,8 +70,8 @@ public class JShiftPanel extends JPanel implements MutilangSupported{
 	/*
 	 * 视图模型以及渲染
 	 */
-	private final MuaListModel<Shift> shiftsListModel = new MuaListModel<>();
-	private final MuaListModel<TimeSection> timeSectionsListModel = new MuaListModel<>();
+	private final MuaListModel<Shift> shiftListModel = new MuaListModel<>();
+	private final MuaListModel<TimeSection> timeSectionListModel = new MuaListModel<>();
 	private final ListCellRenderer<Object> shiftsListRenderer = new DefaultListCellRenderer(){
 		
 		private static final long serialVersionUID = 6567980303497019985L;
@@ -60,11 +79,37 @@ public class JShiftPanel extends JPanel implements MutilangSupported{
 		@Override
 		public java.awt.Component getListCellRendererComponent(javax.swing.JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
 			super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-			/*
-			 * 此处转换是安全的。
-			 */
 			Shift shift = (Shift) value;
 			setText(shift.getName());
+			return this;
+		};
+	};
+	private final ListCellRenderer<Object> timeSectionListRenderer = new DefaultListCellRenderer(){
+		
+		private static final long serialVersionUID = -7812495443357474837L;
+
+		@Override
+		public java.awt.Component getListCellRendererComponent(javax.swing.JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+			super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+			TimeSection timeSection = (TimeSection) value;
+			
+			if(ArrayUtil.contains(shiftSections, timeSection)){
+				setIcon(new ImageIcon(shiftSectionImage));
+			}
+			if(ArrayUtil.contains(extraShiftSections, timeSection)){
+				setIcon(new ImageIcon(extraShiftSectionImage));
+			}
+			if(ArrayUtil.contains(restSections, timeSection)){
+				setIcon(new ImageIcon(restSectionImage));
+			}
+			
+			int a1 = (int) timeSection.getStart();
+			int a2 = (int)(timeSection.getStart() * 60) % 60;
+			int a3 = (int) timeSection.getEnd();
+			int a4 =  (int)(timeSection.getEnd() * 60) % 60;
+			
+			setText(String.format("%02d:%02d - %02d:%02d", a1, a2, a3, a4));
+			
 			return this;
 		};
 	};
@@ -83,7 +128,7 @@ public class JShiftPanel extends JPanel implements MutilangSupported{
 			Mh4wUtil.invokeInEventQueue(new Runnable() {
 				@Override
 				public void run() {
-					shiftsListModel.add(shift);
+					shiftListModel.add(shift);
 				}
 			});
 		}
@@ -97,7 +142,7 @@ public class JShiftPanel extends JPanel implements MutilangSupported{
 			Mh4wUtil.invokeInEventQueue(new Runnable() {
 				@Override
 				public void run() {
-					shiftsListModel.remove(shift);
+					shiftListModel.remove(shift);
 				}
 			});
 		}
@@ -111,7 +156,7 @@ public class JShiftPanel extends JPanel implements MutilangSupported{
 			Mh4wUtil.invokeInEventQueue(new Runnable() {
 				@Override
 				public void run() {
-					shiftsListModel.clear();
+					shiftListModel.clear();
 				}
 			});
 		}
@@ -134,6 +179,10 @@ public class JShiftPanel extends JPanel implements MutilangSupported{
 		
 		this.mutilang = mutilang;
 		
+		shiftSectionImage = ImageUtil.getImage(ImageKey.SHIFT_SECTION, ImageSize.ICON_SMALL);
+		extraShiftSectionImage = ImageUtil.getImage(ImageKey.EXTRA_SHIFT_SECTION, ImageSize.ICON_SMALL);
+		restSectionImage = ImageUtil.getImage(ImageKey.REST_SECTION, ImageSize.ICON_SMALL);
+
 		setLayout(new BorderLayout(0, 0));
 		
 		JAdjustableBorderPanel adjustableBorderPanel = new JAdjustableBorderPanel();
@@ -152,8 +201,34 @@ public class JShiftPanel extends JPanel implements MutilangSupported{
 		shiftsScrollPane.setColumnHeaderView(shiftsLabel);
 		
 		shiftsList = new JList<>();
+		shiftsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		shiftsList.addListSelectionListener(new ListSelectionListener() {
+			@Override
+			public void valueChanged(ListSelectionEvent e) {
+				if(! e.getValueIsAdjusting()){
+					Shift shift = shiftsList.getSelectedValue();
+					if(Objects.nonNull(shift)){
+						timeSectionListModel.clear();
+						
+						shiftSections = shift.getShiftSections();
+						extraShiftSections = shift.getExtraShiftSections();
+						restSections = shift.getRestSections();
+						
+						for(TimeSection timeSection : shift.getShiftSections()){
+							CollectionUtil.insertByOrder(timeSectionListModel, timeSection, TimeSectionComparator.instance);
+						}
+						for(TimeSection timeSection : shift.getExtraShiftSections()){
+							CollectionUtil.insertByOrder(timeSectionListModel, timeSection, TimeSectionComparator.instance);
+						}
+						for(TimeSection timeSection : shift.getRestSections()){
+							CollectionUtil.insertByOrder(timeSectionListModel, timeSection, TimeSectionComparator.instance);
+						}
+					}
+				}
+			}
+		});
 		shiftsScrollPane.setViewportView(shiftsList);
-		shiftsList.setModel(shiftsListModel);
+		shiftsList.setModel(shiftListModel);
 		shiftsList.setCellRenderer(shiftsListRenderer);
 		
 		JScrollPane timeSectionsScrollPane = new JScrollPane();
@@ -166,7 +241,8 @@ public class JShiftPanel extends JPanel implements MutilangSupported{
 		timeSectionsScrollPane.setColumnHeaderView(timeSectionsLabel);
 		
 		timeSectionsList = new JList<>();
-		timeSectionsList.setModel(timeSectionsListModel);
+		timeSectionsList.setModel(timeSectionListModel);
+		timeSectionsList.setCellRenderer(timeSectionListRenderer);
 		timeSectionsScrollPane.setViewportView(timeSectionsList);
 		
 		//设置班次模型
@@ -175,7 +251,7 @@ public class JShiftPanel extends JPanel implements MutilangSupported{
 			shiftModel.getLock().readLock().lock();
 			try{
 				for(Shift shift : shiftModel){
-					shiftsListModel.add(shift);
+					shiftListModel.add(shift);
 				}
 			}finally {
 				shiftModel.getLock().readLock().unlock();
@@ -223,13 +299,13 @@ public class JShiftPanel extends JPanel implements MutilangSupported{
 	 * @param shiftModel the shiftModel to set
 	 */
 	public void setShiftModel(ShiftModel shiftModel) {
-		shiftsListModel.clear();
+		shiftListModel.clear();
 		shiftsList.getSelectionModel().setValueIsAdjusting(true);
 		shiftsList.getSelectionModel().clearSelection();
 		shiftsList.getSelectionModel().setAnchorSelectionIndex(-1);
 		shiftsList.getSelectionModel().setLeadSelectionIndex(-1);
 		
-		timeSectionsListModel.clear();
+		timeSectionListModel.clear();
 		timeSectionsList.getSelectionModel().setValueIsAdjusting(true);
 		timeSectionsList.getSelectionModel().clearSelection();
 		timeSectionsList.getSelectionModel().setAnchorSelectionIndex(-1);
@@ -244,7 +320,7 @@ public class JShiftPanel extends JPanel implements MutilangSupported{
 			shiftModel.getLock().readLock().lock();
 			try{
 				for(Shift shift : shiftModel){
-					shiftsListModel.add(shift);
+					shiftListModel.add(shift);
 				}
 			}finally {
 				shiftModel.getLock().readLock().unlock();
@@ -261,11 +337,12 @@ public class JShiftPanel extends JPanel implements MutilangSupported{
 		if(Objects.nonNull(shiftModel)){
 			shiftModel.removeObverser(shiftObverser);
 		}
-		shiftsListModel.clear();
-		timeSectionsListModel.clear();
+		shiftListModel.clear();
+		timeSectionListModel.clear();
 	}
 
 	private String getLabel(LabelStringKey labelStringKey){
 		return mutilang.getString(labelStringKey.getName());
 	}
+	
 }

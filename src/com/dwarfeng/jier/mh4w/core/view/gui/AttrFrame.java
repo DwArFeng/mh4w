@@ -30,6 +30,8 @@ import com.dwarfeng.jier.mh4w.core.view.obv.AttrFrameObverser;
 
 public class AttrFrame extends JDialog implements MutilangSupported, ObverserSet<AttrFrameObverser>{
 	
+	private static final long serialVersionUID = 2152651850994482036L;
+
 	/**观察器集合*/
 	private final Set<AttrFrameObverser> obversers = Collections.newSetFromMap(new WeakHashMap<>());
 	
@@ -44,18 +46,6 @@ public class AttrFrame extends JDialog implements MutilangSupported, ObverserSet
 	private final JShiftPanel shiftPanel;
 	private final JCoreConfigPanel coreConfigPanel;
 	private final JJobPanel jobPanel;
-	
-	/*
-	 * 非 final 域。
-	 */
-	
-	/*
-	 * 各模型。
-	 */
-	
-	/*
-	 * 各模型的观察器。
-	 */
 	
 	/**
 	 * 新实例。

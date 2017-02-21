@@ -1,6 +1,8 @@
 package com.dwarfeng.jier.mh4w.core.view.gui;
 
 import java.awt.BorderLayout;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.Set;
@@ -12,15 +14,18 @@ import javax.swing.JTabbedPane;
 
 import com.dwarfeng.dutil.basic.prog.ObverserSet;
 import com.dwarfeng.jier.mh4w.core.model.cm.DataListModel;
+import com.dwarfeng.jier.mh4w.core.model.cm.StateModel;
+import com.dwarfeng.jier.mh4w.core.model.eum.CountState;
 import com.dwarfeng.jier.mh4w.core.model.eum.LabelStringKey;
+import com.dwarfeng.jier.mh4w.core.model.obv.StateAdapter;
+import com.dwarfeng.jier.mh4w.core.model.obv.StateObverser;
 import com.dwarfeng.jier.mh4w.core.model.struct.Mutilang;
 import com.dwarfeng.jier.mh4w.core.model.struct.MutilangSupported;
 import com.dwarfeng.jier.mh4w.core.model.struct.OriginalAttendanceData;
 import com.dwarfeng.jier.mh4w.core.model.struct.OriginalWorkticketData;
 import com.dwarfeng.jier.mh4w.core.util.Constants;
+import com.dwarfeng.jier.mh4w.core.util.Mh4wUtil;
 import com.dwarfeng.jier.mh4w.core.view.obv.DetailFrameObverser;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 
 public class DetailFrame extends JFrame implements MutilangSupported, ObverserSet<DetailFrameObverser>{
 
@@ -38,25 +43,63 @@ public class DetailFrame extends JFrame implements MutilangSupported, ObverserSe
 	private final JOriginalWorkticketDataPanel originalWorkticketDataPanel;
 	
 	/*
+	 * 非 final 域。
+	 */
+	private boolean outdateFlag = false;
+	private CountState countState = CountState.NOT_START;
+	
+	/*
 	 * 视图模型以及渲染
 	 */
+	private StateModel stateModel;
 	
 	/*
 	 * 各模型的观察器。
 	 */
+	private final StateObverser stateObverser = new StateAdapter() {
+
+		/* (non-Javadoc)
+		 * @see com.dwarfeng.jier.mh4w.core.model.obv.StateAdapter#fireCountStateChanged(com.dwarfeng.jier.mh4w.core.model.eum.CountState, com.dwarfeng.jier.mh4w.core.model.eum.CountState)
+		 */
+		@Override
+		public void fireCountStateChanged(CountState oldValue, CountState newValue) {
+			Mh4wUtil.invokeInEventQueue(new Runnable() {
+				@Override
+				public void run() {
+					countState = newValue;
+					checkTabbedPanelEnabled();
+				}
+			});
+		}
+
+		/* (non-Javadoc)
+		 * @see com.dwarfeng.jier.mh4w.core.model.obv.StateAdapter#fireCountResultOutdatedChanged(boolean)
+		 */
+		@Override
+		public void fireCountResultOutdatedChanged(boolean newValue) {
+			Mh4wUtil.invokeInEventQueue(new Runnable() {
+				@Override
+				public void run() {
+					outdateFlag = newValue;
+					checkTabbedPanelEnabled();
+				}
+			});
+		}
+		
+	};
 	
 	/**
 	 * 新实例。
 	 */
 	public DetailFrame() {
-		this(Constants.getDefaultLabelMutilang(), null, null);
+		this(Constants.getDefaultLabelMutilang(), null, null, null);
 	}
 	
 	/**
 	 * 新实例。
 	 * @param mutilang
 	 */
-	public DetailFrame(Mutilang mutilang, DataListModel<OriginalAttendanceData> originalAttendanceDataModel,
+	public DetailFrame(Mutilang mutilang, StateModel stateModel, DataListModel<OriginalAttendanceData> originalAttendanceDataModel,
 			DataListModel<OriginalWorkticketData> originalWorkticketDataModel) {
 		Objects.requireNonNull(mutilang, "入口参数 mutilang 不能为 null。");
 	
@@ -81,7 +124,7 @@ public class DetailFrame extends JFrame implements MutilangSupported, ObverserSe
 		tabbedPane.addTab(getLabel(LabelStringKey.DetailFrame_2) , null, originalAttendanceDataPanel, null);
 		
 		originalWorkticketDataPanel = new JOriginalWorkticketDataPanel(mutilang, originalWorkticketDataModel);
-		tabbedPane.addTab("New tab", null, originalWorkticketDataPanel, null);
+		tabbedPane.addTab(getLabel(LabelStringKey.DetailFrame_3), null, originalWorkticketDataPanel, null);
 		
 		JPanel panel_4 = new JPanel();
 		tabbedPane.addTab("New tab", null, panel_4, null);
@@ -91,6 +134,27 @@ public class DetailFrame extends JFrame implements MutilangSupported, ObverserSe
 		
 		JPanel panel_2 = new JPanel();
 		tabbedPane.addTab("New tab", null, panel_2, null);
+		
+		tabbedPane.setEnabledAt(2, false);
+
+		if(Objects.nonNull(this.stateModel)){
+			this.stateModel.removeObverser(stateObverser);
+		}
+		
+		if(Objects.nonNull(stateModel)){
+			stateModel.addObverser(stateObverser);
+			stateModel.getLock().readLock().lock();
+			try{
+				outdateFlag = stateModel.isCountResultOutdated();
+				countState = stateModel.getCountState();
+			}finally {
+				stateModel.getLock().readLock().unlock();
+			}
+			checkTabbedPanelEnabled();
+		}
+		
+		this.stateModel = stateModel;
+		
 	}
 
 	/*
@@ -155,10 +219,45 @@ public class DetailFrame extends JFrame implements MutilangSupported, ObverserSe
 		setTitle(getLabel(LabelStringKey.DetailFrame_1));
 		
 		tabbedPane.setTitleAt(0, getLabel(LabelStringKey.DetailFrame_2));
+		tabbedPane.setTitleAt(1, getLabel(LabelStringKey.DetailFrame_3));
 
 		return true;
 	}
 	
+	/**
+	 * @return the stateModel
+	 */
+	public StateModel getStateModel() {
+		return stateModel;
+	}
+
+	/**
+	 * @param stateModel the stateModel to set
+	 */
+	public void setStateModel(StateModel stateModel) {
+		outdateFlag = false;
+		countState = CountState.NOT_START;
+		checkTabbedPanelEnabled();
+		
+		if(Objects.nonNull(this.stateModel)){
+			this.stateModel.removeObverser(stateObverser);
+		}
+		
+		if(Objects.nonNull(stateModel)){
+			stateModel.addObverser(stateObverser);
+			stateModel.getLock().readLock().lock();
+			try{
+				outdateFlag = stateModel.isCountResultOutdated();
+				countState = stateModel.getCountState();
+			}finally {
+				stateModel.getLock().readLock().unlock();
+			}
+			checkTabbedPanelEnabled();
+		}
+		
+		this.stateModel = stateModel;
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * @see java.awt.Window#dispose()
@@ -177,6 +276,22 @@ public class DetailFrame extends JFrame implements MutilangSupported, ObverserSe
 
 	private String getLabel(LabelStringKey labelStringKey){
 		return mutilang.getString(labelStringKey.getName());
+	}
+	
+	private void checkTabbedPanelEnabled() {
+		if((countState.equals(CountState.STARTED_WAITING) || countState.equals(CountState.STARTED_EXPORTED)) && ! outdateFlag){
+			enableTablePanel();
+		}else {
+			disableTablePanel();
+		}
+	}
+
+	private void disableTablePanel(){
+		tabbedPane.setEnabledAt(2, false);
+	}
+	
+	private void enableTablePanel(){
+		tabbedPane.setEnabledAt(2, true);
 	}
 
 }
