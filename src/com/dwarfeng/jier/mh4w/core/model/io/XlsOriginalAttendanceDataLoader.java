@@ -77,7 +77,7 @@ public class XlsOriginalAttendanceDataLoader extends StreamLoader<DataListModel<
 				String attendanceRecord = loader.getStringAt(0, i, column_record);
 
 				OriginalAttendanceData originalAttendanceData = new DefaultOriginalAttendanceData(fileName, 
-						i, workNumber, department, name, date, shift, attendanceRecord);
+						i + 1, workNumber, department, name, date, shift, attendanceRecord);
 				originalAttendanceDatas.add(originalAttendanceData);
 			}
 			

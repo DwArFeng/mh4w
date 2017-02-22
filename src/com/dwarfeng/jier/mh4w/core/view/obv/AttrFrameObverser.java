@@ -12,7 +12,7 @@ public interface AttrFrameObverser extends Obverser {
 	/**
 	 * 通知属性界面关闭。
 	 */
-	public void fireAttrFrameClosing();
+	public void fireHideAttrFrame();
 
 	/**
 	 * 通知重新读取程序属性。

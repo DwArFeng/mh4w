@@ -15,12 +15,13 @@ public enum BlockKey implements Name{
 	SELECT_ATTENDANCE_FILE(new DefaultName("select_attendance_file")),
 	SELECT_WORKTICKET_FILE(new DefaultName("select_workticket_file")),
 	RESET_COUNT(new DefaultName("reset_count")),
-	SHOW_DETAIL_FRAME(new DefaultName("show_detail_frame")),
-	HIDE_DETAIL_FRAME(new DefaultName("hide_detail_frame")),
+	SHOW_DETAIL(new DefaultName("show_detail")),
+	HIDE_DETAIL(new DefaultName("hide_detail")),
 	COUNT(new DefaultName("count")),
 	SHOW_ATTR_FRAME(new DefaultName("show_attr_frame")),
-	DISPOSE_ATTR_FRAME(new DefaultName("dispose_attr_frame")),
+	HIDE_ATTR_FRAME(new DefaultName("hide_attr_frame")),
 	RELOAD_ATTR(new DefaultName("reload_attr")),
+	HIDE_FAIL_FRAME(new DefaultName("hide_fail_frame")),
 
 	;
 

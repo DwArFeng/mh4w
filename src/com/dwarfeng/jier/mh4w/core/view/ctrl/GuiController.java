@@ -181,4 +181,48 @@ public interface GuiController extends ExternalReadWriteThreadSafe{
 	 */
 	public boolean setAttrFrameMutilang(Mutilang mutilang);
 	
+	/**
+	 * 新建一个失败面板。
+	 * @return 是否成功新建。
+	 */
+	public boolean newFailFrame();
+	
+	/**
+	 * 释放控制器中的失败面板。
+	 * @return 是否成功释放。
+	 */
+	public boolean disposeFailFrame();
+	
+	/**
+	 * 返回控制器中是否拥有失败面板的实例。
+	 * @return 是否拥有失败面板的实例。
+	 */
+	public boolean hasFailFrame();
+	
+	/**
+	 * 获取失败面板是否可见。
+	 * @return 失败面板是否可见。
+	 */
+	public boolean getFailFrameVisible();
+	
+	/**
+	 * 设置失败面板是否可见。
+	 * @param aFlag 失败面板是否可见。
+	 * @return 是否设置成功。
+	 */
+	public boolean setFailFrameVisible(boolean aFlag);
+	
+	/**
+	 * 获取失败面板中的多语言接口。
+	 * @return 失败面板中的多语言接口。
+	 */
+	public Mutilang getFailFrameMutilang();
+	
+	/**
+	 * 设置该控制器重的失败面板的多语言接口。
+	 * @param mutilang 指定的多语言接口。
+	 * @return 该操作是否对该对象造成了改变。
+	 */
+	public boolean setFailFrameMutilang(Mutilang mutilang);
+	
 }

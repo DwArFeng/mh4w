@@ -70,7 +70,7 @@ public final class XlsOriginalWorkticketDataLoader extends StreamLoader<DataList
 				for(Job job : jobs){
 					String workticket = loader.getStringAt(0, i, job.getOriginalColumn());
 					
-					OriginalWorkticketData orWorkticketData = new DefaultOriginalWorkticketData(fileName, i,
+					OriginalWorkticketData orWorkticketData = new DefaultOriginalWorkticketData(fileName, i + 1,
 							workNumber, department, name, workticket, job);
 					originalWorkticketDatas.add(orWorkticketData);
 				}

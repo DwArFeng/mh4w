@@ -1,0 +1,44 @@
+package com.dwarfeng.jier.mh4w.core.util;
+
+import java.util.Objects;
+
+import com.dwarfeng.jier.mh4w.core.model.struct.Staff;
+import com.dwarfeng.jier.mh4w.core.model.struct.TimeSection;
+
+/**
+ * 格式化数据工具类。
+ * <p> 用于将某些结构进行格式化输出。
+ * @author DwArFeng
+ * @since 0.0.0-alpha
+ */
+public final class FormatUtil {
+
+	/**
+	 * 格式化输出员工。
+	 * @param staff 指定的员工。
+	 * @return 员工的格式化输出。
+	 * @throws NullPointerException 入口参数为 <code>null</code>。
+	 */
+	public static String formatStaff(Staff staff){
+		Objects.requireNonNull(staff, "入口参数 staff 不能为 null。");
+		return String.format("%s - %s - %s", staff.getName(), staff.getWorkNumber(), staff.getDepartement());
+	}
+	
+	/**
+	 * 格式化输出时间区间。
+	 * @param timeSection 指定的时间区间。
+	 * @return 时间区间的格式化输出。
+	 * @throws NullPointerException 入口参数为 <code>null</code>。
+	 */
+	public static String formatTimeSection(TimeSection timeSection){
+		Objects.requireNonNull(timeSection, "入口参数 timeSection 不能为 null。");
+
+		int a1 = (int) timeSection.getStart();
+		int a2 = (int)(timeSection.getStart() * 60) % 60;
+		int a3 = (int) timeSection.getEnd();
+		int a4 =  (int)(timeSection.getEnd() * 60) % 60;
+		
+		return String.format("%02d:%02d - %02d:%02d", a1, a2, a3, a4);
+	}
+	
+}

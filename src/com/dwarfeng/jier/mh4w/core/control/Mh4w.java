@@ -75,6 +75,7 @@ import com.dwarfeng.jier.mh4w.core.model.struct.AbstractFlow;
 import com.dwarfeng.jier.mh4w.core.model.struct.DefaultFinishedFlowTaker;
 import com.dwarfeng.jier.mh4w.core.model.struct.DefaultJob;
 import com.dwarfeng.jier.mh4w.core.model.struct.DefaultShift;
+import com.dwarfeng.jier.mh4w.core.model.struct.Fail;
 import com.dwarfeng.jier.mh4w.core.model.struct.FinishedFlowTaker;
 import com.dwarfeng.jier.mh4w.core.model.struct.Flow;
 import com.dwarfeng.jier.mh4w.core.model.struct.Job;
@@ -94,11 +95,14 @@ import com.dwarfeng.jier.mh4w.core.view.ctrl.AbstractGuiController;
 import com.dwarfeng.jier.mh4w.core.view.ctrl.GuiController;
 import com.dwarfeng.jier.mh4w.core.view.gui.AttrFrame;
 import com.dwarfeng.jier.mh4w.core.view.gui.DetailFrame;
+import com.dwarfeng.jier.mh4w.core.view.gui.FailFrame;
 import com.dwarfeng.jier.mh4w.core.view.gui.MainFrame;
 import com.dwarfeng.jier.mh4w.core.view.obv.AttrFrameAdapter;
 import com.dwarfeng.jier.mh4w.core.view.obv.AttrFrameObverser;
 import com.dwarfeng.jier.mh4w.core.view.obv.DetailFrameAdapter;
 import com.dwarfeng.jier.mh4w.core.view.obv.DetailFrameObverser;
+import com.dwarfeng.jier.mh4w.core.view.obv.FailFrameAdapter;
+import com.dwarfeng.jier.mh4w.core.view.obv.FailFrameObverser;
 import com.dwarfeng.jier.mh4w.core.view.obv.MainFrameAdapter;
 import com.dwarfeng.jier.mh4w.core.view.obv.MainFrameObverser;
 
@@ -216,6 +220,7 @@ public final class Mh4w {
 		private DataListModel<OriginalAttendanceData> originalAttendanceDataModel = new DefaultDataListModel<>();
 		private DataListModel<OriginalWorkticketData> originalWorkticketDataModel = new DefaultDataListModel<>();
 		private JobModel jobModel = new DefaultJobModel();
+		private DataListModel<Fail> failsModel = new DefaultDataListModel<>();
 		//structs
 		private FinishedFlowTaker finishedFlowTaker = new DefaultFinishedFlowTaker(backgroundModel);
 		//obvs
@@ -241,6 +246,7 @@ public final class Mh4w {
 						guiController.setMainFrameMutilang(mutilang);
 						guiController.setDetailFrameMutilang(mutilang);
 						guiController.setAttrFrameMutilang(mutilang);
+						guiController.setFailFrameMutilang(mutilang);
 					}
 				});
 			};
@@ -332,13 +338,11 @@ public final class Mh4w {
 				if(Objects.isNull(mainFrame)) return null;
 				
 				AttrFrame attrFrame = new AttrFrame(
-						mainFrame,
 						labelMutilangModel.getMutilang(),
 						coreConfigModel,
 						shiftModel,
 						jobModel
 				);
-				attrFrame.setLocationRelativeTo(mainFrame);
 				attrFrame.addObverser(attrFrameObverser);
 				return attrFrame;
 			}
@@ -351,6 +355,31 @@ public final class Mh4w {
 			protected boolean disposeAttrFrameImpl() {
 				attrFrame.removeObverser(attrFrameObverser);
 				attrFrame.dispose();
+				return true;
+			}
+
+			/*
+			 * (non-Javadoc)
+			 * @see com.dwarfeng.jier.mh4w.core.view.ctrl.AbstractGuiController#newFailFrameImpl()
+			 */
+			@Override
+			protected FailFrame newFailFrameImpl() {
+				FailFrame failFrame = new FailFrame(
+						labelMutilangModel.getMutilang(),
+						failsModel
+				);
+				failFrame.addObverser(failFrameObverser);
+				return failFrame;
+			}
+
+			/*
+			 * (non-Javadoc)
+			 * @see com.dwarfeng.jier.mh4w.core.view.ctrl.AbstractGuiController#disposeFailFrameImpl()
+			 */
+			@Override
+			protected boolean disposeFailFrameImpl() {
+				failFrame.removeObverser(failFrameObverser);
+				failFrame.dispose();
 				return true;
 			}
 		};
@@ -393,21 +422,21 @@ public final class Mh4w {
 				manager.getBackgroundModel().submit(flowProvider.newCountResetFlow());
 			}
 
-			/* 
+			/*
 			 * (non-Javadoc)
-			 * @see com.dwarfeng.jier.mh4w.core.view.obv.MainFrameAdapter#fireHideDetailFrame()
+			 * @see com.dwarfeng.jier.mh4w.core.view.obv.MainFrameAdapter#fireHideDetail()
 			 */
 			@Override
-			public void fireHideDetailFrame() {
+			public void fireHideDetail() {
 				manager.getBackgroundModel().submit(flowProvider.newHideDetailFrameFlow());
 			}
 
-			/* 
+			/*
 			 * (non-Javadoc)
-			 * @see com.dwarfeng.jier.mh4w.core.view.obv.MainFrameAdapter#fireShowDetailFrame()
+			 * @see com.dwarfeng.jier.mh4w.core.view.obv.MainFrameAdapter#fireShowDetail()
 			 */
 			@Override
-			public void fireShowDetailFrame() {
+			public void fireShowDetail() {
 				manager.getBackgroundModel().submit(flowProvider.newShowDetailFrameFlow());
 			}
 			
@@ -449,8 +478,8 @@ public final class Mh4w {
 			 * @see com.dwarfeng.jier.mh4w.core.view.obv.AttrFrameAdapter#fireAttrFrameClosing()
 			 */
 			@Override
-			public void fireAttrFrameClosing() {
-				manager.getBackgroundModel().submit(flowProvider.newDisposeAttrFrameFlow());
+			public void fireHideAttrFrame() {
+				manager.getBackgroundModel().submit(flowProvider.newHideAttrFrameFlow());
 			};
 			
 			/*
@@ -460,6 +489,18 @@ public final class Mh4w {
 			@Override
 			public void fireReloadAttr() {
 				manager.getBackgroundModel().submit(flowProvider.newReloadAttrFlow());
+			};
+			
+		};
+		private final FailFrameObverser failFrameObverser = new FailFrameAdapter() {
+			
+			/*
+			 * (non-Javadoc)
+			 * @see com.dwarfeng.jier.mh4w.core.view.obv.FailFrameAdapter#fireHideFailFrame()
+			 */
+			@Override
+			public void fireHideFailFrame() {
+				manager.getBackgroundModel().submit(flowProvider.newHideFailFrameFlow());
 			};
 			
 		};
@@ -592,6 +633,13 @@ public final class Mh4w {
 		}
 
 		/**
+		 * @return the failsModel
+		 */
+		public DataListModel<Fail> getFailsModel() {
+			return failsModel;
+		}
+
+		/**
 		 * @return the finishedFlowTaker
 		 */
 		public FinishedFlowTaker getFinishedFlowTaker() {
@@ -659,7 +707,7 @@ public final class Mh4w {
 		 * @return 新的显示详细面板流。
 		 */
 		public Flow newShowDetailFrameFlow() {
-			return new ShowDetailFrameFlow();
+			return new ShowDetailFlow();
 		}
 
 		/**
@@ -667,7 +715,7 @@ public final class Mh4w {
 		 * @return 新的隐藏详细面板流。
 		 */
 		public Flow newHideDetailFrameFlow() {
-			return new HideDetailFrameFlow();
+			return new HideDetailFlow();
 		}
 
 		/**
@@ -690,8 +738,8 @@ public final class Mh4w {
 		 * 获取一个新的关闭属性面板流。
 		 * @return 新的关闭属性面板流。
 		 */
-		public Flow newDisposeAttrFrameFlow() {
-			return new DisposeAttrFrameFlow();
+		public Flow newHideAttrFrameFlow() {
+			return new HideAttrFrameFlow();
 		}
 
 		/**
@@ -700,6 +748,14 @@ public final class Mh4w {
 		 */
 		public Flow newReloadAttrFlow() {
 			return new ReloadAttrFlow();
+		}
+
+		/**
+		 * 获取一个新的隐藏失败界面的流。
+		 * @return 新的隐藏失败界面的流。
+		 */
+		public Flow newHideFailFrameFlow() {
+			return new HideFailFrameFlow();
 		}
 
 		/**
@@ -1103,6 +1159,7 @@ public final class Mh4w {
 							manager.getGuiController().newMainFrame();
 							manager.getGuiController().setMainFrameVisible(true);
 							manager.getGuiController().newDetailFrame();
+							manager.getGuiController().newAttrFrame();
 						}
 					});
 					
@@ -1331,10 +1388,10 @@ public final class Mh4w {
 			
 		}
 
-		private final class ShowDetailFrameFlow extends AbstractInnerFlow{
+		private final class ShowDetailFlow extends AbstractInnerFlow{
 		
-			public ShowDetailFrameFlow() {
-				super(BlockKey.SHOW_DETAIL_FRAME);
+			public ShowDetailFlow() {
+				super(BlockKey.SHOW_DETAIL);
 			}
 		
 			/*
@@ -1349,11 +1406,14 @@ public final class Mh4w {
 					}
 					
 					info(LoggerStringKey.Mh4w_FlowProvider_25);
+					
 					Mh4wUtil.invokeInEventQueue(new Runnable() {
 						@Override
 						public void run() {
-							manager.guiController.setDetailFrameVisible(true);
-							manager.guiController.setDetailButtonSelect(true, true);
+							manager.getGuiController().setDetailFrameVisible(true);
+							if(manager.getFailsModel().size() > 0) 
+								manager.getGuiController().setFailFrameVisible(true);
+							manager.getGuiController().setDetailButtonSelect(true, true);
 						}
 					});
 					
@@ -1367,10 +1427,10 @@ public final class Mh4w {
 			
 		}
 
-		private final class HideDetailFrameFlow extends AbstractInnerFlow{
+		private final class HideDetailFlow extends AbstractInnerFlow{
 		
-			public HideDetailFrameFlow() {
-				super(BlockKey.HIDE_DETAIL_FRAME);
+			public HideDetailFlow() {
+				super(BlockKey.HIDE_DETAIL);
 			}
 		
 			/*
@@ -1388,8 +1448,9 @@ public final class Mh4w {
 					Mh4wUtil.invokeInEventQueue(new Runnable() {
 						@Override
 						public void run() {
-							manager.guiController.setDetailFrameVisible(false);
-							manager.guiController.setDetailButtonSelect(false, true);
+							manager.getGuiController().setDetailFrameVisible(false);
+							manager.getGuiController().setFailFrameVisible(false);
+							manager.getGuiController().setDetailButtonSelect(false, true);
 						}
 					});
 					
@@ -1429,14 +1490,14 @@ public final class Mh4w {
 					 * 读取原始考勤数据
 					 * 读取原始工票数据
 					 * 转换原始数据，并将发生的问题记录在错误模型中
-					 * 错误模型.size() > 0 ? goto end_err : next_1
+					 * 错误模型.size() > 0 ? goto err_1 : goto next_1
 					 * 
 					 * next_1:
 					 * 
 					 * 
-					 *  end_err:
+					 *  err_1:
 					 *  设置状态模型为 统计_错误，并显示错误面板。
-					 *  退出
+					 *  exit
 					 */
 					TimeMeasurer tm = new TimeMeasurer();
 					tm.start();
@@ -1477,6 +1538,9 @@ public final class Mh4w {
 						}
 					}
 					
+					//转换原始数据，并将发生的问题记录在错误模型中
+					
+					
 					//TODO 实现统计算法
 					
 					message(LoggerStringKey.Mh4w_FlowProvider_16);
@@ -1513,8 +1577,7 @@ public final class Mh4w {
 					Mh4wUtil.invokeInEventQueue(new Runnable() {
 						@Override
 						public void run() {
-							manager.guiController.newAttrFrame();
-							manager.guiController.setAttrFrameVisible(true);
+							manager.getGuiController().setAttrFrameVisible(true);
 						}
 					});
 					
@@ -1528,10 +1591,10 @@ public final class Mh4w {
 			
 		}
 
-		private final class DisposeAttrFrameFlow extends AbstractInnerFlow{
+		private final class HideAttrFrameFlow extends AbstractInnerFlow{
 		
-			public DisposeAttrFrameFlow() {
-				super(BlockKey.DISPOSE_ATTR_FRAME);
+			public HideAttrFrameFlow() {
+				super(BlockKey.HIDE_ATTR_FRAME);
 			}
 		
 			/*
@@ -1549,7 +1612,7 @@ public final class Mh4w {
 					Mh4wUtil.invokeInEventQueue(new Runnable() {
 						@Override
 						public void run() {
-							manager.guiController.disposeAttrFrame();
+							manager.getGuiController().setAttrFrameVisible(false);
 						}
 					});
 					
@@ -1679,6 +1742,41 @@ public final class Mh4w {
 			}
 			
 		}
+
+		private final class HideFailFrameFlow extends AbstractInnerFlow{
+		
+			public HideFailFrameFlow() {
+				super(BlockKey.HIDE_FAIL_FRAME);
+			}
+		
+			/*
+			 * (non-Javadoc)
+			 * @see com.dwarfeng.tp.core.control.Mh4w.FlowProvider.AbstractInnerFlow#processImpl()
+			 */
+			@Override
+			protected void processImpl() {
+				try{
+					if(getState() != RuntimeState.RUNNING){
+						throw new IllegalStateException("程序还未启动或已经结束");
+					}
+					
+					info(LoggerStringKey.Mh4w_FlowProvider_48);
+					Mh4wUtil.invokeInEventQueue(new Runnable() {
+						@Override
+						public void run() {
+							manager.getGuiController().setFailFrameVisible(false);
+						}
+					});
+					
+					message(LoggerStringKey.Mh4w_FlowProvider_49);
+					
+				}catch (Exception e) {
+					setThrowable(e);
+					message(LoggerStringKey.Mh4w_FlowProvider_50);
+				}
+			}
+			
+		}
 	
 	}
 
@@ -1731,9 +1829,14 @@ public final class Mh4w {
 				Mh4wUtil.invokeAndWaitInEventQueue(new Runnable() {
 					@Override
 					public void run() {
+						manager.getGuiController().setMainFrameVisible(false);
+						manager.getGuiController().setAttrFrameVisible(false);
+						manager.getGuiController().setDetailFrameVisible(false);
+						manager.getGuiController().setFailFrameVisible(false);
 						manager.getGuiController().disposeMainFrame();
 						manager.getGuiController().disposeAttrFrame();
 						manager.getGuiController().disposeDetialFrame();
+						manager.getGuiController().disposeFailFrame();
 					}
 				});
 			} catch (InvocationTargetException ignore) {

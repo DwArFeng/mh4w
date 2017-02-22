@@ -33,6 +33,7 @@ import com.dwarfeng.jier.mh4w.core.model.struct.Shift;
 import com.dwarfeng.jier.mh4w.core.model.struct.TimeSection;
 import com.dwarfeng.jier.mh4w.core.model.struct.TimeSectionComparator;
 import com.dwarfeng.jier.mh4w.core.util.Constants;
+import com.dwarfeng.jier.mh4w.core.util.FormatUtil;
 import com.dwarfeng.jier.mh4w.core.util.ImageUtil;
 import com.dwarfeng.jier.mh4w.core.util.Mh4wUtil;
 
@@ -95,20 +96,15 @@ public class JShiftPanel extends JPanel implements MutilangSupported{
 			
 			if(ArrayUtil.contains(shiftSections, timeSection)){
 				setIcon(new ImageIcon(shiftSectionImage));
-			}
-			if(ArrayUtil.contains(extraShiftSections, timeSection)){
+			}else if(ArrayUtil.contains(extraShiftSections, timeSection)){
 				setIcon(new ImageIcon(extraShiftSectionImage));
-			}
-			if(ArrayUtil.contains(restSections, timeSection)){
+			}else if(ArrayUtil.contains(restSections, timeSection)){
 				setIcon(new ImageIcon(restSectionImage));
+			}else{
+				setIcon(null);
 			}
 			
-			int a1 = (int) timeSection.getStart();
-			int a2 = (int)(timeSection.getStart() * 60) % 60;
-			int a3 = (int) timeSection.getEnd();
-			int a4 =  (int)(timeSection.getEnd() * 60) % 60;
-			
-			setText(String.format("%02d:%02d - %02d:%02d", a1, a2, a3, a4));
+			setText(FormatUtil.formatTimeSection(timeSection));
 			
 			return this;
 		};

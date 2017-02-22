@@ -14,7 +14,6 @@ import java.util.WeakHashMap;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
-import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
@@ -51,17 +50,15 @@ public class AttrFrame extends JDialog implements MutilangSupported, ObverserSet
 	 * 新实例。
 	 */
 	public AttrFrame() {
-		this(null, Constants.getDefaultLabelMutilang(), null, null, null);
+		this(Constants.getDefaultLabelMutilang(), null, null, null);
 	}
 	
 	/**
 	 * 
 	 * @param mutilang
 	 */
-	public AttrFrame(JFrame jframe, Mutilang mutilang, CoreConfigModel coreConfigModel, ShiftModel shiftModel,
+	public AttrFrame(Mutilang mutilang, CoreConfigModel coreConfigModel, ShiftModel shiftModel,
 			JobModel jobModel) {
-		super(jframe, true);
-		
 		Objects.requireNonNull(mutilang, "入口参数 mutilang 不能为 null。");
 		
 		this.mutilang = mutilang;
@@ -69,10 +66,11 @@ public class AttrFrame extends JDialog implements MutilangSupported, ObverserSet
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
-				fireAttrFrameClosing();
+				fireHideAttrFrame();
 			}
 		});
 		
+		setModal(true);
 		setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
 		setTitle(getLabel(LabelStringKey.AttrFrame_2));
 		setType(Type.UTILITY);
@@ -203,9 +201,9 @@ public class AttrFrame extends JDialog implements MutilangSupported, ObverserSet
 		super.dispose();
 	}
 
-	private void fireAttrFrameClosing() {
+	private void fireHideAttrFrame() {
 		for(AttrFrameObverser obverser : obversers){
-			if(Objects.nonNull(obverser)) obverser.fireAttrFrameClosing();
+			if(Objects.nonNull(obverser)) obverser.fireHideAttrFrame();
 		}
 	}
 

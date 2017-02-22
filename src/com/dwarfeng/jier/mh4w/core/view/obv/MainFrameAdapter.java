@@ -16,9 +16,9 @@ public abstract class MainFrameAdapter implements MainFrameObverser {
 	@Override
 	public void fireCountReset() {}
 	@Override
-	public void fireHideDetailFrame() {}
+	public void fireHideDetail() {}
 	@Override
-	public void fireShowDetailFrame() {}
+	public void fireShowDetail() {}
 	@Override
 	public void fireCount() {}
 	@Override

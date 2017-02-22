@@ -16,10 +16,10 @@
 		<dictionary value="select_attendance_file"/>
 		<dictionary value="select_workticket_file"/>
 	</key>
-	<key value="show_detail_frame">
+	<key value="show_detail">
 		<dictionary value="initialize"/>
 	</key>
-	<key value="hide_detail_frame">
+	<key value="hide_detail">
 		<dictionary value="initialize"/>
 	</key>
 	<key value="count">
@@ -28,19 +28,23 @@
 		<dictionary value="select_attendance_file"/>
 		<dictionary value="select_workticket_file"/>
 		<dictionary value="reset_count"/>
-		<dictionary value="show_detail_frame"/>
-		<dictionary value="hide_detail_frame"/>
+		<dictionary value="show_detail"/>
+		<dictionary value="hide_detail"/>
 		<dictionary value="show_attr_frame"/>
-		<dictionary value="dispose_attr_frame"/>
+		<dictionary value="hide_attr_frame"/>
 		<dictionary value="reload_attr"/>
+		<dictionary value="hide_fail_frame"/>
 	</key>
 	<key value="show_attr_frame">
 		<dictionary value="initialize"/>
 	</key>
-	<key value="dispose_attr_frame">
+	<key value="hide_attr_frame">
 		<dictionary value="initialize"/>
 	</key>
 	<key value="reload_attr">
+		<dictionary value="initialize"/>
+	</key>
+	<key value="hide_fail_frame">
 		<dictionary value="initialize"/>
 	</key>
 </root>

@@ -52,6 +52,8 @@ import com.dwarfeng.jier.mh4w.core.view.obv.MainFrameObverser;
  */
 public final class MainFrame extends JFrame implements MutilangSupported, ObverserSet<MainFrameObverser>{
 	
+	private static final long serialVersionUID = -6736287169266943307L;
+
 	/**¹Û²ìÆ÷¼¯ºÏ*/
 	private final Set<MainFrameObverser> obversers = Collections.newSetFromMap(new WeakHashMap<>());
 
@@ -300,9 +302,9 @@ public final class MainFrame extends JFrame implements MutilangSupported, Obvers
 			public void itemStateChanged(ItemEvent e) {
 				if(! detailButtonAdjusting){
 					if(detailButton.isSelected()){
-						fireShowDetailFrame();
+						fireShowDetail();
 					}else{
-						fireHideDetailFrame();
+						fireHideDetail();
 					}
 				}
 			}
@@ -655,15 +657,15 @@ public final class MainFrame extends JFrame implements MutilangSupported, Obvers
 		}
 	}
 
-	private void fireHideDetailFrame() {
+	private void fireHideDetail() {
 		for(MainFrameObverser obverser : obversers){
-			if(Objects.nonNull(obverser)) obverser.fireHideDetailFrame();
+			if(Objects.nonNull(obverser)) obverser.fireHideDetail();
 		}
 	}
 
-	private void fireShowDetailFrame() {
+	private void fireShowDetail() {
 		for(MainFrameObverser obverser : obversers){
-			if(Objects.nonNull(obverser)) obverser.fireShowDetailFrame();
+			if(Objects.nonNull(obverser)) obverser.fireShowDetail();
 		}
 	}
 	

@@ -14,6 +14,7 @@ import com.dwarfeng.dutil.basic.io.CT;
 import com.dwarfeng.jier.mh4w.core.model.struct.Mutilang;
 import com.dwarfeng.jier.mh4w.core.view.gui.AttrFrame;
 import com.dwarfeng.jier.mh4w.core.view.gui.DetailFrame;
+import com.dwarfeng.jier.mh4w.core.view.gui.FailFrame;
 import com.dwarfeng.jier.mh4w.core.view.gui.MainFrame;
 
 /**
@@ -24,11 +25,17 @@ import com.dwarfeng.jier.mh4w.core.view.gui.MainFrame;
  */
 public abstract class AbstractGuiController implements GuiController {
 	
+	/**同步锁*/
 	protected final ReadWriteLock lock = new ReentrantReadWriteLock();
 	
+	/**控制器中的主界面*/
 	protected MainFrame mainFrame = null;
+	/**控制器中的详细界面*/
 	protected DetailFrame detailFrame = null;
+	/**控制器中的属性界面*/
 	protected AttrFrame attrFrame = null;
+	/**控制器中的失败界面*/
+	protected FailFrame failFrame = null;
 	
 	/* 
 	 * (non-Javadoc)
@@ -484,6 +491,9 @@ public abstract class AbstractGuiController implements GuiController {
 		lock.writeLock().lock();
 		try{
 			if(Objects.isNull(attrFrame)) return false;
+			if(aFlag){
+				attrFrame.setLocationRelativeTo(mainFrame);
+			}
 			attrFrame.setVisible(aFlag);
 			return true;
 		}finally {
@@ -522,5 +532,139 @@ public abstract class AbstractGuiController implements GuiController {
 			lock.writeLock().unlock();
 		}
 	}
+
+	/* 
+	 * (non-Javadoc)
+	 * @see com.dwarfeng.jier.mh4w.core.view.ctrl.GuiController#newFailFrame()
+	 */
+	@Override
+	public boolean newFailFrame() {
+		lock.writeLock().lock();
+		try{
+			if(Objects.isNull(failFrame)){
+				failFrame = newFailFrameImpl();
+				return Objects.nonNull(failFrame);
+			}else{
+				return false;
+			}
+		}finally {
+			lock.writeLock().unlock();
+		}
+	}
+	
+	/**
+	 * 新建失败面板的实现方法。
+	 * <p> 该方法已经在调用方法处上锁，不用单独上锁。
+	 * @return 新的主界面。
+	 */
+	 protected abstract FailFrame newFailFrameImpl();
+
+	 
+	 
+	/*
+	 *  (non-Javadoc)
+	 * @see com.dwarfeng.jier.mh4w.core.view.ctrl.GuiController#disposeFailFrame()
+	 */
+	@Override
+	public boolean disposeFailFrame() {
+		lock.writeLock().lock();
+		try{
+			if(Objects.nonNull(failFrame)){
+				if(disposeFailFrameImpl()){
+					failFrame = null;
+					return true;
+				}else{
+					return false;
+				}
+			}else {
+				return false;
+			}
+		}finally {
+			lock.writeLock().unlock();
+		}
+	}
+	
+	/**
+	 * 释放失败面板的实现方法。
+	 * <p> 该方法已在调用方法处上锁，不用单独上锁。
+	 * @return 是否释放成功。
+	 */
+	protected abstract boolean disposeFailFrameImpl();
+
+	/*
+	 *  (non-Javadoc)
+	 * @see com.dwarfeng.jier.mh4w.core.view.ctrl.GuiController#hasFailFrame()
+	 */
+	@Override
+	public boolean hasFailFrame() {
+		lock.readLock().lock();
+		try{
+			return Objects.nonNull(failFrame);
+		}finally {
+			lock.readLock().unlock();
+		}
+	}
+
+	/* 
+	 * (non-Javadoc)
+	 * @see com.dwarfeng.jier.mh4w.core.view.ctrl.GuiController#getFailFrameVisible()
+	 */
+	@Override
+	public boolean getFailFrameVisible() {
+		lock.readLock().lock();
+		try{
+			if(Objects.isNull(mainFrame)) return false;
+			return failFrame.isVisible();
+		}finally {
+			lock.readLock().unlock();
+		}
+	}
+
+	/* 
+	 * (non-Javadoc)
+	 * @see com.dwarfeng.jier.mh4w.core.view.ctrl.GuiController#setFailFrameVisible(boolean)
+	 */
+	@Override
+	public boolean setFailFrameVisible(boolean aFlag) {
+		lock.writeLock().lock();
+		try{
+			if(Objects.isNull(failFrame)) return false;
+			failFrame.setVisible(aFlag);
+			return true;
+		}finally {
+			lock.writeLock().unlock();
+		}
+	}
+
+	/*
+	 *  (non-Javadoc)
+	 * @see com.dwarfeng.jier.mh4w.core.view.ctrl.GuiController#getFailFrameMutilang()
+	 */
+	@Override
+	public Mutilang getFailFrameMutilang() {
+		lock.readLock().lock();
+		try{
+			if(Objects.isNull(failFrame)) return null;
+			return failFrame.getMutilang();
+		}finally {
+			lock.readLock().unlock();
+		}
+	}
+
+	/* 
+	 * (non-Javadoc)
+	 * @see com.dwarfeng.jier.mh4w.core.view.ctrl.GuiController#setFailFrameMutilang(com.dwarfeng.jier.mh4w.core.model.struct.Mutilang)
+	 */
+	@Override
+	public boolean setFailFrameMutilang(Mutilang mutilang) {
+		lock.writeLock().lock();
+		try{
+			if(Objects.isNull(failFrame)) return false;
+			return failFrame.setMutilang(mutilang);
+		}finally {
+			lock.writeLock().unlock();
+		}
+	}
+	
 	
 }

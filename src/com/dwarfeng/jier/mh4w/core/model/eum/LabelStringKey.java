@@ -65,6 +65,10 @@ public enum LabelStringKey implements Name{
 	JOriginalWorkticketDataPanel_4(new DefaultName("JOriginalWorkticketDataPanel.4")),
 	JOriginalWorkticketDataPanel_5(new DefaultName("JOriginalWorkticketDataPanel.5")),
 
+	FailFrame_1(new DefaultName("FailFrame.1")),
+	FailFrame_2(new DefaultName("FailFrame.2")),
+	FailFrame_3(new DefaultName("FailFrame.3")),
+
 	;
 
 	private Name name;

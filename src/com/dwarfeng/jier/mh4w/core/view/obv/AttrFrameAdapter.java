@@ -8,7 +8,7 @@ package com.dwarfeng.jier.mh4w.core.view.obv;
 public abstract class AttrFrameAdapter implements AttrFrameObverser {
 
 	@Override
-	public void fireAttrFrameClosing() {}
+	public void fireHideAttrFrame() {}
 	@Override
 	public void fireReloadAttr() {}
 	

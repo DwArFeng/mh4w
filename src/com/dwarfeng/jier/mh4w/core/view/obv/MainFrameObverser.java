@@ -32,12 +32,12 @@ public interface MainFrameObverser extends Obverser{
 	/**
 	 * 通知隐藏详细信息界面。
 	 */
-	public void fireHideDetailFrame();
+	public void fireHideDetail();
 
 	/**
 	 * 通知显示详细信息界面。
 	 */
-	public void fireShowDetailFrame();
+	public void fireShowDetail();
 
 	/**
 	 * 通知开始统计。
