@@ -474,7 +474,7 @@ public final class Mh4w {
 			 */
 			@Override
 			public void fireHideDetailFrame() {
-				manager.getBackgroundModel().submit(flowProvider.newHideDetailFlow());
+				manager.getBackgroundModel().submit(flowProvider.newHideDetailFrameFlow());
 			};
 			
 		};
@@ -779,6 +779,10 @@ public final class Mh4w {
 			return new HideFailFrameFlow();
 		}
 
+		public Flow newHideDetailFrameFlow() {
+			return new HideDetailFrameFlow();
+		}
+
 		/**
 		 * 内部抽象过程。
 		 * <p> 定义常用的内部用方法。
@@ -957,6 +961,7 @@ public final class Mh4w {
 					return false;
 				}else{
 					manager.getStateModel().setCountResultOutdated(true);
+					CT.trace(true);
 					return true;
 				}
 			}
@@ -1400,6 +1405,8 @@ public final class Mh4w {
 					manager.getAttendanceDataModel().clear();
 					manager.getWorkticketDataModel().clear();
 					
+					manager.getFailModel().clear();
+					
 					manager.getStateModel().setCountResultOutdated(false);
 					manager.getStateModel().setCountState(CountState.NOT_START);
 					manager.getStateModel().setReadyForCount(false);
@@ -1544,6 +1551,7 @@ public final class Mh4w {
 					manager.getAttendanceDataModel().clear();
 					manager.getWorkticketDataModel().clear();
 					manager.getFailModel().clear();
+					manager.getStateModel().setCountResultOutdated(false);
 					
 					//读取原始考勤数据
 					info(LoggerStringKey.Mh4w_FlowProvider_42);
@@ -1851,6 +1859,8 @@ public final class Mh4w {
 						@Override
 						public void run() {
 							manager.getGuiController().setFailFrameVisible(false);
+							if(! manager.getGuiController().getDetailFrameVisible())
+								manager.getGuiController().setDetailButtonSelect(false, true);
 						}
 					});
 					
@@ -1859,6 +1869,43 @@ public final class Mh4w {
 				}catch (Exception e) {
 					setThrowable(e);
 					message(LoggerStringKey.Mh4w_FlowProvider_51);
+				}
+			}
+			
+		}
+
+		private final class HideDetailFrameFlow extends AbstractInnerFlow{
+		
+			public HideDetailFrameFlow() {
+				super(BlockKey.HIDE_DETAIL);
+			}
+		
+			/*
+			 * (non-Javadoc)
+			 * @see com.dwarfeng.tp.core.control.Mh4w.FlowProvider.AbstractInnerFlow#processImpl()
+			 */
+			@Override
+			protected void processImpl() {
+				try{
+					if(getState() != RuntimeState.RUNNING){
+						throw new IllegalStateException("程序还未启动或已经结束");
+					}
+					
+					info(LoggerStringKey.Mh4w_FlowProvider_56);
+					Mh4wUtil.invokeInEventQueue(new Runnable() {
+						@Override
+						public void run() {
+							manager.getGuiController().setDetailFrameVisible(false);
+							if(! manager.getGuiController().getFailFrameVisible())
+								manager.getGuiController().setDetailButtonSelect(false, true);
+						}
+					});
+					
+					message(LoggerStringKey.Mh4w_FlowProvider_57);
+					
+				}catch (Exception e) {
+					setThrowable(e);
+					message(LoggerStringKey.Mh4w_FlowProvider_58);
 				}
 			}
 			

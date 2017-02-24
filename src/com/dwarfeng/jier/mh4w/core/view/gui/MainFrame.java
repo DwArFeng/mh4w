@@ -90,7 +90,8 @@ public final class MainFrame extends JFrame implements MutilangSupported, Obvers
 	private boolean attendanceClickLock = false;
 	private boolean workticketClickLock = false;
 	private boolean detailButtonAdjusting = false;
-	
+	private boolean outdateFlag = false;
+	private CountState countState;
 	/*
 	 * ¸÷Ä£ÐÍ¡£
 	 */
@@ -159,8 +160,8 @@ public final class MainFrame extends JFrame implements MutilangSupported, Obvers
 				}
 			});
 		};
-		
-		/*
+
+		/* 
 		 * (non-Javadoc)
 		 * @see com.dwarfeng.jier.mh4w.core.model.obv.StateAdapter#fireCountStateChanged(com.dwarfeng.jier.mh4w.core.model.eum.CountState, com.dwarfeng.jier.mh4w.core.model.eum.CountState)
 		 */
@@ -169,27 +170,23 @@ public final class MainFrame extends JFrame implements MutilangSupported, Obvers
 			Mh4wUtil.invokeInEventQueue(new Runnable() {
 				@Override
 				public void run() {
-					boolean countResultOutdated = stateModel.isCountResultOutdated();
-					if(newValue.equals(CountState.NOT_START)){
-						detailButton.setIcon(new ImageIcon(detail_purple));
-					}else if(countResultOutdated){
-						detailButton.setIcon(new ImageIcon(detail_gray));
-					}else{
-						switch (newValue) {
-						case NOT_START:
-							detailButton.setIcon(new ImageIcon(detail_purple));
-							break;
-						case STARTED_ERROR:
-							detailButton.setIcon(new ImageIcon(detail_red));
-							break;
-						case STARTED_EXPORTED:
-							detailButton.setIcon(new ImageIcon(detail_green));
-							break;
-						case STARTED_WAITING:
-							detailButton.setIcon(new ImageIcon(detail_yellow));
-							break;
-						}
-					}
+					countState = newValue;
+					checkDetailButton();
+				}
+			});
+		}
+
+		/*
+		 *  (non-Javadoc)
+		 * @see com.dwarfeng.jier.mh4w.core.model.obv.StateAdapter#fireCountResultOutdatedChanged(boolean)
+		 */
+		@Override
+		public void fireCountResultOutdatedChanged(boolean newValue) {
+			Mh4wUtil.invokeInEventQueue(new Runnable() {
+				@Override
+				public void run() {
+					outdateFlag = newValue;
+					checkDetailButton();
 				}
 			});
 		};
@@ -387,36 +384,12 @@ public final class MainFrame extends JFrame implements MutilangSupported, Obvers
 			stateModel.addObverser(stateObverser);
 			stateModel.getLock().readLock().lock();
 			try{
+				outdateFlag = stateModel.isCountResultOutdated();
+				countState = stateModel.getCountState();
 				countButton.setEnabled(stateModel.isReadyForCount());
-				
-				CountState countState = stateModel.getCountState();
-				boolean countResultOutdated = stateModel.isCountResultOutdated();
-				if(countState.equals(CountState.NOT_START)){
-					detailButton.setIcon(new ImageIcon(detail_purple));
-				}else if(countResultOutdated){
-					detailButton.setIcon(new ImageIcon(detail_gray));
-				}else{
-					switch (countState) {
-					case NOT_START:
-						detailButton.setIcon(new ImageIcon(detail_purple));
-						break;
-					case STARTED_ERROR:
-						detailButton.setIcon(new ImageIcon(detail_red));
-						break;
-					case STARTED_EXPORTED:
-						detailButton.setIcon(new ImageIcon(detail_green));
-						break;
-					case STARTED_WAITING:
-						detailButton.setIcon(new ImageIcon(detail_yellow));
-						break;
-					}
-				}
 			}finally {
 				stateModel.getLock().readLock().unlock();
 			}
-		}else{
-			countButton.setEnabled(false);
-			detailButton.setIcon(new ImageIcon(detail_purple));
 		}
 		
 		this.stateModel = stateModel;
@@ -563,7 +536,9 @@ public final class MainFrame extends JFrame implements MutilangSupported, Obvers
 	 */
 	public void setStateModel(StateModel stateModel) {
 		countButton.setEnabled(false);
-		detailButton.setIcon(new ImageIcon(detail_purple));
+		countState = CountState.NOT_START;
+		outdateFlag = false;
+		checkDetailButton();
 		
 		if(Objects.nonNull(this.stateModel)){
 			this.stateModel.removeObverser(stateObverser);
@@ -573,30 +548,9 @@ public final class MainFrame extends JFrame implements MutilangSupported, Obvers
 			stateModel.addObverser(stateObverser);
 			stateModel.getLock().readLock().lock();
 			try{
+				outdateFlag = stateModel.isCountResultOutdated();
+				countState = stateModel.getCountState();
 				countButton.setEnabled(stateModel.isReadyForCount());
-				
-				CountState countState = stateModel.getCountState();
-				boolean countResultOutdated = stateModel.isCountResultOutdated();
-				if(countState.equals(CountState.NOT_START)){
-					detailButton.setIcon(new ImageIcon(detail_purple));
-				}else if(countResultOutdated){
-					detailButton.setIcon(new ImageIcon(detail_gray));
-				}else{
-					switch (countState) {
-					case NOT_START:
-						detailButton.setIcon(new ImageIcon(detail_purple));
-						break;
-					case STARTED_ERROR:
-						detailButton.setIcon(new ImageIcon(detail_red));
-						break;
-					case STARTED_EXPORTED:
-						detailButton.setIcon(new ImageIcon(detail_green));
-						break;
-					case STARTED_WAITING:
-						detailButton.setIcon(new ImageIcon(detail_yellow));
-						break;
-					}
-				}
 			}finally {
 				stateModel.getLock().readLock().unlock();
 			}
@@ -678,6 +632,29 @@ public final class MainFrame extends JFrame implements MutilangSupported, Obvers
 	private void fireShowAttrFrame(){
 		for(MainFrameObverser obverser : obversers){
 			if(Objects.nonNull(obverser)) obverser.fireShowAttrFrame();
+		}
+	}
+
+	private void checkDetailButton() {
+		if(countState.equals(CountState.NOT_START)){
+			detailButton.setIcon(new ImageIcon(detail_purple));
+		}else if(outdateFlag){
+			detailButton.setIcon(new ImageIcon(detail_gray));
+		}else{
+			switch (countState) {
+			case NOT_START:
+				detailButton.setIcon(new ImageIcon(detail_purple));
+				break;
+			case STARTED_ERROR:
+				detailButton.setIcon(new ImageIcon(detail_red));
+				break;
+			case STARTED_EXPORTED:
+				detailButton.setIcon(new ImageIcon(detail_green));
+				break;
+			case STARTED_WAITING:
+				detailButton.setIcon(new ImageIcon(detail_yellow));
+				break;
+			}
 		}
 	}
 

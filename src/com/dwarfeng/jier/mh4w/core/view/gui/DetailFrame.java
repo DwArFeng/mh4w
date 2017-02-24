@@ -58,7 +58,8 @@ public class DetailFrame extends JFrame implements MutilangSupported, ObverserSe
 	 */
 	private final StateObverser stateObverser = new StateAdapter() {
 
-		/* (non-Javadoc)
+		/* 
+		 * (non-Javadoc)
 		 * @see com.dwarfeng.jier.mh4w.core.model.obv.StateAdapter#fireCountStateChanged(com.dwarfeng.jier.mh4w.core.model.eum.CountState, com.dwarfeng.jier.mh4w.core.model.eum.CountState)
 		 */
 		@Override
@@ -72,7 +73,8 @@ public class DetailFrame extends JFrame implements MutilangSupported, ObverserSe
 			});
 		}
 
-		/* (non-Javadoc)
+		/*
+		 *  (non-Javadoc)
 		 * @see com.dwarfeng.jier.mh4w.core.model.obv.StateAdapter#fireCountResultOutdatedChanged(boolean)
 		 */
 		@Override
