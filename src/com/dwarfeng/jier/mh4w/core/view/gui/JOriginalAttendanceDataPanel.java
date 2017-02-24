@@ -20,10 +20,10 @@ import com.dwarfeng.jier.mh4w.core.util.Mh4wUtil;
 
 public class JOriginalAttendanceDataPanel extends JPanel implements MutilangSupported{
 	
-	private static final long serialVersionUID = 5220449504180055729L;
+	private static final long serialVersionUID = -1863168148608059318L;
 
 	/**多语言接口*/
-	private Mutilang mutilang;
+	private final Mutilang mutilang;
 	
 	/*
 	 * final 域。
@@ -212,14 +212,10 @@ public class JOriginalAttendanceDataPanel extends JPanel implements MutilangSupp
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.dwarfeng.jier.mh4w.core.model.struct.MutilangSupported#setMutilang(com.dwarfeng.jier.mh4w.core.model.struct.Mutilang)
+	 * @see com.dwarfeng.jier.mh4w.core.model.struct.MutilangSupported#updateMutilang()
 	 */
 	@Override
-	public boolean setMutilang(Mutilang mutilang) {
-		if(Objects.isNull(mutilang)) return false;
-		if(Objects.equals(this.mutilang, mutilang)) return false;
-		this.mutilang = mutilang;
-		
+	public void updateMutilang() {
 		//更新各标签的文本。
 		table.getColumnModel().getColumn(0).setHeaderValue(getLabel(LabelStringKey.JOriginalAttendanceDataPanel_1));
 		table.getColumnModel().getColumn(1).setHeaderValue(getLabel(LabelStringKey.JOriginalAttendanceDataPanel_2));
@@ -227,8 +223,6 @@ public class JOriginalAttendanceDataPanel extends JPanel implements MutilangSupp
 		table.getColumnModel().getColumn(3).setHeaderValue(getLabel(LabelStringKey.JOriginalAttendanceDataPanel_4));
 		table.getColumnModel().getColumn(4).setHeaderValue(getLabel(LabelStringKey.JOriginalAttendanceDataPanel_5));
 		table.getColumnModel().getColumn(5).setHeaderValue(getLabel(LabelStringKey.JOriginalAttendanceDataPanel_6));
-		
-		return true;
 	}
 
 	/**

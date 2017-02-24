@@ -52,11 +52,10 @@ public interface GuiController extends ExternalReadWriteThreadSafe{
 	public Mutilang getMainFrameMutilang();
 	
 	/**
-	 * 设置该控制器中主面板的多语言接口。
-	 * @param mutilang 指定的多语言接口。
-	 * @return 该操作是否对该对象造成了改变。
+	 * 更新该控制器中的主面板的多语言接口。
+	 * @return 是否更新成功。
 	 */
-	public boolean setMainFrameMutilang(Mutilang mutilang);
+	public boolean updateMainFrameMutilang();
 	
 	/**
 	 * 向用户询问一个或数个文件。
@@ -124,6 +123,7 @@ public interface GuiController extends ExternalReadWriteThreadSafe{
 	 */
 	public boolean setDetailFrameVisible(boolean aFlag);
 	
+	
 	/**
 	 * 获取该控制器中详细面板的多语言接口。
 	 * @return 该控制器中详细面板的多语言接口。
@@ -131,11 +131,10 @@ public interface GuiController extends ExternalReadWriteThreadSafe{
 	public Mutilang getDetailFrameMutilang();
 	
 	/**
-	 * 设置该控制器中详细面板的多语言接口。
-	 * @param mutilang 指定的多语言接口。
-	 * @return 该操作是否对该对象造成了改变。
+	 * 更新该控制器重详细面板的多语言接口。
+	 * @return 是否更新成功。
 	 */
-	public boolean setDetailFrameMutilang(Mutilang mutilang);
+	public boolean updateDetailFrameMutilang();
 	
 	/**
 	 * 新建一个属性界面。
@@ -175,11 +174,10 @@ public interface GuiController extends ExternalReadWriteThreadSafe{
 	public Mutilang getAttrFrameMutilang();
 	
 	/**
-	 * 设置该控制器中属性面板的多语言接口。
-	 * @param mutilang 指定的多语言接口。
-	 * @return 该操作是否对该对象造成了改变。
+	 * 更新开控制器中属性面板的多语言接口。
+	 * @return 是否更新成功。
 	 */
-	public boolean setAttrFrameMutilang(Mutilang mutilang);
+	public boolean updateAttrFrameMutilang();
 	
 	/**
 	 * 新建一个失败面板。
@@ -219,10 +217,9 @@ public interface GuiController extends ExternalReadWriteThreadSafe{
 	public Mutilang getFailFrameMutilang();
 	
 	/**
-	 * 设置该控制器重的失败面板的多语言接口。
-	 * @param mutilang 指定的多语言接口。
-	 * @return 该操作是否对该对象造成了改变。
+	 * 更新该控制器中失败面板的多语言接口。
+	 * @return 是否更新成功。
 	 */
-	public boolean setFailFrameMutilang(Mutilang mutilang);
+	public boolean updateFailFrameMutilang();
 	
 }

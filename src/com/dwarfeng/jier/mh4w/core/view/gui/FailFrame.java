@@ -34,13 +34,13 @@ import com.dwarfeng.jier.mh4w.core.view.obv.FailFrameObverser;
 
 public final class FailFrame extends JFrame implements MutilangSupported, ObverserSet<FailFrameObverser>{
 	
-	private static final long serialVersionUID = -3902363222733520296L;
+	private static final long serialVersionUID = 7871583751089485861L;
 
 	/**观察器集合*/
 	private final Set<FailFrameObverser> obversers = Collections.newSetFromMap(new WeakHashMap<>());
 
 	/**多语言接口*/
-	private Mutilang mutilang;
+	private final Mutilang mutilang;
 	
 	/*
 	 * final 域。
@@ -286,17 +286,13 @@ public final class FailFrame extends JFrame implements MutilangSupported, Obvers
 	public Mutilang getMutilang() {
 		return mutilang;
 	}
-
+	
 	/*
 	 * (non-Javadoc)
-	 * @see com.dwarfeng.jier.mh4w.core.model.struct.MutilangSupported#setMutilang(com.dwarfeng.jier.mh4w.core.model.struct.Mutilang)
+	 * @see com.dwarfeng.jier.mh4w.core.model.struct.MutilangSupported#updateMutilang()
 	 */
 	@Override
-	public boolean setMutilang(Mutilang mutilang) {
-		if(Objects.isNull(mutilang)) return false;
-		if(Objects.equals(this.mutilang, mutilang)) return false;
-		this.mutilang = mutilang;
-		
+	public void updateMutilang() {
 		//更新各标签的文本。
 		setTitle(getLabel(LabelStringKey.FailFrame_3));
 
@@ -304,8 +300,6 @@ public final class FailFrame extends JFrame implements MutilangSupported, Obvers
 		
 		table.getColumnModel().getColumn(0).setHeaderValue(getLabel(LabelStringKey.FailFrame_1));
 		table.getColumnModel().getColumn(1).setHeaderValue(getLabel(LabelStringKey.FailFrame_2));
-		
-		return true;
 	}
 
 	/**

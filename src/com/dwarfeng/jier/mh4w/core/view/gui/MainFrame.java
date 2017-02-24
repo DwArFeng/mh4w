@@ -51,14 +51,14 @@ import com.dwarfeng.jier.mh4w.core.view.obv.MainFrameObverser;
  * @since 0.0.0-alpha
  */
 public final class MainFrame extends JFrame implements MutilangSupported, ObverserSet<MainFrameObverser>{
-	
-	private static final long serialVersionUID = -6736287169266943307L;
+
+	private static final long serialVersionUID = 9174331728124630738L;
 
 	/**观察器集合*/
 	private final Set<MainFrameObverser> obversers = Collections.newSetFromMap(new WeakHashMap<>());
 
 	/**多语言接口*/
-	private Mutilang mutilang;
+	private final Mutilang mutilang;
 	
 	/*
 	 * final 域。
@@ -406,14 +406,10 @@ public final class MainFrame extends JFrame implements MutilangSupported, Obvers
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.dwarfeng.jier.mh4w.core.model.struct.MutilangSupported#setMutilang(com.dwarfeng.jier.mh4w.core.model.struct.Mutilang)
+	 * @see com.dwarfeng.jier.mh4w.core.model.struct.MutilangSupported#updateMutilang()
 	 */
 	@Override
-	public boolean setMutilang(Mutilang mutilang) {
-		if(Objects.isNull(mutilang)) return false;
-		if(Objects.equals(this.mutilang, mutilang)) return false;
-		this.mutilang = mutilang;
-		
+	public void updateMutilang() {
 		//更新各标签的文本。
 		setTitle(getLabel(LabelStringKey.MainFrame_5));
 		
@@ -429,8 +425,6 @@ public final class MainFrame extends JFrame implements MutilangSupported, Obvers
 		
 		countButton.setText(getLabel(LabelStringKey.MainFrame_4));
 		attrButton.setToolTipText(getLabel(LabelStringKey.MainFrame_6));
-		
-		return true;
 	}
 
 	/*

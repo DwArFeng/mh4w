@@ -39,10 +39,10 @@ import com.dwarfeng.jier.mh4w.core.util.Mh4wUtil;
 
 public class JShiftPanel extends JPanel implements MutilangSupported{
 
-	private static final long serialVersionUID = -4233720215313562929L;
+	private static final long serialVersionUID = 2134081134259458795L;
 
 	/**多语言接口*/
-	private Mutilang mutilang;
+	private final Mutilang mutilang;
 
 	/*
 	 * final 域。
@@ -269,21 +269,15 @@ public class JShiftPanel extends JPanel implements MutilangSupported{
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.dwarfeng.jier.mh4w.core.model.struct.MutilangSupported#setMutilang(com.dwarfeng.jier.mh4w.core.model.struct.Mutilang)
+	 * @see com.dwarfeng.jier.mh4w.core.model.struct.MutilangSupported#updateMutilang()
 	 */
 	@Override
-	public boolean setMutilang(Mutilang mutilang) {
-		if(Objects.isNull(mutilang)) return false;
-		if(Objects.equals(this.mutilang, mutilang)) return false;
-		this.mutilang = mutilang;
-		
+	public void updateMutilang() {
 		//更新各标签的文本。
 		shiftsLabel.setText(getLabel(LabelStringKey.JShiftPanel_1));
 		timeSectionsLabel.setText(getLabel(LabelStringKey.JShiftPanel_2));
-		
-		return true;
 	}
-
+	
 	/**
 	 * @return the shiftModel
 	 */

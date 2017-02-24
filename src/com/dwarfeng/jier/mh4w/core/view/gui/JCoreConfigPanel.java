@@ -29,18 +29,16 @@ import com.dwarfeng.jier.mh4w.core.util.Mh4wUtil;
  */
 public class JCoreConfigPanel extends JPanel implements MutilangSupported{
 	
+	private static final long serialVersionUID = 2838610136352340152L;
+
 	/**多语言接口*/
-	private Mutilang mutilang;
+	private final Mutilang mutilang;
 	
 	/*
 	 * final 域。
 	 */
 	private final JTable table;
 
-	/*
-	 * 非 final 域。
-	 */
-	
 	/*
 	 * 各模型。
 	 */
@@ -185,21 +183,15 @@ public class JCoreConfigPanel extends JPanel implements MutilangSupported{
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.dwarfeng.jier.mh4w.core.model.struct.MutilangSupported#setMutilang(com.dwarfeng.jier.mh4w.core.model.struct.Mutilang)
+	 * @see com.dwarfeng.jier.mh4w.core.model.struct.MutilangSupported#updateMutilang()
 	 */
 	@Override
-	public boolean setMutilang(Mutilang mutilang) {
-		if(Objects.isNull(mutilang)) return false;
-		if(Objects.equals(this.mutilang, mutilang)) return false;
-		this.mutilang = mutilang;
-		
+	public void updateMutilang() {
 		//更新各标签的文本。
 		table.getColumnModel().getColumn(0).setHeaderValue(getLabel(LabelStringKey.JCoreConfigPanel_1));
 		table.getColumnModel().getColumn(1).setHeaderValue(getLabel(LabelStringKey.JCoreConfigPanel_2));
 
 		table.repaint();
-		
-		return true;
 	}
 	
 	/**

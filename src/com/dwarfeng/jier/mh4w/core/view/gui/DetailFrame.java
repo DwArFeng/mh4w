@@ -33,7 +33,7 @@ public class DetailFrame extends JFrame implements MutilangSupported, ObverserSe
 	private final Set<DetailFrameObverser> obversers = Collections.newSetFromMap(new WeakHashMap<>());
 	
 	/**多语言接口*/
-	private Mutilang mutilang;
+	private final Mutilang mutilang;
 	
 	/*
 	 * final 域。
@@ -203,27 +203,22 @@ public class DetailFrame extends JFrame implements MutilangSupported, ObverserSe
 	public Mutilang getMutilang() {
 		return mutilang;
 	}
-
+	
 	/*
 	 * (non-Javadoc)
-	 * @see com.dwarfeng.jier.mh4w.core.model.struct.MutilangSupported#setMutilang(com.dwarfeng.jier.mh4w.core.model.struct.Mutilang)
+	 * @see com.dwarfeng.jier.mh4w.core.model.struct.MutilangSupported#updateMutilang()
 	 */
 	@Override
-	public boolean setMutilang(Mutilang mutilang) {
-		if(Objects.isNull(mutilang)) return false;
-		if(Objects.equals(this.mutilang, mutilang)) return false;
-		this.mutilang = mutilang;
-		
+	public void updateMutilang() {
 		//更新子面板
-		originalAttendanceDataPanel.setMutilang(mutilang);
+		originalAttendanceDataPanel.updateMutilang();
+		originalWorkticketDataPanel.updateMutilang();
 		
 		//更新各标签的文本。
 		setTitle(getLabel(LabelStringKey.DetailFrame_1));
 		
 		tabbedPane.setTitleAt(0, getLabel(LabelStringKey.DetailFrame_2));
 		tabbedPane.setTitleAt(1, getLabel(LabelStringKey.DetailFrame_3));
-
-		return true;
 	}
 	
 	/**

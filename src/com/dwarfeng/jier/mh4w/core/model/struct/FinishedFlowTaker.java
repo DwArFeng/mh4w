@@ -18,12 +18,10 @@ public interface FinishedFlowTaker extends ExternalReadWriteThreadSafe, Mutilang
 	public Logger getLogger();
 	
 	/**
-	 * 设置该完成过程取出器中的记录器。
-	 * @param logger 指定的记录器。
-	 * @return 该操作是否对该记录器造成了改变。
-	 * @throws NullPointerException 入口参数为 <code>null</code>。
+	 * 更新记录器。
+	 * <p> 该方法一般用于在记录器模型更新后，完成过程取出器进行相关的更新。
 	 */
-	public boolean setLogger(Logger logger);
+	public void updateLogger();
 	
 	/**
 	 * 获取该过程取出器中的后台模型。

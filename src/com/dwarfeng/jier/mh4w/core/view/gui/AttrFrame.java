@@ -29,13 +29,13 @@ import com.dwarfeng.jier.mh4w.core.view.obv.AttrFrameObverser;
 
 public class AttrFrame extends JDialog implements MutilangSupported, ObverserSet<AttrFrameObverser>{
 	
-	private static final long serialVersionUID = 2152651850994482036L;
+	private static final long serialVersionUID = 4773527467684527902L;
 
 	/**观察器集合*/
 	private final Set<AttrFrameObverser> obversers = Collections.newSetFromMap(new WeakHashMap<>());
 	
 	/**多语言接口*/
-	private Mutilang mutilang;
+	private final Mutilang mutilang;
 
 	/*
 	 * final 域。
@@ -127,18 +127,15 @@ public class AttrFrame extends JDialog implements MutilangSupported, ObverserSet
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.dwarfeng.jier.mh4w.core.model.struct.MutilangSupported#setMutilang(com.dwarfeng.jier.mh4w.core.model.struct.Mutilang)
+	 * @see com.dwarfeng.jier.mh4w.core.model.struct.MutilangSupported#updateMutilang()
 	 */
 	@Override
-	public boolean setMutilang(Mutilang mutilang) {
-		if(Objects.isNull(mutilang)) return false;
-		if(Objects.equals(this.mutilang, mutilang)) return false;
-		this.mutilang = mutilang;
-		
+	public void updateMutilang() {
+	
 		//更新子面板
-		shiftPanel.setMutilang(mutilang);
-		coreConfigPanel.setMutilang(mutilang);
-		jobPanel.setMutilang(mutilang);
+		shiftPanel.updateMutilang();
+		coreConfigPanel.updateMutilang();
+		jobPanel.updateMutilang();
 		
 		//更新各标签的文本。
 		setTitle(getLabel(LabelStringKey.AttrFrame_2));
@@ -148,10 +145,8 @@ public class AttrFrame extends JDialog implements MutilangSupported, ObverserSet
 		tabbedPane.setTitleAt(0, getLabel(LabelStringKey.AttrFrame_3));
 		tabbedPane.setTitleAt(1, getLabel(LabelStringKey.AttrFrame_4));
 		tabbedPane.setTitleAt(2, getLabel(LabelStringKey.AttrFrame_5));
-
-		return true;
 	}
-
+	
 	/*
 	 * (non-Javadoc)
 	 * @see com.dwarfeng.dutil.basic.prog.ObverserSet#getObversers()

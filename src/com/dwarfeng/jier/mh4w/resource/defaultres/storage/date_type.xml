@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <root >
-	<!--使用如下的格式：<date year="1970" month="1" day="1" dateType="HOLIDAY"></date>-->
+	<!--使用如下的格式：<date year="1970" month="1" day="1" date_type="HOLIDAY"></date>-->
 </root>

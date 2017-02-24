@@ -24,10 +24,8 @@ public class DefaultFinishedFlowTaker implements FinishedFlowTaker {
 	private final ReadWriteLock lock = new ReentrantReadWriteLock();
 	private final BackgroundModel backgroundModel;
 	private final Thread thread = THREAD_FACTORY.newThread(new Taker());
-	
-	
-	private Logger logger;
-	private Mutilang mutilang;
+	private final Logger logger;
+	private final Mutilang mutilang;
 	
 	private boolean runFlag = true;
 	
@@ -81,23 +79,14 @@ public class DefaultFinishedFlowTaker implements FinishedFlowTaker {
 			lock.readLock().unlock();
 		}
 	}
-
+	
 	/*
 	 * (non-Javadoc)
-	 * @see com.dwarfeng.jier.mh4w.core.model.struct.FinishedFlowTaker#setLogger(com.dwarfeng.jier.mh4w.core.model.struct.Logger)
+	 * @see com.dwarfeng.jier.mh4w.core.model.struct.FinishedFlowTaker#updateLogger()
 	 */
 	@Override
-	public boolean setLogger(Logger logger) {
-		Objects.requireNonNull(logger, "入口参数 logger 不能为 null。");
-		
-		lock.writeLock().lock();
-		try{
-			if(Objects.equals(this.logger, logger)) return false;
-			this.logger = logger;
-			return true;
-		}finally {
-			lock.writeLock().unlock();
-		}
+	public void updateLogger() {
+		//不进行任何操作
 	}
 
 	/*
@@ -140,20 +129,11 @@ public class DefaultFinishedFlowTaker implements FinishedFlowTaker {
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.dwarfeng.jier.mh4w.core.model.struct.MutilangSupported#setMutilang(com.dwarfeng.jier.mh4w.core.model.struct.Mutilang)
+	 * @see com.dwarfeng.jier.mh4w.core.model.struct.MutilangSupported#updateMutilang()
 	 */
 	@Override
-	public boolean setMutilang(Mutilang mutilang) {
-		Objects.requireNonNull(mutilang, "入口参数 mutilang 不能为 null。");
-		
-		lock.writeLock().lock();
-		try{
-			if(Objects.equals(this.mutilang, mutilang)) return false;
-			this.mutilang = mutilang;
-			return true;
-		}finally {
-			lock.writeLock().unlock();
-		}
+	public void updateMutilang() {
+		//不进行任何操作。
 	}
 	
 	private boolean isRun(){

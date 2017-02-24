@@ -20,8 +20,10 @@ import com.dwarfeng.jier.mh4w.core.util.Mh4wUtil;
 
 public class JOriginalWorkticketDataPanel extends JPanel implements MutilangSupported{
 	
+	private static final long serialVersionUID = -4579359363819266216L;
+
 	/**多语言接口*/
-	private Mutilang mutilang;
+	private final Mutilang mutilang;
 	
 	/*
 	 * final 域。
@@ -202,25 +204,19 @@ public class JOriginalWorkticketDataPanel extends JPanel implements MutilangSupp
 	public Mutilang getMutilang() {
 		return mutilang;
 	}
-
+	
 	/*
 	 * (non-Javadoc)
-	 * @see com.dwarfeng.jier.mh4w.core.model.struct.MutilangSupported#setMutilang(com.dwarfeng.jier.mh4w.core.model.struct.Mutilang)
+	 * @see com.dwarfeng.jier.mh4w.core.model.struct.MutilangSupported#updateMutilang()
 	 */
 	@Override
-	public boolean setMutilang(Mutilang mutilang) {
-		if(Objects.isNull(mutilang)) return false;
-		if(Objects.equals(this.mutilang, mutilang)) return false;
-		this.mutilang = mutilang;
-		
+	public void updateMutilang() {
 		//更新各标签的文本。
 		table.getColumnModel().getColumn(0).setHeaderValue(getLabel(LabelStringKey.JOriginalWorkticketDataPanel_1));
 		table.getColumnModel().getColumn(1).setHeaderValue(getLabel(LabelStringKey.JOriginalWorkticketDataPanel_2));
 		table.getColumnModel().getColumn(2).setHeaderValue(getLabel(LabelStringKey.JOriginalWorkticketDataPanel_3));
 		table.getColumnModel().getColumn(3).setHeaderValue(getLabel(LabelStringKey.JOriginalWorkticketDataPanel_4));
 		table.getColumnModel().getColumn(4).setHeaderValue(getLabel(LabelStringKey.JOriginalWorkticketDataPanel_5));
-		
-		return true;
 	}
 
 	/**

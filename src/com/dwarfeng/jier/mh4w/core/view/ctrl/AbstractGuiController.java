@@ -10,7 +10,6 @@ import javax.swing.JFileChooser;
 import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileFilter;
 
-import com.dwarfeng.dutil.basic.io.CT;
 import com.dwarfeng.jier.mh4w.core.model.struct.Mutilang;
 import com.dwarfeng.jier.mh4w.core.view.gui.AttrFrame;
 import com.dwarfeng.jier.mh4w.core.view.gui.DetailFrame;
@@ -164,14 +163,15 @@ public abstract class AbstractGuiController implements GuiController {
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.dwarfeng.jier.mh4w.core.view.ctrl.GuiController#setMainFrameMutilang(com.dwarfeng.jier.mh4w.core.model.struct.Mutilang)
+	 * @see com.dwarfeng.jier.mh4w.core.view.ctrl.GuiController#updateMainFrameMutilang()
 	 */
 	@Override
-	public boolean setMainFrameMutilang(Mutilang mutilang) {
+	public boolean updateMainFrameMutilang() {
 		lock.writeLock().lock();
 		try{
 			if(Objects.isNull(mainFrame)) return false;
-			return mainFrame.setMutilang(mutilang);
+			mainFrame.updateMutilang();
+			return true;
 		}finally {
 			lock.writeLock().unlock();
 		}
@@ -386,14 +386,15 @@ public abstract class AbstractGuiController implements GuiController {
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.dwarfeng.jier.mh4w.core.view.ctrl.GuiController#setDetailFrameMutilang(com.dwarfeng.jier.mh4w.core.model.struct.Mutilang)
+	 * @see com.dwarfeng.jier.mh4w.core.view.ctrl.GuiController#updateDetailFrameMutilang()
 	 */
 	@Override
-	public boolean setDetailFrameMutilang(Mutilang mutilang) {
+	public boolean updateDetailFrameMutilang() {
 		lock.writeLock().lock();
 		try{
 			if(Objects.isNull(detailFrame)) return false;
-			return detailFrame.setMutilang(mutilang);
+			detailFrame.updateMutilang();
+			return true;
 		}finally {
 			lock.writeLock().unlock();
 		}
@@ -520,16 +521,15 @@ public abstract class AbstractGuiController implements GuiController {
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.dwarfeng.jier.mh4w.core.view.ctrl.GuiController#setAttrFrameMutilang(com.dwarfeng.jier.mh4w.core.model.struct.Mutilang)
+	 * @see com.dwarfeng.jier.mh4w.core.view.ctrl.GuiController#updateAttrFrameMutilang()
 	 */
 	@Override
-	public boolean setAttrFrameMutilang(Mutilang mutilang) {
+	public boolean updateAttrFrameMutilang() {
 		lock.writeLock().lock();
 		try{
 			if(Objects.isNull(attrFrame)) return false;
-			boolean aFlag = attrFrame.setMutilang(mutilang);
-			CT.trace(aFlag);
-			return aFlag;
+			attrFrame.updateMutilang();
+			return true;
 		}finally {
 			lock.writeLock().unlock();
 		}
@@ -659,21 +659,21 @@ public abstract class AbstractGuiController implements GuiController {
 			lock.readLock().unlock();
 		}
 	}
-
-	/* 
+	
+	/*
 	 * (non-Javadoc)
-	 * @see com.dwarfeng.jier.mh4w.core.view.ctrl.GuiController#setFailFrameMutilang(com.dwarfeng.jier.mh4w.core.model.struct.Mutilang)
+	 * @see com.dwarfeng.jier.mh4w.core.view.ctrl.GuiController#updateFailFrameMutilang()
 	 */
 	@Override
-	public boolean setFailFrameMutilang(Mutilang mutilang) {
+	public boolean updateFailFrameMutilang() {
 		lock.writeLock().lock();
 		try{
 			if(Objects.isNull(failFrame)) return false;
-			return failFrame.setMutilang(mutilang);
+			failFrame.updateMutilang();
+			return true;
 		}finally {
 			lock.writeLock().unlock();
 		}
 	}
-	
 	
 }

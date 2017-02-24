@@ -229,18 +229,19 @@ public final class Mh4w {
 		private DataListModel<AttendanceData> attendanceDataModel = new DefaultDataListModel<>();
 		private DataListModel<WorkticketData> workticketDataModel = new DefaultDataListModel<>();
 		//structs
-		private FinishedFlowTaker finishedFlowTaker = new DefaultFinishedFlowTaker(backgroundModel);
+		private FinishedFlowTaker finishedFlowTaker = new DefaultFinishedFlowTaker(backgroundModel, 
+				loggerModel.getLogger(), loggerMutilangModel.getMutilang());
 		//obvs
 		private LoggerObverser loggerObverser = new LoggerAdapter() {
 			@Override
 			public void fireUpdated() {
-				finishedFlowTaker.setLogger(loggerModel.getLogger());
+				finishedFlowTaker.updateLogger();
 			}
 		};
 		private MutilangObverser loggerMutilangObverser = new MutilangAdapter() {
 			@Override
 			public void fireUpdated() {
-				finishedFlowTaker.setMutilang(loggerMutilangModel.getMutilang());
+				finishedFlowTaker.updateLogger();
 			}
 		};
 		private MutilangObverser labelMutilangObverser = new MutilangAdapter() {
@@ -250,10 +251,10 @@ public final class Mh4w {
 				Mh4wUtil.invokeInEventQueue(new Runnable() {
 					@Override
 					public void run() {
-						guiController.setMainFrameMutilang(mutilang);
-						guiController.setDetailFrameMutilang(mutilang);
-						guiController.setAttrFrameMutilang(mutilang);
-						guiController.setFailFrameMutilang(mutilang);
+						guiController.updateMainFrameMutilang();
+						guiController.updateDetailFrameMutilang();
+						guiController.updateAttrFrameMutilang();
+						guiController.updateFailFrameMutilang();
 					}
 				});
 			};
@@ -389,6 +390,7 @@ public final class Mh4w {
 				failFrame.dispose();
 				return true;
 			}
+
 		};
 		//GUI obversers
 		private final MainFrameObverser mainFrameObverser = new MainFrameAdapter() {

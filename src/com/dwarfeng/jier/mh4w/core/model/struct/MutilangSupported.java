@@ -15,11 +15,9 @@ public interface MutilangSupported {
 	public Mutilang getMutilang();
 	
 	/**
-	 * 设置该对象中的多语言接口为指定的多语言接口。
-	 * @param mutilang 指定的多语言接口。
-	 * @return 该操作是否对该对象造成了改变。
-	 * @throws NullPointerException 入口参数为 <code>null</code>。
+	 * 更新多语言。
+	 * <p> 该方法一般用于在多语言模型更新后，通知多语言支持接口进行相关的更新。
 	 */
-	public boolean setMutilang(Mutilang mutilang);
+	public void updateMutilang();
 
 }

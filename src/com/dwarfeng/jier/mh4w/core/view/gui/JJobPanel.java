@@ -23,8 +23,10 @@ import com.dwarfeng.jier.mh4w.core.util.Mh4wUtil;
 
 public class JJobPanel extends JPanel implements MutilangSupported{
 
+	private static final long serialVersionUID = 2486725605516206360L;
+
 	/**多语言接口*/
-	private Mutilang mutilang;
+	private final Mutilang mutilang;
 
 	/*
 	 * final 域。
@@ -214,23 +216,17 @@ public class JJobPanel extends JPanel implements MutilangSupported{
 	public Mutilang getMutilang() {
 		return this.mutilang;
 	}
-
+	
 	/*
 	 * (non-Javadoc)
-	 * @see com.dwarfeng.jier.mh4w.core.model.struct.MutilangSupported#setMutilang(com.dwarfeng.jier.mh4w.core.model.struct.Mutilang)
+	 * @see com.dwarfeng.jier.mh4w.core.model.struct.MutilangSupported#updateMutilang()
 	 */
 	@Override
-	public boolean setMutilang(Mutilang mutilang) {
-		if(Objects.isNull(mutilang)) return false;
-		if(Objects.equals(this.mutilang, mutilang)) return false;
-		this.mutilang = mutilang;
-		
+	public void updateMutilang() {
 		//更新各标签的文本。
 		table.getColumnModel().getColumn(0).setHeaderValue(getLabel(LabelStringKey.JJobPanel_1));
 		table.getColumnModel().getColumn(1).setHeaderValue(getLabel(LabelStringKey.JJobPanel_2));
 		table.getColumnModel().getColumn(2).setHeaderValue(getLabel(LabelStringKey.JJobPanel_3));
-		
-		return true;
 	}
 
 	/**
