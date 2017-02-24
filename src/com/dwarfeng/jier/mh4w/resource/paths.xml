@@ -6,4 +6,5 @@
 	<info key="mutilang.label.setting" path="attributes/mutilang/label/setting.xml" default="/com/dwarfeng/jier/mh4w/resource/defaultres/mutilang/label/setting.xml"></info>
 	<info key="define.shifts" path="attributes/define/shifts.xml" default="/com/dwarfeng/jier/mh4w/resource/defaultres/define/shifts.xml"></info>
 	<info key="define.jobs" path="attributes/define/jobs.xml" default="/com/dwarfeng/jier/mh4w/resource/defaultres/define/jobs.xml"></info>
+	<info key="storage.date_type" path="attributes/storage/date_type.xml" default="/com/dwarfeng/jier/mh4w/resource/defaultres/storage/date_type.xml"></info>
 </root>

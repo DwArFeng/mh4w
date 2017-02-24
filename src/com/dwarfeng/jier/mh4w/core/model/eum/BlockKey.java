@@ -22,6 +22,7 @@ public enum BlockKey implements Name{
 	HIDE_ATTR_FRAME(new DefaultName("hide_attr_frame")),
 	RELOAD_ATTR(new DefaultName("reload_attr")),
 	HIDE_FAIL_FRAME(new DefaultName("hide_fail_frame")),
+	HIDE_DETAIL_FRAME(new DefaultName("hide_detail_frame")),
 
 	;
 

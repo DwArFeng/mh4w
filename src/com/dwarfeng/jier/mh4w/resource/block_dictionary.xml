@@ -34,6 +34,7 @@
 		<dictionary value="hide_attr_frame"/>
 		<dictionary value="reload_attr"/>
 		<dictionary value="hide_fail_frame"/>
+		<dictionary value="hide_detail_frame"/>
 	</key>
 	<key value="show_attr_frame">
 		<dictionary value="initialize"/>
@@ -45,6 +46,9 @@
 		<dictionary value="initialize"/>
 	</key>
 	<key value="hide_fail_frame">
+		<dictionary value="initialize"/>
+	</key>
+	<key value="hide_detail_frame">
 		<dictionary value="initialize"/>
 	</key>
 </root>

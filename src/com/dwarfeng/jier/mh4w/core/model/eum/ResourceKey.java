@@ -31,6 +31,8 @@ public enum ResourceKey implements Name{
 	DEFINE_SHIFTS("define.shifts"),
 	/**工作信息*/
 	DEFINE_JOBS("define.jobs"),
+	/**日期类型*/
+	STORAGE_DATE_TYPE("storage.date_type"),
 	
 	;
 
