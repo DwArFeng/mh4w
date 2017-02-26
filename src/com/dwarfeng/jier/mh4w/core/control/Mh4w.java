@@ -1780,7 +1780,8 @@ public final class Mh4w {
 					try{
 						for(OriginalAttendanceData rawData : manager.getOriginalAttendanceDataModel()){
 							try{
-								AttendanceData attendanceData = CountUtil.transAttendanceData(rawData, manager.getShiftModel());
+								AttendanceData attendanceData = CountUtil.transAttendanceData(rawData, manager.getShiftModel(),
+										manager.getCoreConfigModel(), manager.getDateTypeModel());
 								manager.getAttendanceDataModel().add(attendanceData);
 							}catch (TransException e) {
 								manager.getFailModel().add(new DefaultFail(rawData, FailType.DATA_STRUCT_FAIL));

@@ -77,6 +77,30 @@ public interface CoreConfigModel extends SyncConfigModel {
 	public int getWorkticketNameColumn();
 	
 	/**
+	 * 获取统计时所用的正常上班的工时系数。
+	 * @return 统计所用的正常上班的工时系数。
+	 */
+	public double getShiftCoefficientCount();
+	
+	/**
+	 * 获取统计时所用的拖班的工时系数。
+	 * @return 统计所用的拖班的工时系数。
+	 */
+	public double getExtraCoefficientCount();
+	
+	/**
+	 * 获取统计时所用的周末上班的工时系数。
+	 * @return 统计所用的周末上班的工时系数。
+	 */
+	public double getWeekendCoefficientCount();
+	
+	/**
+	 * 获取统计时所用的节假日上班的工时系数。
+	 * @return 统计所用的节假日上班的工时系数。
+	 */
+	public double getHolidayCoefficientCount();
+	
+	/**
 	 * 获取记录器多语言接口的当前语言。
 	 * @return 记录器多语言接口当前的语言。
 	 */

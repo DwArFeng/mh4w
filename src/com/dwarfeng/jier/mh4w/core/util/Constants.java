@@ -74,6 +74,10 @@ public final class Constants {
 		coreConfigOrder.add(CoreConfig.WORKTICKET_COLUMN_DEPARTMENT);
 		coreConfigOrder.add(CoreConfig.WORKTICKET_COLUMN_WORKNUMBER);
 		coreConfigOrder.add(CoreConfig.WORKTICKET_COLUMN_NAME);
+		coreConfigOrder.add(CoreConfig.COUNT_COEFFICIENT_SHIFT);
+		coreConfigOrder.add(CoreConfig.COUNT_COEFFICIENT_EXTRA);
+		coreConfigOrder.add(CoreConfig.COUNT_COEFFICIENT_WEEKEND);
+		coreConfigOrder.add(CoreConfig.COUNT_COEFFICIENT_HOLIDAY);
 		coreConfigOrder.add(CoreConfig.MUTILANG_LABEL);
 		coreConfigOrder.add(CoreConfig.MUTILANG_LOGGER);
 	}

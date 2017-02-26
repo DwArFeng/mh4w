@@ -51,6 +51,7 @@
 	</key>
 	<key value="reload_attr">
 		<dictionary value="initialize"/>
+		<dictionary value="count"/>
 	</key>
 	<key value="hide_fail_frame">
 		<dictionary value="initialize"/>
@@ -70,6 +71,7 @@
 		<dictionary value="clear_date_type_entry"/>
 		<dictionary value="save_date_type_entry"/>
 		<dictionary value="load_date_type_entry"/>
+		<dictionary value="count"/>
 	</key>
 	<key value="remove_date_type_entry">
 		<dictionary value="initialize"/>
@@ -77,6 +79,7 @@
 		<dictionary value="clear_date_type_entry"/>
 		<dictionary value="save_date_type_entry"/>
 		<dictionary value="load_date_type_entry"/>
+		<dictionary value="count"/>
 	</key>
 	<key value="clear_date_type_entry">
 		<dictionary value="initialize"/>
@@ -84,6 +87,7 @@
 		<dictionary value="remove_date_type_entry"/>
 		<dictionary value="save_date_type_entry"/>
 		<dictionary value="load_date_type_entry"/>
+		<dictionary value="count"/>
 	</key>
 		<key value="save_date_type_entry">
 		<dictionary value="initialize"/>
@@ -91,6 +95,7 @@
 		<dictionary value="remove_date_type_entry"/>
 		<dictionary value="clear_date_type_entry"/>
 		<dictionary value="load_date_type_entry"/>
+		<dictionary value="count"/>
 	</key>
 	<key value="load_date_type_entry">
 		<dictionary value="initialize"/>
@@ -98,5 +103,6 @@
 		<dictionary value="remove_date_type_entry"/>
 		<dictionary value="clear_date_type_entry"/>
 		<dictionary value="save_date_type_entry"/>
+		<dictionary value="count"/>
 	</key>
 </root>

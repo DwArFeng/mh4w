@@ -174,6 +174,62 @@ public class DefaultCoreConfigModel extends DefaultSyncConfigModel implements Co
 			lock.readLock().unlock();
 		}
 	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see com.dwarfeng.jier.mh4w.core.model.cm.CoreConfigModel#getShiftCoefficientCount()
+	 */
+	@Override
+	public double getShiftCoefficientCount() {
+		lock.readLock().lock();
+		try{
+			return Double.parseDouble(getValidValue(CoreConfig.COUNT_COEFFICIENT_SHIFT.getConfigKey()));
+		}finally {
+			lock.readLock().unlock();
+		}
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see com.dwarfeng.jier.mh4w.core.model.cm.CoreConfigModel#getExtraCoefficientCount()
+	 */
+	@Override
+	public double getExtraCoefficientCount() {
+		lock.readLock().lock();
+		try{
+			return Double.parseDouble(getValidValue(CoreConfig.COUNT_COEFFICIENT_EXTRA.getConfigKey()));
+		}finally {
+			lock.readLock().unlock();
+		}
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see com.dwarfeng.jier.mh4w.core.model.cm.CoreConfigModel#getWeekendCoefficientCount()
+	 */
+	@Override
+	public double getWeekendCoefficientCount() {
+		lock.readLock().lock();
+		try{
+			return Double.parseDouble(getValidValue(CoreConfig.COUNT_COEFFICIENT_WEEKEND.getConfigKey()));
+		}finally {
+			lock.readLock().unlock();
+		}
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see com.dwarfeng.jier.mh4w.core.model.cm.CoreConfigModel#getHolidayCoefficientCount()
+	 */
+	@Override
+	public double getHolidayCoefficientCount() {
+		lock.readLock().lock();
+		try{
+			return Double.parseDouble(getValidValue(CoreConfig.COUNT_COEFFICIENT_HOLIDAY.getConfigKey()));
+		}finally {
+			lock.readLock().unlock();
+		}
+	}
 
 	/*
 	 * (non-Javadoc)

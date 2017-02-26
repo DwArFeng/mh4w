@@ -39,11 +39,18 @@ public enum CoreConfig implements ConfigEntry{
 	WORKTICKET_COLUMN_WORKNUMBER("workticket.column.worknumber", "B", new MatchConfigChecker("[A-Z]+"), LabelStringKey.CoreConfig_12),
 	/**工票表中姓名所在的列*/
 	WORKTICKET_COLUMN_NAME("workticket.column.name", "C", new MatchConfigChecker("[A-Z]+"), LabelStringKey.CoreConfig_13),
+	/**正常上班的工时系数*/
+	COUNT_COEFFICIENT_SHIFT("count.coefficient.shift", "4.0", new MatchConfigChecker("^(\\-|\\+)?[\\d]{1,10}\\.[\\d]{1,10}$"), LabelStringKey.CoreConfig_14),
+	/**拖班的工时系数*/
+	COUNT_COEFFICIENT_EXTRA("count.coefficient.extra", "5.5", new MatchConfigChecker("^(\\-|\\+)?[\\d]{1,10}\\.[\\d]{1,10}$"), LabelStringKey.CoreConfig_15),
+	/**周末上班的工时系数*/
+	COUNT_COEFFICIENT_WEEKEND("count.coefficient.weekend", "6.0", new MatchConfigChecker("^(\\-|\\+)?[\\d]{1,10}\\.[\\d]{1,10}$"), LabelStringKey.CoreConfig_16),
+	/**节假日上班的工时系数*/
+	COUNT_COEFFICIENT_HOLIDAY("count.coefficient.holiday", "7.0", new MatchConfigChecker("^(\\-|\\+)?[\\d]{1,10}\\.[\\d]{1,10}$"), LabelStringKey.CoreConfig_17),
 	/**标签的使用语言*/
 	MUTILANG_LABEL("mutilang.label", "", new NonNullConfigChecker(), LabelStringKey.CoreConfig_1),
 	/**记录器的使用语言*/
 	MUTILANG_LOGGER("mutilang.logger", "", new NonNullConfigChecker(), LabelStringKey.CoreConfig_2),
-	
 	;
 	
 	private final ConfigEntry configEntry;

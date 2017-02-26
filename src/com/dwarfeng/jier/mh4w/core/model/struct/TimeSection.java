@@ -16,9 +16,11 @@ public final class TimeSection {
 	 * 新实例。
 	 * @param start 开始时间。
 	 * @param end 结束时间。
+	 * @throws IllegalArgumentException 结束时间小于起始时间。
 	 */
 	public TimeSection(double start, double end) {
-		super();
+		if(end < start) throw new IllegalArgumentException("时间区间 - 时间区间的结束时间不能小于起始时间");
+		
 		this.start = start;
 		this.end = end;
 	}

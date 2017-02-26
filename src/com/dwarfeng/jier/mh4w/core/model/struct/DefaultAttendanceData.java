@@ -2,6 +2,8 @@ package com.dwarfeng.jier.mh4w.core.model.struct;
 
 import java.util.Objects;
 
+import com.dwarfeng.jier.mh4w.core.model.eum.DateType;
+
 /**
  * 默认出勤数据。
  * <p> 出勤数据的默认实现。
@@ -14,6 +16,9 @@ public final class DefaultAttendanceData implements AttendanceData{
 	private final CountDate countDate;
 	private final Shift shift;
 	private final TimeSection attendanceRecord;
+	private final DateType dateType;
+	private final double equivalentWorkTime;
+	private final double originalWorkTime;
 	
 	/**
 	 * 新实例。
@@ -23,16 +28,21 @@ public final class DefaultAttendanceData implements AttendanceData{
 	 * @param attendanceRecord 出勤记录。
 	 * @throws NullPointerException 入口参数为 <code>null</code>。
 	 */
-	public DefaultAttendanceData(Staff staff, CountDate countDate, Shift shift, TimeSection attendanceRecord) {
+	public DefaultAttendanceData(Staff staff, CountDate countDate, Shift shift, TimeSection attendanceRecord,
+			DateType dateType, double equivalentWorkTime, double originalWorkTime) {
 		Objects.requireNonNull(staff, "入口参数 staff 不能为 null。");
 		Objects.requireNonNull(countDate, "入口参数 countDate 不能为 null。");
 		Objects.requireNonNull(shift, "入口参数 shift 不能为 null。");
 		Objects.requireNonNull(attendanceRecord, "入口参数 attendanceRecord 不能为 null。");
+		Objects.requireNonNull(dateType, "入口参数 dateType 不能为 null。");
 
 		this.staff = staff;
 		this.countDate = countDate;
 		this.shift = shift;
 		this.attendanceRecord = attendanceRecord;
+		this.dateType = dateType;
+		this.equivalentWorkTime = equivalentWorkTime;
+		this.originalWorkTime = originalWorkTime;
 	}
 
 	/*
@@ -51,6 +61,15 @@ public final class DefaultAttendanceData implements AttendanceData{
 	@Override
 	public CountDate getCountDate() {
 		return countDate;
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see com.dwarfeng.jier.mh4w.core.model.struct.AttendanceData#getDateType()
+	 */
+	@Override
+	public DateType getDateType() {
+		return dateType;
 	}
 
 	/*
@@ -71,6 +90,22 @@ public final class DefaultAttendanceData implements AttendanceData{
 		return attendanceRecord;
 	}
 	
+	/*
+	 * (non-Javadoc)
+	 * @see com.dwarfeng.jier.mh4w.core.model.struct.AttendanceData#getEquivalentWorkTime()
+	 */
+	@Override
+	public double getEquivalentWorkTime() {
+		return equivalentWorkTime;
+	}
 	
+	/*
+	 * (non-Javadoc)
+	 * @see com.dwarfeng.jier.mh4w.core.model.struct.AttendanceData#getOriginalWorkTime()
+	 */
+	@Override
+	public double getOriginalWorkTime() {
+		return originalWorkTime;
+	}
 
 }

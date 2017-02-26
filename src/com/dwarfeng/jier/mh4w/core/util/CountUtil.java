@@ -3,15 +3,18 @@ package com.dwarfeng.jier.mh4w.core.util;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 
 import com.dwarfeng.dutil.basic.num.NumberUtil;
 import com.dwarfeng.dutil.basic.num.unit.Time;
 import com.dwarfeng.jier.mh4w.core.model.cm.CoreConfigModel;
+import com.dwarfeng.jier.mh4w.core.model.cm.DateTypeModel;
 import com.dwarfeng.jier.mh4w.core.model.cm.FileSelectModel;
 import com.dwarfeng.jier.mh4w.core.model.cm.JobModel;
 import com.dwarfeng.jier.mh4w.core.model.cm.ShiftModel;
+import com.dwarfeng.jier.mh4w.core.model.eum.DateType;
 import com.dwarfeng.jier.mh4w.core.model.io.XlsOriginalAttendanceDataLoader;
 import com.dwarfeng.jier.mh4w.core.model.io.XlsOriginalWorkticketDataLoader;
 import com.dwarfeng.jier.mh4w.core.model.struct.AttendanceData;
@@ -138,26 +141,92 @@ public final class CountUtil {
 	 * 将原始考勤数据转换成考勤数据。
 	 * @param rawData 指定的原始数据。
 	 * @param shiftModel 班次模型。
+	 * @param coreConfigModel 的核心配置模型。
+	 * @param dateTypeModel 日期类型模型。
 	 * @return 由指定的原始数据转化成的考勤数据。
 	 * @throws TransException 转化过程发生异常。
 	 * @throws NullPointerException 入口参数为 <code>null</code>。
 	 */
-	public static AttendanceData transAttendanceData(OriginalAttendanceData rawData, ShiftModel shiftModel) throws TransException{
+	public static AttendanceData transAttendanceData(OriginalAttendanceData rawData, ShiftModel shiftModel,
+			CoreConfigModel coreConfigModel, DateTypeModel dateTypeModel) throws TransException{
 		Objects.requireNonNull(rawData, "入口参数 rawData 不能为 null。");
 		Objects.requireNonNull(shiftModel, "入口参数 shiftModel 不能为 null。");
+		Objects.requireNonNull(coreConfigModel, "入口参数 coreConfigModel 不能为 null。");
+		Objects.requireNonNull(dateTypeModel, "入口参数 dateTypeModel 不能为 null。");
 
 		try{
+			double coefficient_shift = coreConfigModel.getShiftCoefficientCount();
+			double coefficient_extra = coreConfigModel.getExtraCoefficientCount();
+			double coefficient_weekend = coreConfigModel.getWeekendCoefficientCount();
+			double coefficient_holiday = coreConfigModel.getHolidayCoefficientCount();
+			
 			Staff staff = transStaff(rawData.getWorkNumber(), rawData.getDepartment(), rawData.getName());
 			CountDate countDate = transCountDate(rawData.getDate());
 			Shift shift = transShift(rawData.getShift(), shiftModel);
 			TimeSection attendanceRecord = transTimeSection(rawData.getAttendanceRecord());
+			DateType dateType = dateTypeModel.getOrDefault(countDate, DateType.NORMAL);
+			double equivalentWorkTime = 0;
+			double originalWorkTime = 0;
 			
-			AttendanceData data = new DefaultAttendanceData(staff, countDate, shift, attendanceRecord);
+			double shiftTime = 0;
+			double extraShiftTime = 0;
+			
+			//根据班次中的数据计算正常上班和拖班的时间。
+			for(TimeSection timeSection : shift.getShiftSections()){
+				shiftTime += getCoincidenceTime(timeSection, attendanceRecord);
+			}
+			for(TimeSection timeSection : shift.getExtraShiftSections()){
+				extraShiftTime += getCoincidenceTime(timeSection, attendanceRecord);
+			}
+			
+			//算出原始工作时间
+			originalWorkTime = shiftTime + extraShiftTime;
+			
+			//根据指定的日期类型计算等效工作时间。
+			switch (dateType) {
+			case HOLIDAY:
+				extraShiftTime = (shiftTime + extraShiftTime) * coefficient_holiday;
+				break;
+			case NORMAL:
+				extraShiftTime = shiftTime * coefficient_shift + extraShiftTime * coefficient_extra;
+				break;
+			case WEEKEND:
+				extraShiftTime = (shiftTime + extraShiftTime) * coefficient_weekend;
+				break;
+			}
+			
+			AttendanceData data = new DefaultAttendanceData(staff, countDate, shift, attendanceRecord, dateType,
+					equivalentWorkTime, originalWorkTime);
+			
 			return data;
 		}catch (Exception e) {
 			throw new TransException("无法将指定的原始考勤数据转化为考勤数据", e);
 		}
 			
+	}
+	
+	/**
+	 * 返回两个时间区间的重合的时间。
+	 * @param t1 第一个时间区间。
+	 * @param t2 第二个时间区间。
+	 * @return 两个时间区间的重合的时间。
+	 * @throws NullPointerException 入口参数为 <code>null</code>。
+	 */
+	public static double getCoincidenceTime(TimeSection t1, TimeSection t2){
+		Objects.requireNonNull(t1, "入口参数 t1 不能为 null。");
+		Objects.requireNonNull(t2, "入口参数 t2 不能为 null。");
+
+		double n1 = t1.getStart();
+		double n2 = t1.getEnd();
+		double n3 = t2.getStart();
+		double n4 = t2.getEnd();
+		
+		//检测时间区间是否没有重合的部分
+		if(n2 < n3 || n4 < n1) return 0;
+		
+		double[] ns = new double[]{n1, n2, n3, n4	};
+		Arrays.sort(ns);
+		return ns[2] - ns[1];
 	}
 	
 	/**
@@ -261,7 +330,9 @@ public final class CountUtil {
 			
 			double start = Double.parseDouble(f[0]) + NumberUtil.unitTrans(Double.parseDouble(f[1]), Time.MIN, Time.HOR).doubleValue();
 			double end = Double.parseDouble(l[0]) + NumberUtil.unitTrans(Double.parseDouble(l[1]), Time.MIN, Time.HOR).doubleValue();
-
+			
+			if(end < start) throw new IllegalArgumentException("时间区间的结束时间不能小于起始时间");
+			
 			return new TimeSection(start, end);
 		}catch (Exception e) {
 			throw new TransException("无法将指定的时间区间文本转换为班次" + string, e);
