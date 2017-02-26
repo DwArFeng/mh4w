@@ -23,6 +23,13 @@ public enum BlockKey implements Name{
 	RELOAD_ATTR(new DefaultName("reload_attr")),
 	HIDE_FAIL_FRAME(new DefaultName("hide_fail_frame")),
 	HIDE_DETAIL_FRAME(new DefaultName("hide_detail_frame")),
+	SHOW_DATE_TYPE_FRAME(new DefaultName("show_date_type_frame")),
+	HIDE_DATE_TYPE_FRAME(new DefaultName("hide_date_type_frame")),
+	SUBMIT_DATE_TYPE_ENTRY(new DefaultName("submit_date_type_entry")),
+	REMOVE_DATE_TYPE_ENTRY(new DefaultName("remove_date_type_entry")),
+	CLEAR_DATE_TYPE_ENTRY(new DefaultName("clear_date_type_entry")),
+	SAVE_DATE_TYPE_ENTRY(new DefaultName("save_date_type_entry")),
+	LOAD_DATE_TYPE_ENTRY(new DefaultName("load_date_type_entry")),
 
 	;
 

@@ -23,5 +23,7 @@ public abstract class MainFrameAdapter implements MainFrameObverser {
 	public void fireCount() {}
 	@Override
 	public void fireShowAttrFrame() {}
+	@Override
+	public void fireShowDateTypeFrame() {}
 	
 }

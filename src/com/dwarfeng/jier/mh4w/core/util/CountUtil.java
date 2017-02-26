@@ -172,7 +172,12 @@ public final class CountUtil {
 		try{
 			Staff staff = transStaff(rawData.getWorkNumber(), rawData.getDepartment(), rawData.getName());
 			Job job = rawData.getJob();
-			double workticket = Double.parseDouble(rawData.getWorkticket());
+			double workticket;
+			if(rawData.getWorkticket().equals("")){
+				workticket = 0;
+			}else {
+				workticket = Double.parseDouble(rawData.getWorkticket());
+			}
 			
 			return new DefaultWorkticketData(staff, job, workticket);
 		}catch (Exception e) {

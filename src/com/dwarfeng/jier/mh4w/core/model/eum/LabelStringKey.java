@@ -70,6 +70,17 @@ public enum LabelStringKey implements Name{
 	FailFrame_3(new DefaultName("FailFrame.3")),
 	FailFrame_4(new DefaultName("FailFrame.4")),
 
+	DateTypeFrame_1(new DefaultName("DateTypeFrame.1")),
+	DateTypeFrame_2(new DefaultName("DateTypeFrame.2")),
+	DateTypeFrame_3(new DefaultName("DateTypeFrame.3")),
+	DateTypeFrame_4(new DefaultName("DateTypeFrame.4")),
+	DateTypeFrame_5(new DefaultName("DateTypeFrame.5")),
+	DateTypeFrame_6(new DefaultName("DateTypeFrame.6")),
+	DateTypeFrame_7(new DefaultName("DateTypeFrame.7")),
+	DateTypeFrame_8(new DefaultName("DateTypeFrame.8")),
+	DateTypeFrame_9(new DefaultName("DateTypeFrame.9")),
+	DateTypeFrame_10(new DefaultName("DateTypeFrame.10")),
+
 	;
 
 	private Name name;

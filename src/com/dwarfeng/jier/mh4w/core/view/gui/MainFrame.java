@@ -322,6 +322,7 @@ public final class MainFrame extends JFrame implements MutilangSupported, Obvers
 		calendarButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				fireShowDateTypeFrame();
 			}
 		});
 		calendarButton.setIcon(new ImageIcon(calendar_blue));
@@ -626,6 +627,12 @@ public final class MainFrame extends JFrame implements MutilangSupported, Obvers
 	private void fireShowAttrFrame(){
 		for(MainFrameObverser obverser : obversers){
 			if(Objects.nonNull(obverser)) obverser.fireShowAttrFrame();
+		}
+	}
+	
+	private void fireShowDateTypeFrame(){
+		for(MainFrameObverser obverser : obversers){
+			if(Objects.nonNull(obverser)) obverser.fireShowDateTypeFrame();
 		}
 	}
 

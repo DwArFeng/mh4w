@@ -49,7 +49,7 @@ public final class XmlDateTypeSaver extends StreamSaver<DateTypeModel> {
 				history.addAttribute("year", entry.getKey().getYear() + "");
 				history.addAttribute("month", entry.getKey().getMonth() + "");
 				history.addAttribute("day", entry.getKey().getDay() + "");
-				history.addAttribute("dateType", entry.getValue().toString());
+				history.addAttribute("date_type", entry.getValue().toString());
 				root.add(history);
 			}
 			

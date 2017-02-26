@@ -222,4 +222,47 @@ public interface GuiController extends ExternalReadWriteThreadSafe{
 	 */
 	public boolean updateFailFrameMutilang();
 	
+	/**
+	 * 新建一个日期类型面板。
+	 * @return 是否成功新建。
+	 */
+	public boolean newDateTypeFrame();
+	
+	/**
+	 * 释放控制器中的日期类型面板。
+	 * @return 是否成功释放。
+	 */
+	public boolean disposeDateTypeFrame();
+	
+	/**
+	 * 返回控制器中是否有日期类型面板的实例。
+	 * @return 是否有日期类型面板的实例。
+	 */
+	public boolean hasDateTypeFrame();
+	
+	/**
+	 * 返回控制器中的日期类型面板是否可见。
+	 * @return 控制器中的日期类型面板是否可见。
+	 */
+	public boolean getDateTypeFrameVisible();
+	
+	/**
+	 * 设置控制器中的日期类型面板的可见性。
+	 * @param aFlag 控制器中的日期面板是否可见。
+	 * @return 是否设置成功。
+	 */
+	public boolean setDateTypeFrameVisible(boolean aFlag);
+	
+	/**
+	 * 获取日期类型面板中的多语言接口。
+	 * @return 日期面板中的多语言接口。
+	 */
+	public Mutilang getDateTypeFrameMutilang();
+	
+	/**
+	 * 更新该控制器中日期类型面板的多语言接口。
+	 * @return 是否更新成功。
+	 */
+	public boolean updateDateTypeFrameMutilang();
+	
 }

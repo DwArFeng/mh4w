@@ -12,6 +12,7 @@ import javax.swing.filechooser.FileFilter;
 
 import com.dwarfeng.jier.mh4w.core.model.struct.Mutilang;
 import com.dwarfeng.jier.mh4w.core.view.gui.AttrFrame;
+import com.dwarfeng.jier.mh4w.core.view.gui.DateTypeFrame;
 import com.dwarfeng.jier.mh4w.core.view.gui.DetailFrame;
 import com.dwarfeng.jier.mh4w.core.view.gui.FailFrame;
 import com.dwarfeng.jier.mh4w.core.view.gui.MainFrame;
@@ -35,6 +36,8 @@ public abstract class AbstractGuiController implements GuiController {
 	protected AttrFrame attrFrame = null;
 	/**控制器中的失败界面*/
 	protected FailFrame failFrame = null;
+	/**控制器中的日期类型界面*/
+	protected DateTypeFrame dateTypeFrame = null;
 	
 	/* 
 	 * (non-Javadoc)
@@ -675,5 +678,142 @@ public abstract class AbstractGuiController implements GuiController {
 			lock.writeLock().unlock();
 		}
 	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.dwarfeng.jier.mh4w.core.view.ctrl.GuiController#newDateTypeFrame()
+	 */
+	@Override
+	public boolean newDateTypeFrame() {
+		lock.writeLock().lock();
+		try{
+			if(Objects.isNull(dateTypeFrame)){
+				dateTypeFrame = newDateTypeFrameImpl();
+				return Objects.nonNull(dateTypeFrame);
+			}else{
+				return false;
+			}
+		}finally {
+			lock.writeLock().unlock();
+		}
+	}
+
+	/**
+	 * 新建日期类型面板的实现方法。
+	 * <p> 该方法已经在调用方法处上锁，不用单独上锁。
+	 * @return 新的日期类型界面。
+	 */
+	protected abstract DateTypeFrame newDateTypeFrameImpl();
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.dwarfeng.jier.mh4w.core.view.ctrl.GuiController#disposeDateTypeFrame()
+	 */
+	@Override
+	public boolean disposeDateTypeFrame() {
+		lock.writeLock().lock();
+		try{
+			if(Objects.nonNull(dateTypeFrame)){
+				if(disposeDateTypeFrameImpl()){
+					dateTypeFrame = null;
+					return true;
+				}else{
+					return false;
+				}
+			}else {
+				return false;
+			}
+		}finally {
+			lock.writeLock().unlock();
+		}
+	}
+
+	/**
+	 * 释放日期类型面板的实现方法。
+	 * <p> 该方法已在调用方法处上锁，不用单独上锁。
+	 * @return 是否释放成功。
+	 */
+	protected abstract boolean disposeDateTypeFrameImpl();
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.dwarfeng.jier.mh4w.core.view.ctrl.GuiController#hasDateTypeFrame()
+	 */
+	@Override
+	public boolean hasDateTypeFrame() {
+		lock.readLock().lock();
+		try{
+			return Objects.nonNull(dateTypeFrame);
+		}finally {
+			lock.readLock().unlock();
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.dwarfeng.jier.mh4w.core.view.ctrl.GuiController#getDateTypeFrameVisible()
+	 */
+	@Override
+	public boolean getDateTypeFrameVisible() {
+		lock.readLock().lock();
+		try{
+			if(Objects.isNull(dateTypeFrame)) return false;
+			return dateTypeFrame.isVisible();
+		}finally {
+			lock.readLock().unlock();
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.dwarfeng.jier.mh4w.core.view.ctrl.GuiController#setDateTypeFrameVisible(boolean)
+	 */
+	@Override
+	public boolean setDateTypeFrameVisible(boolean aFlag) {
+		lock.writeLock().lock();
+		try{
+			if(Objects.isNull(dateTypeFrame)) return false;
+			if(aFlag){
+				dateTypeFrame.setLocationRelativeTo(mainFrame);
+			}
+			dateTypeFrame.setVisible(aFlag);
+			return true;
+		}finally {
+			lock.writeLock().unlock();
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.dwarfeng.jier.mh4w.core.view.ctrl.GuiController#getDateTypeFrameMutilang()
+	 */
+	@Override
+	public Mutilang getDateTypeFrameMutilang() {
+		lock.readLock().lock();
+		try{
+			if(Objects.isNull(dateTypeFrame)) return null;
+			return dateTypeFrame.getMutilang();
+		}finally {
+			lock.readLock().unlock();
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.dwarfeng.jier.mh4w.core.view.ctrl.GuiController#updateDateTypeFrameMutilang()
+	 */
+	@Override
+	public boolean updateDateTypeFrameMutilang() {
+		lock.writeLock().lock();
+		try{
+			if(Objects.isNull(dateTypeFrame)) return false;
+			dateTypeFrame.updateMutilang();
+			return true;
+		}finally {
+			lock.writeLock().unlock();
+		}
+	}
+	
+	
 	
 }

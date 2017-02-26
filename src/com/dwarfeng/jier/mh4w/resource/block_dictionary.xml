@@ -35,6 +35,13 @@
 		<dictionary value="reload_attr"/>
 		<dictionary value="hide_fail_frame"/>
 		<dictionary value="hide_detail_frame"/>
+		<dictionary value="show_date_type_frame"/>
+		<dictionary value="hide_date_type_frame"/>
+		<dictionary value="submit_date_type_entry"/>
+		<dictionary value="remove_date_type_entry"/>
+		<dictionary value="clear_date_type_entry"/>
+		<dictionary value="save_date_type_entry"/>
+		<dictionary value="load_date_type_entry"/>
 	</key>
 	<key value="show_attr_frame">
 		<dictionary value="initialize"/>
@@ -50,5 +57,46 @@
 	</key>
 	<key value="hide_detail_frame">
 		<dictionary value="initialize"/>
+	</key>
+	<key value="show_date_type_frame">
+		<dictionary value="initialize"/>
+	</key>
+	<key value="hide_date_type_frame">
+		<dictionary value="initialize"/>
+	</key>
+	<key value="submit_date_type_entry">
+		<dictionary value="initialize"/>
+		<dictionary value="remove_date_type_entry"/>
+		<dictionary value="clear_date_type_entry"/>
+		<dictionary value="save_date_type_entry"/>
+		<dictionary value="load_date_type_entry"/>
+	</key>
+	<key value="remove_date_type_entry">
+		<dictionary value="initialize"/>
+		<dictionary value="submit_date_type_entry"/>
+		<dictionary value="clear_date_type_entry"/>
+		<dictionary value="save_date_type_entry"/>
+		<dictionary value="load_date_type_entry"/>
+	</key>
+	<key value="clear_date_type_entry">
+		<dictionary value="initialize"/>
+		<dictionary value="submit_date_type_entry"/>
+		<dictionary value="remove_date_type_entry"/>
+		<dictionary value="save_date_type_entry"/>
+		<dictionary value="load_date_type_entry"/>
+	</key>
+		<key value="save_date_type_entry">
+		<dictionary value="initialize"/>
+		<dictionary value="submit_date_type_entry"/>
+		<dictionary value="remove_date_type_entry"/>
+		<dictionary value="clear_date_type_entry"/>
+		<dictionary value="load_date_type_entry"/>
+	</key>
+	<key value="load_date_type_entry">
+		<dictionary value="initialize"/>
+		<dictionary value="submit_date_type_entry"/>
+		<dictionary value="remove_date_type_entry"/>
+		<dictionary value="clear_date_type_entry"/>
+		<dictionary value="save_date_type_entry"/>
 	</key>
 </root>

@@ -2,6 +2,7 @@ package com.dwarfeng.jier.mh4w.core.util;
 
 import java.util.Objects;
 
+import com.dwarfeng.jier.mh4w.core.model.struct.CountDate;
 import com.dwarfeng.jier.mh4w.core.model.struct.DataFromXls;
 import com.dwarfeng.jier.mh4w.core.model.struct.Staff;
 import com.dwarfeng.jier.mh4w.core.model.struct.TimeSection;
@@ -51,5 +52,17 @@ public final class FormatUtil {
 	public static String formatDataFromXls(DataFromXls dataFromXls){
 		Objects.requireNonNull(dataFromXls, "入口参数 dataFromXls 不能为 null。");
 		return String.format("%s:%d", dataFromXls.getFileName(), dataFromXls.getRow());
+	}
+	
+	/**
+	 * 格式化统计日期对象。
+	 * @param countDate 指定的统计日期。
+	 * @return 指定的日期对象的格式化输出。
+	 * @throws NullPointerException 入口参数为 <code>null</code>。
+	 */
+	public static String formatCountDate(CountDate countDate){
+		Objects.requireNonNull(countDate, "入口参数 countDate 不能为 null。");
+		
+		return String.format("%04d - %02d - %02d", countDate.getYear(), countDate.getMonth(), countDate.getDay());
 	}
 }

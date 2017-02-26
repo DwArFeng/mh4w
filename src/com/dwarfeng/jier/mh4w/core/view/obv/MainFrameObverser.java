@@ -48,5 +48,10 @@ public interface MainFrameObverser extends Obverser{
 	 * 通知显示属性面板。
 	 */
 	public void fireShowAttrFrame();
+
+	/**
+	 * 通知显示日期类型面板。
+	 */
+	public void fireShowDateTypeFrame();
 	
 }

@@ -36,10 +36,12 @@ import com.dwarfeng.jier.mh4w.core.model.cm.BackgroundModel;
 import com.dwarfeng.jier.mh4w.core.model.cm.BlockModel;
 import com.dwarfeng.jier.mh4w.core.model.cm.CoreConfigModel;
 import com.dwarfeng.jier.mh4w.core.model.cm.DataListModel;
+import com.dwarfeng.jier.mh4w.core.model.cm.DateTypeModel;
 import com.dwarfeng.jier.mh4w.core.model.cm.DefaultBackgroundModel;
 import com.dwarfeng.jier.mh4w.core.model.cm.DefaultBlockModel;
 import com.dwarfeng.jier.mh4w.core.model.cm.DefaultCoreConfigModel;
 import com.dwarfeng.jier.mh4w.core.model.cm.DefaultDataListModel;
+import com.dwarfeng.jier.mh4w.core.model.cm.DefaultDateTypeModel;
 import com.dwarfeng.jier.mh4w.core.model.cm.DefaultFileSelectModel;
 import com.dwarfeng.jier.mh4w.core.model.cm.DefaultJobModel;
 import com.dwarfeng.jier.mh4w.core.model.cm.DefaultLoggerModel;
@@ -57,12 +59,15 @@ import com.dwarfeng.jier.mh4w.core.model.cm.StateModel;
 import com.dwarfeng.jier.mh4w.core.model.eum.BlockKey;
 import com.dwarfeng.jier.mh4w.core.model.eum.CoreConfig;
 import com.dwarfeng.jier.mh4w.core.model.eum.CountState;
+import com.dwarfeng.jier.mh4w.core.model.eum.DateType;
 import com.dwarfeng.jier.mh4w.core.model.eum.FailType;
 import com.dwarfeng.jier.mh4w.core.model.eum.LoggerStringKey;
 import com.dwarfeng.jier.mh4w.core.model.eum.ResourceKey;
 import com.dwarfeng.jier.mh4w.core.model.io.XlsOriginalAttendanceDataLoader;
 import com.dwarfeng.jier.mh4w.core.model.io.XlsOriginalWorkticketDataLoader;
 import com.dwarfeng.jier.mh4w.core.model.io.XmlBlockLoader;
+import com.dwarfeng.jier.mh4w.core.model.io.XmlDateTypeLoader;
+import com.dwarfeng.jier.mh4w.core.model.io.XmlDateTypeSaver;
 import com.dwarfeng.jier.mh4w.core.model.io.XmlJobLoader;
 import com.dwarfeng.jier.mh4w.core.model.io.XmlLoggerLoader;
 import com.dwarfeng.jier.mh4w.core.model.io.XmlMutilangLoader;
@@ -74,6 +79,7 @@ import com.dwarfeng.jier.mh4w.core.model.obv.MutilangAdapter;
 import com.dwarfeng.jier.mh4w.core.model.obv.MutilangObverser;
 import com.dwarfeng.jier.mh4w.core.model.struct.AbstractFlow;
 import com.dwarfeng.jier.mh4w.core.model.struct.AttendanceData;
+import com.dwarfeng.jier.mh4w.core.model.struct.CountDate;
 import com.dwarfeng.jier.mh4w.core.model.struct.DefaultFail;
 import com.dwarfeng.jier.mh4w.core.model.struct.DefaultFinishedFlowTaker;
 import com.dwarfeng.jier.mh4w.core.model.struct.DefaultJob;
@@ -82,7 +88,6 @@ import com.dwarfeng.jier.mh4w.core.model.struct.Fail;
 import com.dwarfeng.jier.mh4w.core.model.struct.FinishedFlowTaker;
 import com.dwarfeng.jier.mh4w.core.model.struct.Flow;
 import com.dwarfeng.jier.mh4w.core.model.struct.Job;
-import com.dwarfeng.jier.mh4w.core.model.struct.Mutilang;
 import com.dwarfeng.jier.mh4w.core.model.struct.OriginalAttendanceData;
 import com.dwarfeng.jier.mh4w.core.model.struct.OriginalWorkticketData;
 import com.dwarfeng.jier.mh4w.core.model.struct.ProcessException;
@@ -90,6 +95,7 @@ import com.dwarfeng.jier.mh4w.core.model.struct.Resource;
 import com.dwarfeng.jier.mh4w.core.model.struct.Shift;
 import com.dwarfeng.jier.mh4w.core.model.struct.TimeSection;
 import com.dwarfeng.jier.mh4w.core.model.struct.TransException;
+import com.dwarfeng.jier.mh4w.core.model.struct.UnsafeDateTypeEntry;
 import com.dwarfeng.jier.mh4w.core.model.struct.UnsafeJob;
 import com.dwarfeng.jier.mh4w.core.model.struct.UnsafeShift;
 import com.dwarfeng.jier.mh4w.core.model.struct.WorkticketData;
@@ -99,11 +105,14 @@ import com.dwarfeng.jier.mh4w.core.util.Mh4wUtil;
 import com.dwarfeng.jier.mh4w.core.view.ctrl.AbstractGuiController;
 import com.dwarfeng.jier.mh4w.core.view.ctrl.GuiController;
 import com.dwarfeng.jier.mh4w.core.view.gui.AttrFrame;
+import com.dwarfeng.jier.mh4w.core.view.gui.DateTypeFrame;
 import com.dwarfeng.jier.mh4w.core.view.gui.DetailFrame;
 import com.dwarfeng.jier.mh4w.core.view.gui.FailFrame;
 import com.dwarfeng.jier.mh4w.core.view.gui.MainFrame;
 import com.dwarfeng.jier.mh4w.core.view.obv.AttrFrameAdapter;
 import com.dwarfeng.jier.mh4w.core.view.obv.AttrFrameObverser;
+import com.dwarfeng.jier.mh4w.core.view.obv.DateTypeFrameAdapter;
+import com.dwarfeng.jier.mh4w.core.view.obv.DateTypeFrameObverser;
 import com.dwarfeng.jier.mh4w.core.view.obv.DetailFrameAdapter;
 import com.dwarfeng.jier.mh4w.core.view.obv.DetailFrameObverser;
 import com.dwarfeng.jier.mh4w.core.view.obv.FailFrameAdapter;
@@ -228,6 +237,7 @@ public final class Mh4w {
 		private DataListModel<Fail> failModel = new DefaultDataListModel<>();
 		private DataListModel<AttendanceData> attendanceDataModel = new DefaultDataListModel<>();
 		private DataListModel<WorkticketData> workticketDataModel = new DefaultDataListModel<>();
+		private DateTypeModel dateTypeModel = new DefaultDateTypeModel();
 		//structs
 		private FinishedFlowTaker finishedFlowTaker = new DefaultFinishedFlowTaker(backgroundModel, 
 				loggerModel.getLogger(), loggerMutilangModel.getMutilang());
@@ -247,7 +257,6 @@ public final class Mh4w {
 		private MutilangObverser labelMutilangObverser = new MutilangAdapter() {
 			@Override
 			public void fireUpdated() {
-				Mutilang mutilang = labelMutilangModel.getMutilang();
 				Mh4wUtil.invokeInEventQueue(new Runnable() {
 					@Override
 					public void run() {
@@ -255,6 +264,7 @@ public final class Mh4w {
 						guiController.updateDetailFrameMutilang();
 						guiController.updateAttrFrameMutilang();
 						guiController.updateFailFrameMutilang();
+						guiController.updateDateTypeFrameMutilang();
 					}
 				});
 			};
@@ -391,6 +401,31 @@ public final class Mh4w {
 				return true;
 			}
 
+			/*
+			 * (non-Javadoc)
+			 * @see com.dwarfeng.jier.mh4w.core.view.ctrl.AbstractGuiController#newDateTypeFrameImpl()
+			 */
+			@Override
+			protected DateTypeFrame newDateTypeFrameImpl() {
+				DateTypeFrame dateTypeFrame = new DateTypeFrame(
+						labelMutilangModel.getMutilang(),
+						dateTypeModel
+				);
+				dateTypeFrame.addObverser(dateTypeFrameObverser);
+				return dateTypeFrame;
+			}
+
+			/*
+			 * (non-Javadoc)
+			 * @see com.dwarfeng.jier.mh4w.core.view.ctrl.AbstractGuiController#disposeDateTypeFrameImpl()
+			 */
+			@Override
+			protected boolean disposeDateTypeFrameImpl() {
+				dateTypeFrame.removeObverser(dateTypeFrameObverser);
+				dateTypeFrame.dispose();
+				return true;
+			}
+
 		};
 		//GUI obversers
 		private final MainFrameObverser mainFrameObverser = new MainFrameAdapter() {
@@ -467,6 +502,15 @@ public final class Mh4w {
 				manager.getBackgroundModel().submit(flowProvider.newShowAttrFrameFlow());
 			};
 			
+			/*
+			 * (non-Javadoc)
+			 * @see com.dwarfeng.jier.mh4w.core.view.obv.MainFrameAdapter#fireShowDateTypeFrame()
+			 */
+			@Override
+			public void fireShowDateTypeFrame() {
+				manager.getBackgroundModel().submit(flowProvider.newShowDateTypeFrameFlow());
+			};
+			
 		};
 		private final DetailFrameObverser detailFrameObverser = new DetailFrameAdapter() {
 			
@@ -510,6 +554,63 @@ public final class Mh4w {
 			@Override
 			public void fireHideFailFrame() {
 				manager.getBackgroundModel().submit(flowProvider.newHideFailFrameFlow());
+			};
+			
+		};
+		private final DateTypeFrameObverser dateTypeFrameObverser = new DateTypeFrameAdapter() {
+			
+			/*
+			 * (non-Javadoc)
+			 * @see com.dwarfeng.jier.mh4w.core.view.obv.DateTypeFrameAdapter#fireHideDateTypeFrame()
+			 */
+			@Override
+			public void fireHideDateTypeFrame() {
+				manager.getBackgroundModel().submit(flowProvider.newHideDateTypeFrameFlow());
+			};
+			
+			/*
+			 * (non-Javadoc)
+			 * @see com.dwarfeng.jier.mh4w.core.view.obv.DateTypeFrameAdapter#fireDateTypeEntrySubmitted(com.dwarfeng.jier.mh4w.core.model.struct.CountDate, com.dwarfeng.jier.mh4w.core.model.eum.DateType)
+			 */
+			@Override
+			public void fireSubmitDateTypeEntry(CountDate key, DateType value) {
+				manager.getBackgroundModel().submit(flowProvider.newSubmitDateTypeEntryFlow(key, value));
+			};
+			
+			/*
+			 * (non-Javadoc)
+			 * @see com.dwarfeng.jier.mh4w.core.view.obv.DateTypeFrameAdapter#fireRemoveDateTypeEntry(com.dwarfeng.jier.mh4w.core.model.struct.CountDate)
+			 */
+			@Override
+			public void fireRemoveDateTypeEntry(CountDate key) {
+				manager.getBackgroundModel().submit(flowProvider.newRemoveDateTypeEntryFlow(key));
+			}
+
+			/*
+			 * (non-Javadoc)
+			 * @see com.dwarfeng.jier.mh4w.core.view.obv.DateTypeFrameAdapter#fireClearDateTypeEntry()
+			 */
+			@Override
+			public void fireClearDateTypeEntry() {
+				manager.getBackgroundModel().submit(flowProvider.newClearDateTypeEntryFlow());
+			}
+
+			/*
+			 * (non-Javadoc)
+			 * @see com.dwarfeng.jier.mh4w.core.view.obv.DateTypeFrameAdapter#fireSaveDateTypeEntry()
+			 */
+			@Override
+			public void fireSaveDateTypeEntry() {
+				manager.getBackgroundModel().submit(flowProvider.newSaveDateTypeEntryFlow());
+			}
+
+			/*
+			 * (non-Javadoc)
+			 * @see com.dwarfeng.jier.mh4w.core.view.obv.DateTypeFrameAdapter#fireLoadDateTypeEntry()
+			 */
+			@Override
+			public void fireLoadDateTypeEntry() {
+				manager.getBackgroundModel().submit(flowProvider.newLoadDateTypeEntryFlow());
 			};
 			
 		};
@@ -663,6 +764,13 @@ public final class Mh4w {
 		}
 
 		/**
+		 * @return the dateTypeModel
+		 */
+		public DateTypeModel getDateTypeModel() {
+			return dateTypeModel;
+		}
+
+		/**
 		 * @return the finishedFlowTaker
 		 */
 		public FinishedFlowTaker getFinishedFlowTaker() {
@@ -781,8 +889,71 @@ public final class Mh4w {
 			return new HideFailFrameFlow();
 		}
 
+		/**
+		 * 获取一个新的隐藏详细界面的流。
+		 * @return 新的隐藏详细界面的流。
+		 */
 		public Flow newHideDetailFrameFlow() {
 			return new HideDetailFrameFlow();
+		}
+
+		/**
+		 * 获取一个新的显示日期类型界面的流。
+		 * @return 新的显示日期类型界面的流。
+		 */
+		public Flow newShowDateTypeFrameFlow() {
+			return new ShowDateTypeFrameFlow();
+		}
+
+		/**
+		 * 获取一个新的隐藏日期类型界面的流。
+		 * @return 新的隐藏日期类型界面的流。
+		 */
+		public Flow newHideDateTypeFrameFlow() {
+			return new HideDateTypeFrameFlow();
+		}
+
+		/**
+		 * 获取一个新的提交日期类型入口的流。
+		 * @param key 入口的键。
+		 * @param value 入口的值。
+		 * @return 新的提交日期类型入口的流。
+		 */
+		public Flow newSubmitDateTypeEntryFlow(CountDate key, DateType value) {
+			return new SubmitDateTypeEntryFlow(key, value);
+		}
+
+		/**
+		 * 获取一个新的移除日期类型入口的流。
+		 * @param key 指定的键。
+		 * @return 新的移除日期类型入口的流。
+		 */
+		public Flow newRemoveDateTypeEntryFlow(CountDate key) {
+			return new RemoveDateTypeEntryFlow(key);
+		}
+
+		/**
+		 * 获取一个新的清除日期类型的流。
+		 * @return 新的清除日期类型的流。
+		 */
+		public Flow newClearDateTypeEntryFlow() {
+			return new ClearDateTypeEntryFlow();
+		}
+
+		/**
+		 * 获取一个新的保存日期类型的流。
+		 * @return 新的保存日期类型的流。
+		 */
+		public Flow newSaveDateTypeEntryFlow() {
+			return new SaveDateTypeEntryFlow();
+		}
+
+		/**
+		 * 获取一个新的读取日期类型的流。
+		 * @return 新的读取日期类型的流。
+		 */
+		public Flow newLoadDateTypeEntryFlow() {
+			return new LoadDateTypeEntryFlow();
 		}
 
 		/**
@@ -999,7 +1170,7 @@ public final class Mh4w {
 					
 					//加载程序的资源模型
 					info(LoggerStringKey.Mh4w_FlowProvider_3);
-					message(LoggerStringKey.Mh4w_FlowProvider_3);
+					
 					XmlResourceLoader resourceLoader = null;
 					try{
 						resourceLoader = new XmlResourceLoader(Mh4w.class.getResourceAsStream("/com/dwarfeng/jier/mh4w/resource/paths.xml"));
@@ -1185,10 +1356,12 @@ public final class Mh4w {
 						@Override
 						public void run() {
 							manager.getGuiController().newMainFrame();
-							manager.getGuiController().setMainFrameVisible(true);
 							manager.getGuiController().newDetailFrame();
 							manager.getGuiController().newAttrFrame();
 							manager.getGuiController().newFailFrame();
+							manager.getGuiController().newDateTypeFrame();
+							
+							manager.getGuiController().setMainFrameVisible(true);
 						}
 					});
 					
@@ -1222,6 +1395,7 @@ public final class Mh4w {
 					}
 					
 					info(LoggerStringKey.Mh4w_FlowProvider_11);
+					
 					exit();
 					
 				}catch (Exception e) {
@@ -1248,6 +1422,8 @@ public final class Mh4w {
 					if(getState() != RuntimeState.RUNNING){
 						throw new IllegalStateException("程序还未启动或已经结束");
 					}
+					
+					info(LoggerStringKey.Mh4w_FlowProvider_13);
 					
 					//决定根目录
 					File directory = new File(System.getProperty("user.dir"));
@@ -1324,6 +1500,8 @@ public final class Mh4w {
 						throw new IllegalStateException("程序还未启动或已经结束");
 					}
 					
+					info(LoggerStringKey.Mh4w_FlowProvider_13);
+					
 					//决定根目录
 					File directory = new File(System.getProperty("user.dir"));
 					manager.getFileSelectModel().getLock().writeLock().lock();
@@ -1399,6 +1577,8 @@ public final class Mh4w {
 						throw new IllegalStateException("程序还未启动或已经结束");
 					}
 					
+					info(LoggerStringKey.Mh4w_FlowProvider_22);
+					
 					manager.getFileSelectModel().setAttendanceFile(null);
 					manager.getFileSelectModel().setWorkticketFile(null);
 					
@@ -1412,6 +1592,15 @@ public final class Mh4w {
 					manager.getStateModel().setCountResultOutdated(false);
 					manager.getStateModel().setCountState(CountState.NOT_START);
 					manager.getStateModel().setReadyForCount(false);
+					
+					Mh4wUtil.invokeInEventQueue(new Runnable() {
+						@Override
+						public void run() {
+							manager.getGuiController().setDetailFrameVisible(false);
+							manager.getGuiController().setFailFrameVisible(false);
+							manager.getGuiController().setDetailButtonSelect(false, true);
+						}
+					});
 					
 					message(LoggerStringKey.Mh4w_FlowProvider_23);
 					
@@ -1480,6 +1669,7 @@ public final class Mh4w {
 					}
 					
 					info(LoggerStringKey.Mh4w_FlowProvider_27);
+					
 					Mh4wUtil.invokeInEventQueue(new Runnable() {
 						@Override
 						public void run() {
@@ -1516,6 +1706,8 @@ public final class Mh4w {
 						throw new IllegalStateException("程序还未启动或已经结束");
 					}
 					
+					info(LoggerStringKey.Mh4w_FlowProvider_41);
+					
 					/*
 					 * -------------------------- 统计算法 -------------------------
 					 * start：
@@ -1542,8 +1734,6 @@ public final class Mh4w {
 					 */
 					TimeMeasurer tm = new TimeMeasurer();
 					tm.start();
-					
-					info(LoggerStringKey.Mh4w_FlowProvider_41);
 					
 					//读取原始考勤数据
 					info(LoggerStringKey.Mh4w_FlowProvider_47);
@@ -1643,7 +1833,9 @@ public final class Mh4w {
 						@Override
 						public void run() {
 							manager.getGuiController().setDetailFrameVisible(true);
-							manager.getGuiController().setFailFrameVisible(true);
+							if(manager.getFailModel().size() > 0){
+								manager.getGuiController().setFailFrameVisible(true);
+							}
 							manager.getGuiController().setDetailButtonSelect(true, true);
 						}
 					});
@@ -1670,6 +1862,7 @@ public final class Mh4w {
 					}
 					
 					info(LoggerStringKey.Mh4w_FlowProvider_32);
+					
 					Mh4wUtil.invokeInEventQueue(new Runnable() {
 						@Override
 						public void run() {
@@ -1705,6 +1898,7 @@ public final class Mh4w {
 					}
 					
 					info(LoggerStringKey.Mh4w_FlowProvider_35);
+					
 					Mh4wUtil.invokeInEventQueue(new Runnable() {
 						@Override
 						public void run() {
@@ -1857,6 +2051,7 @@ public final class Mh4w {
 					}
 					
 					info(LoggerStringKey.Mh4w_FlowProvider_49);
+					
 					Mh4wUtil.invokeInEventQueue(new Runnable() {
 						@Override
 						public void run() {
@@ -1894,6 +2089,7 @@ public final class Mh4w {
 					}
 					
 					info(LoggerStringKey.Mh4w_FlowProvider_56);
+					
 					Mh4wUtil.invokeInEventQueue(new Runnable() {
 						@Override
 						public void run() {
@@ -1908,6 +2104,290 @@ public final class Mh4w {
 				}catch (Exception e) {
 					setThrowable(e);
 					message(LoggerStringKey.Mh4w_FlowProvider_58);
+				}
+			}
+			
+		}
+
+		private final class ShowDateTypeFrameFlow extends AbstractInnerFlow{
+		
+			public ShowDateTypeFrameFlow() {
+				super(BlockKey.SHOW_DATE_TYPE_FRAME);
+			}
+		
+			/*
+			 * (non-Javadoc)
+			 * @see com.dwarfeng.tp.core.control.Mh4w.FlowProvider.AbstractInnerFlow#processImpl()
+			 */
+			@Override
+			protected void processImpl() {
+				try{
+					if(getState() != RuntimeState.RUNNING){
+						throw new IllegalStateException("程序还未启动或已经结束");
+					}
+					
+					info(LoggerStringKey.Mh4w_FlowProvider_59);
+					
+					Mh4wUtil.invokeInEventQueue(new Runnable() {
+						@Override
+						public void run() {
+							manager.getGuiController().setDateTypeFrameVisible(true);
+						}
+					});
+					
+					message(LoggerStringKey.Mh4w_FlowProvider_60);
+					
+				}catch (Exception e) {
+					setThrowable(e);
+					message(LoggerStringKey.Mh4w_FlowProvider_61);
+				}
+			}
+			
+		}
+
+		private final class HideDateTypeFrameFlow extends AbstractInnerFlow{
+		
+			public HideDateTypeFrameFlow() {
+				super(BlockKey.HIDE_DATE_TYPE_FRAME);
+			}
+		
+			/*
+			 * (non-Javadoc)
+			 * @see com.dwarfeng.tp.core.control.Mh4w.FlowProvider.AbstractInnerFlow#processImpl()
+			 */
+			@Override
+			protected void processImpl() {
+				try{
+					if(getState() != RuntimeState.RUNNING){
+						throw new IllegalStateException("程序还未启动或已经结束");
+					}
+					
+					info(LoggerStringKey.Mh4w_FlowProvider_62);
+					
+					Mh4wUtil.invokeInEventQueue(new Runnable() {
+						@Override
+						public void run() {
+							manager.getGuiController().setDateTypeFrameVisible(false);
+						}
+					});
+					
+					message(LoggerStringKey.Mh4w_FlowProvider_63);
+					
+				}catch (Exception e) {
+					setThrowable(e);
+					message(LoggerStringKey.Mh4w_FlowProvider_64);
+				}
+			}
+			
+		}
+
+		private final class SubmitDateTypeEntryFlow extends AbstractMayChangeStateFlow{
+			
+			private final CountDate key;
+			private final DateType value;
+		
+			public SubmitDateTypeEntryFlow(CountDate key, DateType value) {
+				super(BlockKey.SUBMIT_DATE_TYPE_ENTRY);
+				this.key = key;
+				this.value = value;
+			}
+		
+			/*
+			 * (non-Javadoc)
+			 * @see com.dwarfeng.tp.core.control.Mh4w.FlowProvider.AbstractInnerFlow#processImpl()
+			 */
+			@Override
+			protected void processImpl() {
+				try{
+					if(getState() != RuntimeState.RUNNING){
+						throw new IllegalStateException("程序还未启动或已经结束");
+					}
+					
+					info(LoggerStringKey.Mh4w_FlowProvider_65);
+					
+					manager.getDateTypeModel().put(key, value);
+					
+					mayCountResultOutdated();
+					
+					message(LoggerStringKey.Mh4w_FlowProvider_66);
+					
+				}catch (Exception e) {
+					setThrowable(e);
+					message(LoggerStringKey.Mh4w_FlowProvider_67);
+				}
+			}
+			
+		}
+
+		private final class RemoveDateTypeEntryFlow extends AbstractMayChangeStateFlow{
+			
+			private final CountDate key;
+		
+			public RemoveDateTypeEntryFlow(CountDate key) {
+				super(BlockKey.RESET_COUNT);
+				this.key = key;
+			}
+		
+			/*
+			 * (non-Javadoc)
+			 * @see com.dwarfeng.tp.core.control.Mh4w.FlowProvider.AbstractInnerFlow#processImpl()
+			 */
+			@Override
+			protected void processImpl() {
+				try{
+					if(getState() != RuntimeState.RUNNING){
+						throw new IllegalStateException("程序还未启动或已经结束");
+					}
+					
+					info(LoggerStringKey.Mh4w_FlowProvider_68);
+					
+					manager.getDateTypeModel().remove(key);
+					
+					mayCountResultOutdated();
+					
+					message(LoggerStringKey.Mh4w_FlowProvider_69);
+					
+				}catch (Exception e) {
+					setThrowable(e);
+					message(LoggerStringKey.Mh4w_FlowProvider_70);
+				}
+			}
+			
+		}
+
+		private final class ClearDateTypeEntryFlow extends AbstractMayChangeStateFlow{
+			
+			public ClearDateTypeEntryFlow() {
+				super(BlockKey.CLEAR_DATE_TYPE_ENTRY);
+			}
+		
+			/*
+			 * (non-Javadoc)
+			 * @see com.dwarfeng.tp.core.control.Mh4w.FlowProvider.AbstractInnerFlow#processImpl()
+			 */
+			@Override
+			protected void processImpl() {
+				try{
+					if(getState() != RuntimeState.RUNNING){
+						throw new IllegalStateException("程序还未启动或已经结束");
+					}
+					
+					info(LoggerStringKey.Mh4w_FlowProvider_68);
+					
+					manager.getDateTypeModel().clear();
+					
+					mayCountResultOutdated();
+					
+					message(LoggerStringKey.Mh4w_FlowProvider_69);
+					
+				}catch (Exception e) {
+					setThrowable(e);
+					message(LoggerStringKey.Mh4w_FlowProvider_70);
+				}
+			}
+			
+		}
+
+		private final class SaveDateTypeEntryFlow extends AbstractInnerFlow{
+			
+			public SaveDateTypeEntryFlow() {
+				super(BlockKey.SAVE_DATE_TYPE_ENTRY);
+			}
+		
+			/*
+			 * (non-Javadoc)
+			 * @see com.dwarfeng.tp.core.control.Mh4w.FlowProvider.AbstractInnerFlow#processImpl()
+			 */
+			@Override
+			protected void processImpl() {
+				try{
+					if(getState() != RuntimeState.RUNNING){
+						throw new IllegalStateException("程序还未启动或已经结束");
+					}
+					
+					info(LoggerStringKey.Mh4w_FlowProvider_71);
+					
+					//保存日期类型信息。
+					XmlDateTypeSaver dateTypeSaver = null;
+					try{
+						dateTypeSaver = new XmlDateTypeSaver(getResource(ResourceKey.STORAGE_DATE_TYPE).openOutputStream());
+						dateTypeSaver.save(manager.getDateTypeModel());
+					}catch(IOException e){
+						warn(LoggerStringKey.Mh4w_FlowProvider_4, e);
+						getResource(ResourceKey.STORAGE_DATE_TYPE).reset();
+						dateTypeSaver = new XmlDateTypeSaver(getResource(ResourceKey.STORAGE_DATE_TYPE).openOutputStream());
+						dateTypeSaver.save(manager.getDateTypeModel());
+					}finally{
+						if(Objects.nonNull(dateTypeSaver)){
+							dateTypeSaver.close();
+						}
+					}
+					
+					message(LoggerStringKey.Mh4w_FlowProvider_72);
+					
+				}catch (Exception e) {
+					setThrowable(e);
+					message(LoggerStringKey.Mh4w_FlowProvider_73);
+				}
+			}
+			
+		}
+
+		private final class LoadDateTypeEntryFlow extends AbstractMayChangeStateFlow{
+			
+			public LoadDateTypeEntryFlow() {
+				super(BlockKey.LOAD_DATE_TYPE_ENTRY);
+			}
+		
+			/*
+			 * (non-Javadoc)
+			 * @see com.dwarfeng.tp.core.control.Mh4w.FlowProvider.AbstractInnerFlow#processImpl()
+			 */
+			@Override
+			protected void processImpl() {
+				try{
+					if(getState() != RuntimeState.RUNNING){
+						throw new IllegalStateException("程序还未启动或已经结束");
+					}
+					
+					info(LoggerStringKey.Mh4w_FlowProvider_74);
+					
+					//读取日期类型信息。
+					manager.getDateTypeModel().clear();
+					Set<UnsafeDateTypeEntry> unsafeDateTypeEntries = new LinkedHashSet<>();
+					XmlDateTypeLoader dateTypeLoader = null;
+					try{
+						dateTypeLoader = new XmlDateTypeLoader(getResource(ResourceKey.STORAGE_DATE_TYPE).openInputStream());
+						dateTypeLoader.load(unsafeDateTypeEntries);
+					}catch(IOException e){
+						warn(LoggerStringKey.Mh4w_FlowProvider_4, e);
+						getResource(ResourceKey.STORAGE_DATE_TYPE).reset();
+						dateTypeLoader = new XmlDateTypeLoader(getResource(ResourceKey.STORAGE_DATE_TYPE).openInputStream());
+						dateTypeLoader.load(unsafeDateTypeEntries);
+					}finally{
+						if(Objects.nonNull(dateTypeLoader)){
+							dateTypeLoader.close();
+						}
+					}
+					
+					for(UnsafeDateTypeEntry entry : unsafeDateTypeEntries){
+						try{
+							CountDate key = entry.getCountDate();
+							DateType value = entry.getDateType();
+							
+							manager.getDateTypeModel().put(key, value);
+						}catch (ProcessException e) {
+							warn(LoggerStringKey.Mh4w_FlowProvider_77, e);
+						}
+					}
+					
+					mayCountResultOutdated();
+					
+					message(LoggerStringKey.Mh4w_FlowProvider_75);
+					
+				}catch (Exception e) {
+					setThrowable(e);
+					message(LoggerStringKey.Mh4w_FlowProvider_76);
 				}
 			}
 			
@@ -1968,10 +2448,13 @@ public final class Mh4w {
 						manager.getGuiController().setAttrFrameVisible(false);
 						manager.getGuiController().setDetailFrameVisible(false);
 						manager.getGuiController().setFailFrameVisible(false);
+						manager.getGuiController().setDateTypeFrameVisible(false);
+						
 						manager.getGuiController().disposeMainFrame();
 						manager.getGuiController().disposeAttrFrame();
 						manager.getGuiController().disposeDetialFrame();
 						manager.getGuiController().disposeFailFrame();
+						manager.getGuiController().disposeDateTypeFrame();
 					}
 				});
 			} catch (InvocationTargetException ignore) {
