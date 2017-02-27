@@ -30,6 +30,7 @@ public enum BlockKey implements Name{
 	CLEAR_DATE_TYPE_ENTRY(new DefaultName("clear_date_type_entry")),
 	SAVE_DATE_TYPE_ENTRY(new DefaultName("save_date_type_entry")),
 	LOAD_DATE_TYPE_ENTRY(new DefaultName("load_date_type_entry")),
+	EXPORT_COUNT_RESULT(new DefaultName("export_count_result")),
 
 	;
 

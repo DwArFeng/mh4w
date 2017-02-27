@@ -1,6 +1,7 @@
 package com.dwarfeng.jier.mh4w.core.control;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
@@ -22,7 +23,6 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 
 import com.dwarfeng.dutil.basic.io.CT;
-import com.dwarfeng.dutil.basic.mea.TimeMeasurer;
 import com.dwarfeng.dutil.basic.prog.DefaultVersion;
 import com.dwarfeng.dutil.basic.prog.RuntimeState;
 import com.dwarfeng.dutil.basic.prog.Version;
@@ -63,6 +63,7 @@ import com.dwarfeng.jier.mh4w.core.model.eum.DateType;
 import com.dwarfeng.jier.mh4w.core.model.eum.FailType;
 import com.dwarfeng.jier.mh4w.core.model.eum.LoggerStringKey;
 import com.dwarfeng.jier.mh4w.core.model.eum.ResourceKey;
+import com.dwarfeng.jier.mh4w.core.model.io.XlsCountResultsSaver;
 import com.dwarfeng.jier.mh4w.core.model.io.XlsOriginalAttendanceDataLoader;
 import com.dwarfeng.jier.mh4w.core.model.io.XlsOriginalWorkticketDataLoader;
 import com.dwarfeng.jier.mh4w.core.model.io.XmlBlockLoader;
@@ -80,6 +81,7 @@ import com.dwarfeng.jier.mh4w.core.model.obv.MutilangObverser;
 import com.dwarfeng.jier.mh4w.core.model.struct.AbstractFlow;
 import com.dwarfeng.jier.mh4w.core.model.struct.AttendanceData;
 import com.dwarfeng.jier.mh4w.core.model.struct.CountDate;
+import com.dwarfeng.jier.mh4w.core.model.struct.CountResult;
 import com.dwarfeng.jier.mh4w.core.model.struct.DataFromXls;
 import com.dwarfeng.jier.mh4w.core.model.struct.DefaultFail;
 import com.dwarfeng.jier.mh4w.core.model.struct.DefaultFinishedFlowTaker;
@@ -239,6 +241,7 @@ public final class Mh4w {
 		private DataListModel<AttendanceData> attendanceDataModel = new DefaultDataListModel<>();
 		private DataListModel<WorkticketData> workticketDataModel = new DefaultDataListModel<>();
 		private DateTypeModel dateTypeModel = new DefaultDateTypeModel();
+		private DataListModel<CountResult> countResultModel = new DefaultDataListModel<>();
 		//structs
 		private FinishedFlowTaker finishedFlowTaker = new DefaultFinishedFlowTaker(backgroundModel, 
 				loggerModel.getLogger(), loggerMutilangModel.getMutilang());
@@ -333,7 +336,8 @@ public final class Mh4w {
 						originalAttendanceDataModel,
 						originalWorkticketDataModel,
 						attendanceDataModel,
-						workticketDataModel
+						workticketDataModel,
+						countResultModel
 				);
 				detailFrame.addObverser(detailFrameObverser);
 				return detailFrame;
@@ -524,6 +528,15 @@ public final class Mh4w {
 			@Override
 			public void fireHideDetailFrame() {
 				manager.getBackgroundModel().submit(flowProvider.newHideDetailFrameFlow());
+			};
+			
+			/*
+			 * (non-Javadoc)
+			 * @see com.dwarfeng.jier.mh4w.core.view.obv.DetailFrameAdapter#fireExportCountResult()
+			 */
+			@Override
+			public void fireExportCountResult() {
+				manager.getBackgroundModel().submit(flowProvider.newExportCountResultFlow());
 			};
 			
 		};
@@ -774,6 +787,13 @@ public final class Mh4w {
 		}
 
 		/**
+		 * @return the countResultModel
+		 */
+		public DataListModel<CountResult> getCountResultModel() {
+			return countResultModel;
+		}
+
+		/**
 		 * @return the finishedFlowTaker
 		 */
 		public FinishedFlowTaker getFinishedFlowTaker() {
@@ -960,6 +980,14 @@ public final class Mh4w {
 		}
 
 		/**
+		 * 获取一个新的导出统计结果的流。
+		 * @return 新的导出统计结果的流。
+		 */
+		public Flow newExportCountResultFlow() {
+			return new ExportCountResultFlow();
+		}
+
+		/**
 		 * 内部抽象过程。
 		 * <p> 定义常用的内部用方法。
 		 * @author DwArFeng
@@ -985,6 +1013,7 @@ public final class Mh4w {
 			 * @param totleProgress 总进度。
 			 * @param determinateFlag 是否为进度已知的流程。
 			 * @param cancelableFlag 是否能够被取消。
+			 * @throws NullPointerException 入口参数为 <code>null</code>。
 			 */
 			public AbstractInnerFlow(BlockKey blockKey, int progress, int totleProgress, boolean determinateFlag, boolean cancelableFlag ){
 				super(progress, totleProgress, determinateFlag, cancelableFlag);
@@ -1096,24 +1125,26 @@ public final class Mh4w {
 		private abstract class AbstractMayChangeStateFlow extends AbstractInnerFlow{
 
 			/**
-			 * 
-			 * @param blockKey
+			 * 新实例。
+			 * @param blockKey 阻挡键，不能为 <code>null</code>。
+			 * @throws NullPointerException 入口参数为 <code>null</code>。
 			 */
 			public AbstractMayChangeStateFlow(BlockKey blockKey) {
 				super(blockKey);
 			}
 			
 			/**
-			 * @param blockKey
-			 * @param progress
-			 * @param totleProgress
-			 * @param determinateFlag
-			 * @param cancelableFlag
+			 * 新实例。
+			 * @param blockKey 阻挡键，不能为 <code>null</code>。
+			 * @param progress 当前进度。
+			 * @param totleProgress 总进度。
+			 * @param determinateFlag 是否为进度已知的流程。
+			 * @param cancelableFlag 是否能够被取消。
+			 * @throws NullPointerException 入口参数为 <code>null</code>。
 			 */
 			public AbstractMayChangeStateFlow(BlockKey blockKey, int progress, int totleProgress,
 					boolean determinateFlag, boolean cancelableFlag) {
 				super(blockKey, progress, totleProgress, determinateFlag, cancelableFlag);
-				// TODO Auto-generated constructor stub
 			}
 
 			/**
@@ -1456,7 +1487,7 @@ public final class Mh4w {
 					int fileSelectionMode = JFileChooser.FILES_ONLY;
 					
 					//获得文件
-					File[] files = manager.getGuiController().askFile(directory, fileFilters, acceptAllFileFilter, mutiSelectionEnabled, fileSelectionMode);
+					File[] files = manager.getGuiController().askFile4Open(directory, fileFilters, acceptAllFileFilter, mutiSelectionEnabled, fileSelectionMode);
 					
 					//将获取的文件设置在模型中并输出记录
 					if(files.length == 0){
@@ -1533,7 +1564,7 @@ public final class Mh4w {
 					int fileSelectionMode = JFileChooser.FILES_ONLY;
 					
 					//获得文件
-					File[] files = manager.getGuiController().askFile(directory, fileFilters, acceptAllFileFilter, mutiSelectionEnabled, fileSelectionMode);
+					File[] files = manager.getGuiController().askFile4Open(directory, fileFilters, acceptAllFileFilter, mutiSelectionEnabled, fileSelectionMode);
 					
 					//将获取的文件设置在模型中并输出记录
 					if(files.length == 0){
@@ -1589,6 +1620,7 @@ public final class Mh4w {
 					manager.getOriginalWorkticketDataModel().clear();
 					manager.getAttendanceDataModel().clear();
 					manager.getWorkticketDataModel().clear();
+					manager.getCountResultModel().clear();
 					
 					manager.getFailModel().clear();
 					
@@ -1743,13 +1775,14 @@ public final class Mh4w {
 					 *  exit
 					 */
 					
-					//读取原始考勤数据
+					//清除残留数据
 					info(LoggerStringKey.Mh4w_FlowProvider_47);
 					message(LoggerStringKey.Mh4w_FlowProvider_47);
 					manager.getOriginalAttendanceDataModel().clear();
 					manager.getOriginalWorkticketDataModel().clear();
 					manager.getAttendanceDataModel().clear();
 					manager.getWorkticketDataModel().clear();
+					manager.getCountResultModel().clear();
 					manager.getFailModel().clear();
 					manager.getStateModel().setCountResultOutdated(false);
 					
@@ -1839,17 +1872,20 @@ public final class Mh4w {
 					}
 					
 					//统计数据，并把统计结果放在统计结果模型中
-					
-					//TODO 实现统计算法
+					info(LoggerStringKey.Mh4w_FlowProvider_79);
+					for(CountResult countResult : CountUtil.countData(manager.getAttendanceDataModel(),
+							manager.getWorkticketDataModel())){
+						manager.getCountResultModel().add(countResult);
+					}
 					
 					//更新状态
 					manager.getStateModel().setCountState(CountState.STARTED_WAITING);
 					
-					message(LoggerStringKey.Mh4w_FlowProvider_16);
+					message(LoggerStringKey.Mh4w_FlowProvider_83);
 					
 				}catch (Exception e) {
 					setThrowable(e);
-					message(LoggerStringKey.Mh4w_FlowProvider_14);
+					message(LoggerStringKey.Mh4w_FlowProvider_84);
 				}finally {
 					Mh4wUtil.invokeInEventQueue(new Runnable() {
 						@Override
@@ -2413,6 +2449,82 @@ public final class Mh4w {
 				}catch (Exception e) {
 					setThrowable(e);
 					message(LoggerStringKey.Mh4w_FlowProvider_76);
+				}
+			}
+			
+		}
+
+		private final class ExportCountResultFlow extends AbstractInnerFlow{
+			
+			public ExportCountResultFlow() {
+				super(BlockKey.SAVE_DATE_TYPE_ENTRY);
+			}
+		
+			/*
+			 * (non-Javadoc)
+			 * @see com.dwarfeng.tp.core.control.Mh4w.FlowProvider.AbstractInnerFlow#processImpl()
+			 */
+			@Override
+			protected void processImpl() {
+				try{
+					if(getState() != RuntimeState.RUNNING){
+						throw new IllegalStateException("程序还未启动或已经结束");
+					}
+					
+					info(LoggerStringKey.Mh4w_FlowProvider_80);
+					
+					//决定根目录
+					File directory = new File(System.getProperty("user.dir"));
+					manager.getFileSelectModel().getLock().writeLock().lock();
+					try{
+						if(Objects.nonNull(manager.getFileSelectModel().getWorkticketFile())){
+							directory = manager.getFileSelectModel().getWorkticketFile().getParentFile();
+						}else if (Objects.nonNull(manager.getFileSelectModel().getAttendanceFile())) {
+							directory = manager.getFileSelectModel().getAttendanceFile().getParentFile();
+						}
+					}finally {
+						manager.getFileSelectModel().getLock().writeLock().unlock();
+					}
+
+					//决定文件筛选器
+					FileFilter[] fileFilters = new FileFilter[]{
+							new FileNameExtensionFilter(getLabel(LoggerStringKey.Mh4w_FlowProvider_15), "xls")
+					};
+					
+					//不接受所有文件筛选器
+					boolean acceptAllFileFilter = false;
+					
+					//获得文件
+					File file = manager.getGuiController().askFile4Save(directory, fileFilters, acceptAllFileFilter, "xls");
+					
+					//将获取的文件设置在模型中并输出记录
+					if(Objects.isNull(file)){
+						info(LoggerStringKey.Mh4w_FlowProvider_17);
+						return;
+					}else{
+						manager.getFileSelectModel().setAttendanceFile(file);
+						formatInfo(LoggerStringKey.Mh4w_FlowProvider_18, file.getAbsolutePath());
+					}
+					
+					XlsCountResultsSaver countResultsSaver = null;
+					try{
+						countResultsSaver = new XlsCountResultsSaver(new FileOutputStream(file), 
+								manager.getLabelMutilangModel().getMutilang());
+						countResultsSaver.save(new XlsCountResultsSaver.CountResults(manager.getAttendanceDataModel(),
+								manager.getWorkticketDataModel(), manager.getCountResultModel(), manager.getJobModel()));
+					}finally {
+						if(Objects.nonNull(countResultsSaver)){
+							countResultsSaver.close();
+						}
+					}
+					
+					manager.getStateModel().setCountState(CountState.STARTED_EXPORTED);
+					
+					message(LoggerStringKey.Mh4w_FlowProvider_81);
+					
+				}catch (Exception e) {
+					setThrowable(e);
+					message(LoggerStringKey.Mh4w_FlowProvider_82);
 				}
 			}
 			

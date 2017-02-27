@@ -74,18 +74,23 @@ public class FocusTraversalOnArray extends FocusTraversalPolicy {
 	// FocusTraversalPolicy
 	//
 	////////////////////////////////////////////////////////////////////////////
+	@Override
 	public Component getComponentAfter(Container container, Component component) {
 		return cycle(component, 1);
 	}
+	@Override
 	public Component getComponentBefore(Container container, Component component) {
 		return cycle(component, -1);
 	}
+	@Override
 	public Component getFirstComponent(Container container) {
 		return m_Components[0];
 	}
+	@Override
 	public Component getLastComponent(Container container) {
 		return m_Components[m_Components.length - 1];
 	}
+	@Override
 	public Component getDefaultComponent(Container container) {
 		return getFirstComponent(container);
 	}

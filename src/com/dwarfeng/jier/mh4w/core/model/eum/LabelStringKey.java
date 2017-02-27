@@ -24,6 +24,7 @@ public enum LabelStringKey implements Name{
 	DetailFrame_3(new DefaultName("DetailFrame.3")),
 	DetailFrame_4(new DefaultName("DetailFrame.4")),
 	DetailFrame_5(new DefaultName("DetailFrame.5")),
+	DetailFrame_6(new DefaultName("DetailFrame.6")),
 
 	AttrFrame_1(new DefaultName("AttrFrame.1")),
 	AttrFrame_2(new DefaultName("AttrFrame.2")),
@@ -109,6 +110,19 @@ public enum LabelStringKey implements Name{
 	JWorkticketDataPanel_4(new DefaultName("JWorkticketDataPanel.4")),
 	JWorkticketDataPanel_5(new DefaultName("JWorkticketDataPanel.5")),
 	JWorkticketDataPanel_6(new DefaultName("JWorkticketDataPanel.6")),
+
+	JCountResultPanel_1(new DefaultName("JCountResultPanel.1")),
+	JCountResultPanel_2(new DefaultName("JCountResultPanel.2")),
+	JCountResultPanel_3(new DefaultName("JCountResultPanel.3")),
+	JCountResultPanel_4(new DefaultName("JCountResultPanel.4")),
+	JCountResultPanel_5(new DefaultName("JCountResultPanel.5")),
+	JCountResultPanel_6(new DefaultName("JCountResultPanel.6")),
+	JCountResultPanel_7(new DefaultName("JCountResultPanel.7")),
+	JCountResultPanel_8(new DefaultName("JCountResultPanel.8")),
+	
+	JxlCountResultsSaver_1(new DefaultName("JxlCountResultsSaver.1")),
+	JxlCountResultsSaver_2(new DefaultName("JxlCountResultsSaver.2")),
+	JxlCountResultsSaver_3(new DefaultName("JxlCountResultsSaver.3")),
 
 	;
 

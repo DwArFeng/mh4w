@@ -4,8 +4,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Objects;
@@ -24,16 +24,18 @@ import com.dwarfeng.jier.mh4w.core.model.io.XlsOriginalAttendanceDataLoader;
 import com.dwarfeng.jier.mh4w.core.model.io.XlsOriginalWorkticketDataLoader;
 import com.dwarfeng.jier.mh4w.core.model.struct.AttendanceData;
 import com.dwarfeng.jier.mh4w.core.model.struct.CountDate;
+import com.dwarfeng.jier.mh4w.core.model.struct.CountResult;
 import com.dwarfeng.jier.mh4w.core.model.struct.Counter;
 import com.dwarfeng.jier.mh4w.core.model.struct.DataFromXls;
 import com.dwarfeng.jier.mh4w.core.model.struct.DataWithPerson;
 import com.dwarfeng.jier.mh4w.core.model.struct.DefaultAttendanceData;
+import com.dwarfeng.jier.mh4w.core.model.struct.DefaultCountResult;
 import com.dwarfeng.jier.mh4w.core.model.struct.DefaultWorkticketData;
 import com.dwarfeng.jier.mh4w.core.model.struct.Job;
 import com.dwarfeng.jier.mh4w.core.model.struct.OriginalAttendanceData;
 import com.dwarfeng.jier.mh4w.core.model.struct.OriginalWorkticketData;
-import com.dwarfeng.jier.mh4w.core.model.struct.Shift;
 import com.dwarfeng.jier.mh4w.core.model.struct.Person;
+import com.dwarfeng.jier.mh4w.core.model.struct.Shift;
 import com.dwarfeng.jier.mh4w.core.model.struct.TimeSection;
 import com.dwarfeng.jier.mh4w.core.model.struct.TransException;
 import com.dwarfeng.jier.mh4w.core.model.struct.WorkticketData;
@@ -363,9 +365,9 @@ public final class CountUtil {
 		Objects.requireNonNull(attendanceDataModel, "入口参数 attendanceDataModel 不能为 null。");
 		Objects.requireNonNull(workticketDataModel, "入口参数 workticketDataModel 不能为 null。");
 
-		Map<String, Map<Person, PersonConsistentElement>> struct = new HashMap<>();
+		Map<String, Map<Person, PersonConsistentElement>> struct = new LinkedHashMap<>();
 		//开辟新的集合持有数据，以防对模型的锁造成频繁的占用。
-		Set<PersonConsistentComplex> datas = new HashSet<>();
+		Set<PersonConsistentComplex> datas = new LinkedHashSet<>();
 		
 		//读取数据
 		attendanceDataModel.getLock().readLock().lock();
@@ -390,7 +392,7 @@ public final class CountUtil {
 			//根据工号获取 struct 中的值
 			String workNumber = data.dataWithPerson.getPerson().getWorkNumber();
 			if(! struct.containsKey(workNumber)){
-				struct.put(workNumber, new HashMap<>());
+				struct.put(workNumber, new LinkedHashMap<>());
 			}
 			Map<Person, PersonConsistentElement> personInfo = struct.get(workNumber);
 			
@@ -405,7 +407,7 @@ public final class CountUtil {
 		}
 		
 		//定义不一致集合。
-		Set<DataFromXls> unconsistents = new HashSet<>();
+		Set<DataFromXls> unconsistents = new LinkedHashSet<>();
 		
 		//循环检查每个工号，观察其是否含有多个对应的员工。
 		for(Map<Person, PersonConsistentElement> personMap : struct.values()){
@@ -451,7 +453,7 @@ public final class CountUtil {
 	}
 	
 	private final static class PersonConsistentElement{
-		public final Set<DataFromXls> datas = new HashSet<>();
+		public final Set<DataFromXls> datas = new LinkedHashSet<>();
 		public final Counter counter = new Counter();
 	}
 	
@@ -467,15 +469,14 @@ public final class CountUtil {
 		Objects.requireNonNull(attendanceDataModel, "入口参数 attendanceDataModel 不能为 null。");
 		Objects.requireNonNull(workticketDataModel, "入口参数 workticketDataModel 不能为 null。");
 		
-		//开辟映射空间。
-		Map<Person, DataFromXls> attendanceMap = new HashMap<>();
-		Map<Person, DataFromXls> workticketMap = new HashMap<>();
+		//开辟新的集合持有数据，以防对模型的锁造成频繁的占用。
+		Set<AttendanceData> attendanceDatas = new LinkedHashSet<>();
+		Set<WorkticketData> workticketDatas = new LinkedHashSet<>();
 		
-		//将出勤信息和工票信息添加到映射空间中
 		attendanceDataModel.getLock().readLock().lock();
 		try{
 			for(AttendanceData data : attendanceDataModel){
-				attendanceMap.put(data.getPerson(), data);
+				attendanceDatas.add(data);
 			}
 		}finally {
 			attendanceDataModel.getLock().readLock().unlock();
@@ -483,28 +484,125 @@ public final class CountUtil {
 		workticketDataModel.getLock().readLock().lock();
 		try{
 			for(WorkticketData data : workticketDataModel){
-				workticketMap.put(data.getPerson(), data);
+				workticketDatas.add(data);
 			}
 		}finally{
 			workticketDataModel.getLock().readLock().unlock();
 		}
 		
+		//开辟映射空间。
+		Map<String, DataFromXls> attendanceMap = new LinkedHashMap<>();
+		Map<String, DataFromXls> workticketMap = new LinkedHashMap<>();
+		
+		//将出勤信息和工票信息添加到映射空间中
+		for(AttendanceData data : attendanceDatas){
+			attendanceMap.put(data.getWorkNumber(), data);
+		}
+		for(WorkticketData data : workticketDatas){
+			workticketMap.put(data.getWorkNumber(), data);
+		}
+		
 		//开辟不匹配集合
-		Set<DataFromXls> unmatches = new HashSet<>();
+		Set<DataFromXls> unmatches = new LinkedHashSet<>();
 		
 		//对比映射工件的键，并把不匹配的键对应的值添加到不匹配集合中
-		for(Person person : attendanceMap.keySet()){
-			if(! workticketMap.containsKey(person)){
-				unmatches.add(attendanceMap.get(person));
+		for(AttendanceData data : attendanceDatas){
+			if(! workticketMap.containsKey(data.getWorkNumber())){
+				unmatches.add(data);
 			}
 		}
-		for(Person person : workticketMap.keySet()){
-			if(! attendanceMap.containsKey(person)){
-				unmatches.add(workticketMap.get(person));
+		for(WorkticketData data : workticketDatas){
+			if(! attendanceMap.containsKey(data.getWorkNumber())){
+				unmatches.add(data);
 			}
 		}
 		
 		return unmatches;
+		
+	}
+	
+	/**
+	 * 统计数据。
+	 * @param attendanceDataModel 指定的考勤数据模型。
+	 * @param workticketDataModel 指定的工票数据模型。
+	 * @return 由指定数据得到的统计结果。
+	 * @throws NullPointerException 入口参数为 <code>null</code>。
+	 */
+	public static Set<CountResult> countData(DataListModel<AttendanceData> attendanceDataModel,
+			DataListModel<WorkticketData> workticketDataModel){
+		Objects.requireNonNull(attendanceDataModel, "入口参数 attendanceDataModel 不能为 null。");
+		Objects.requireNonNull(workticketDataModel, "入口参数 workticketDataModel 不能为 null。");
+		
+		//以工号为主键归档数据
+		Map<String, Set<AttendanceData>> attendanceDataMap = new LinkedHashMap<>();
+		Map<String, Set<WorkticketData>> workticketDataMap = new LinkedHashMap<>();
+		attendanceDataModel.getLock().readLock().lock();
+		try{
+			for(AttendanceData data : attendanceDataModel){
+				if(! attendanceDataMap.containsKey(data.getWorkNumber())){
+					attendanceDataMap.put(data.getWorkNumber(), new LinkedHashSet<>());
+				}
+				attendanceDataMap.get(data.getWorkNumber()).add(data);
+			}
+		}finally {
+			attendanceDataModel.getLock().readLock().unlock();
+		}
+		workticketDataModel.getLock().readLock().lock();
+		try{
+			for(WorkticketData data : workticketDataModel){
+				if(! workticketDataMap.containsKey(data.getWorkNumber())){
+					workticketDataMap.put(data.getWorkNumber(), new LinkedHashSet<>());
+				}
+				workticketDataMap.get(data.getWorkNumber()).add(data);
+			}
+		}finally{
+			workticketDataModel.getLock().readLock().unlock();
+		}
+		
+		//开辟统计结果集合
+		Set<CountResult> countResults = new LinkedHashSet<>();
+		
+		//根据归档映射循环统计每一个工号下的统计结果
+		for(String workNumber : attendanceDataMap.keySet()){
+			Set<AttendanceData> attendanceDatas = attendanceDataMap.get(workNumber);
+			Set<WorkticketData> workticketDatas = workticketDataMap.get(workNumber);
+			
+			//对简单的统计量进行提取
+			Person person = null;
+			double equivalentWorkTime = 0;
+			double originalWorkTime = 0;
+			double workticket = 0;
+			Map<Job, Double> workticketMap = new LinkedHashMap<>();
+			Map<Job, Double> workticketPercentMap = new LinkedHashMap<>();
+			
+			for(AttendanceData data : attendanceDatas){
+				if(Objects.isNull(person)) person = data.getPerson();
+				equivalentWorkTime += data.getEquivalentWorkTime();
+				originalWorkTime += data.getOriginalWorkTime();
+			}
+			
+			for(WorkticketData data : workticketDatas){
+				if(Objects.isNull(person)) person = data.getPerson();
+				workticket += data.getWorkticket();
+				workticketMap.put(data.getJob(), data.getWorkticket());
+			}
+			
+			for(Map.Entry<Job, Double> entry : workticketMap.entrySet()){
+				workticketPercentMap.put(entry.getKey(), workticket == 0 ? 0 : entry.getValue() / workticket);
+			}
+			
+			//计算 较复杂的统计量  -  value
+			double value = 0;
+			double b = workticket / originalWorkTime;
+			double c = b * equivalentWorkTime;
+			for(Map.Entry<Job, Double> entry : workticketPercentMap.entrySet()){
+				value += c * entry.getValue() * entry.getKey().getValuePerHour();
+			}
+			
+			countResults.add(new DefaultCountResult(person, equivalentWorkTime, originalWorkTime, workticket, workticketMap, workticketPercentMap, value));
+		}
+		
+		return countResults;
 		
 	}
 	

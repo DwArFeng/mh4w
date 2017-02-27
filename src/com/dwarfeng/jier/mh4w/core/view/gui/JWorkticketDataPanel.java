@@ -1,4 +1,4 @@
-package com.dwarfeng.jier.mh4w.core;
+package com.dwarfeng.jier.mh4w.core.view.gui;
 
 import java.awt.BorderLayout;
 import java.util.Objects;
@@ -19,6 +19,7 @@ import com.dwarfeng.jier.mh4w.core.model.struct.Mutilang;
 import com.dwarfeng.jier.mh4w.core.model.struct.MutilangSupported;
 import com.dwarfeng.jier.mh4w.core.model.struct.WorkticketData;
 import com.dwarfeng.jier.mh4w.core.util.Constants;
+import com.dwarfeng.jier.mh4w.core.util.FormatUtil;
 import com.dwarfeng.jier.mh4w.core.util.Mh4wUtil;
 
 public class JWorkticketDataPanel extends JPanel implements MutilangSupported{
@@ -76,7 +77,7 @@ public class JWorkticketDataPanel extends JPanel implements MutilangSupported{
 			}
 			if(column == 4 || column == 5){
 				setHorizontalAlignment(JLabel.RIGHT);
-				setText((double) value + "");
+				setText(FormatUtil.formatDouble((double) value));
 			}
 			return this;
 		};

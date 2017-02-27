@@ -1,14 +1,12 @@
 package com.dwarfeng.jier.mh4w.core.view.obv;
 
 /**
- * 详细界面观察器适配器。
+ * 统计结果观察器适配器。
  * @author DwArFeng
  * @since 0.0.0-alpha
  */
-public abstract class DetailFrameAdapter implements DetailFrameObverser {
+public abstract class CountResultPanalAdapter implements CountResultPanelObverser{
 
-	@Override
-	public void fireHideDetailFrame() {}
 	@Override
 	public void fireExportCountResult() {}
 	

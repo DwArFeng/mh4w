@@ -58,9 +58,9 @@ public interface GuiController extends ExternalReadWriteThreadSafe{
 	public boolean updateMainFrameMutilang();
 	
 	/**
-	 * 向用户询问一个或数个文件。
+	 * 向用户询问一个或数个文件用于打开。
 	 * <p> 该方法是阻塞式的，在用户选择完文件之前，会一直阻塞。
-	 * 因此，请不要在 EventQueue 线程中调用这个方法。
+	 * 该方法允许在非 EventQueue 线程下调用。
 	 * @param directory 指定的根目录的位置。
 	 * @param fileFilters 指定的文件筛选器。
 	 * @param acceptAllFileFilter 是否允许选择全部文件。
@@ -68,8 +68,20 @@ public interface GuiController extends ExternalReadWriteThreadSafe{
 	 * @param fileSelectionMode 文件选择模式。
 	 * @return 用户选择的文件。
 	 */
-	public File[] askFile(File directory, FileFilter[] fileFilters, boolean acceptAllFileFilter, boolean mutiSelectionEnabled,
+	public File[] askFile4Open(File directory, FileFilter[] fileFilters, boolean acceptAllFileFilter, boolean mutiSelectionEnabled,
 			int fileSelectionMode);
+	
+	/**
+	 * 向用户询问一个文件用于保存
+	 * <p> 该方法是阻塞式的，在用户选择完文件之前，会一直阻塞。
+	 * 该方法允许在非 EventQueue 线程下调用。
+	 * @param directory 指定的根目录的位置。
+	 * @param fileFilters 指定的文件筛选器。
+	 * @param acceptAllFileFilter 是否允许选择全部文件。
+	 * @param defaultFileExtension 当文件没有扩展名的时候使用的默认扩展名。
+	 * @return 用户选择的文件。
+	 */
+	public File askFile4Save(File directory, FileFilter[] fileFilters, boolean acceptAllFileFilter, String defaultFileExtension);
 	
 	/**
 	 * 解除考勤文件面板的点击锁定。

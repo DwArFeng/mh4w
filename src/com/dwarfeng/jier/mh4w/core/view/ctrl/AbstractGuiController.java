@@ -1,5 +1,6 @@
 package com.dwarfeng.jier.mh4w.core.view.ctrl;
 
+import java.awt.Component;
 import java.awt.Point;
 import java.io.File;
 import java.util.Objects;
@@ -182,10 +183,10 @@ public abstract class AbstractGuiController implements GuiController {
 	
 	/*
 	 * (non-Javadoc)
-	 * @see com.dwarfeng.jier.mh4w.core.view.ctrl.GuiController#askFile()
+	 * @see com.dwarfeng.jier.mh4w.core.view.ctrl.GuiController#askFile4Open(java.io.File, javax.swing.filechooser.FileFilter[], boolean, boolean, int)
 	 */
 	@Override
-	public File[] askFile(File directory, FileFilter[] fileFilters, boolean acceptAllFileFilter, boolean mutiSelectionEnabled,
+	public File[] askFile4Open(File directory, FileFilter[] fileFilters, boolean acceptAllFileFilter, boolean mutiSelectionEnabled,
 			int fileSelectionMode) {
 		lock.writeLock().lock();
 		try{
@@ -216,6 +217,49 @@ public abstract class AbstractGuiController implements GuiController {
 		}
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see com.dwarfeng.jier.mh4w.core.view.ctrl.GuiController#askFile4Save(java.io.File, javax.swing.filechooser.FileFilter[], boolean)
+	 */
+	@Override
+	public File askFile4Save(File directory, FileFilter[] fileFilters, boolean acceptAllFileFilter, String defaultFileExtension) {
+		lock.writeLock().lock();
+		try{
+			Component component = null;
+			
+			if(Objects.nonNull(detailFrame) || detailFrame.isVisible()){
+				component = detailFrame;
+			}else if(Objects.nonNull(mainFrame) || mainFrame.isVisible()){
+				component = mainFrame;
+			}
+			
+			JFileChooser chooser = new JFileChooser();
+			chooser.setCurrentDirectory(directory);
+			chooser.setAcceptAllFileFilterUsed(acceptAllFileFilter);
+			chooser.setMultiSelectionEnabled(false);
+			chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+			if(Objects.nonNull(fileFilters)){
+				for(FileFilter fileFilter : fileFilters){
+					chooser.setFileFilter(fileFilter);
+				}
+			}
+
+			int status = chooser.showSaveDialog(component);
+			if(status == JFileChooser.APPROVE_OPTION){
+				File file = chooser.getSelectedFile();
+				if(Objects.nonNull(defaultFileExtension) && file.getName().indexOf(".") < 0){
+					String fileName = file.getName() + (defaultFileExtension.startsWith(".") ? defaultFileExtension : "." + defaultFileExtension);
+					file = new File(file.getParentFile(), fileName);
+				}
+				return file;
+			}else{
+				return null;
+			}
+		}finally {
+			lock.writeLock().unlock();
+		}
+	}
+	
 	/*
 	 * (non-Javadoc)
 	 * @see com.dwarfeng.jier.mh4w.core.view.ctrl.GuiController#attendanceClickUnlock()

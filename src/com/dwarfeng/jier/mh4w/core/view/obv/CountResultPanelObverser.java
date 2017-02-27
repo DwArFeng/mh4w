@@ -3,19 +3,14 @@ package com.dwarfeng.jier.mh4w.core.view.obv;
 import com.dwarfeng.dutil.basic.prog.Obverser;
 
 /**
- * 详细面板观察器。
+ * 统计结果面板适配器。
  * @author DwArFeng
  * @since 0.0.0-alpha
  */
-public interface DetailFrameObverser extends Obverser{
+public interface CountResultPanelObverser extends Obverser{
 
 	/**
-	 * 通知隐藏详细界面。
-	 */
-	public void fireHideDetailFrame();
-
-	/**
-	 * 通知导出统计结果
+	 * 通知导出统计结果。
 	 */
 	public void fireExportCountResult();
 

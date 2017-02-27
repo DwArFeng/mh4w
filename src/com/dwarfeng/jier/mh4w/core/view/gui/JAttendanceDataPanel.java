@@ -78,7 +78,7 @@ public class JAttendanceDataPanel extends JPanel implements MutilangSupported{
 			}
 			if(column == 7 || column == 8){
 				setHorizontalAlignment(JLabel.RIGHT);
-				setText((double) value + "");
+				setText(FormatUtil.formatDouble((double) value));
 			}
 			if(column == 6){
 				setHorizontalAlignment(JLabel.LEFT);

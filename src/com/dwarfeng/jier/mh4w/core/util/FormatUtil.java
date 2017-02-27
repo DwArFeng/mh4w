@@ -65,4 +65,13 @@ public final class FormatUtil {
 		
 		return String.format("%04d - %02d - %02d", countDate.getYear(), countDate.getMonth(), countDate.getDay());
 	}
+	
+	/**
+	 * 格式化双精度浮点数。
+	 * @param value 指定的双精度浮点数。
+	 * @return 指定的双精度浮点数的格式化输出。
+	 */
+	public static String formatDouble(double value){
+		return String.format("%.2f", value);
+	}
 }
