@@ -135,13 +135,17 @@ import com.dwarfeng.jier.mh4w.core.view.obv.MainFrameObverser;
  */
 public final class Mh4w implements ObverserSet<Mh4wObverser>{
 	
+	public static void main(String[] args) {
+		CT.trace(Mh4w.VERSION);
+	}
+	
 	/**ÊµÀýµÄ°æ±¾*/
 	public final static Version VERSION = new DefaultVersion.Builder()
 			.type(VersionType.RELEASE)
 			.firstVersion((byte) 1)
 			.secondVersion((byte) 1)
 			.thirdVersion((byte) 0)
-			.buildDate("20170303")
+			.buildDate("20170304")
 			.buildVersion('A')
 			.type(VersionType.RELEASE)
 			.build();

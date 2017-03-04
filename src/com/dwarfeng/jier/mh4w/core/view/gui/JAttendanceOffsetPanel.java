@@ -4,9 +4,14 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Image;
 import java.awt.Insets;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -15,29 +20,34 @@ import java.util.Set;
 import java.util.WeakHashMap;
 
 import javax.swing.AbstractAction;
-import javax.swing.AbstractListModel;
 import javax.swing.DefaultListCellRenderer;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.ListCellRenderer;
 import javax.swing.ListSelectionModel;
-import javax.swing.MutableComboBoxModel;
+import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.swing.plaf.basic.BasicComboBoxEditor;
+import javax.swing.event.PopupMenuEvent;
+import javax.swing.event.PopupMenuListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 
+import com.dwarfeng.dutil.basic.gui.swing.MuaListModel;
 import com.dwarfeng.dutil.basic.prog.ObverserSet;
 import com.dwarfeng.jier.mh4w.core.model.cm.DataListModel;
+import com.dwarfeng.jier.mh4w.core.model.eum.ImageKey;
+import com.dwarfeng.jier.mh4w.core.model.eum.ImageSize;
 import com.dwarfeng.jier.mh4w.core.model.eum.LabelStringKey;
 import com.dwarfeng.jier.mh4w.core.model.obv.ListOperateAdapter;
 import com.dwarfeng.jier.mh4w.core.model.obv.ListOperateObverser;
@@ -50,14 +60,17 @@ import com.dwarfeng.jier.mh4w.core.model.struct.Person;
 import com.dwarfeng.jier.mh4w.core.model.struct.UnsafeAttendanceOffset;
 import com.dwarfeng.jier.mh4w.core.util.Constants;
 import com.dwarfeng.jier.mh4w.core.util.FormatUtil;
+import com.dwarfeng.jier.mh4w.core.util.ImageUtil;
 import com.dwarfeng.jier.mh4w.core.util.Mh4wUtil;
 import com.dwarfeng.jier.mh4w.core.view.obv.AttendanceOffsetPanelObverser;
 import com.sun.glass.events.KeyEvent;
 
 public class JAttendanceOffsetPanel extends JPanel implements MutilangSupported, ObverserSet<AttendanceOffsetPanelObverser> {
 
-	/**comboBox所允许的最小宽度*/
-	private static final int MIN_COMBOBOX_WIDTH = 150;
+	private static final long serialVersionUID = -469470576808053138L;
+
+	/**personSelectTextField所允许的最小宽度*/
+	private static final int MIN_PERSON_SELECT_TEXT_FIELD_WIDTH = 150;
 	
 	/**观察器集合*/
 	private final Set<AttendanceOffsetPanelObverser> obversers = Collections.newSetFromMap(new WeakHashMap<>());
@@ -72,17 +85,24 @@ public class JAttendanceOffsetPanel extends JPanel implements MutilangSupported,
 	private final JTextField timeTextField;
 	private final JTextField descriptionTextField;
 	private final JButton submitButton;
-	private final JComboBox<Person> comboBox;
 	private final JLabel timeLabel;
 	private final JLabel descritionLabel;
 	private final JButton clearButton;
 	private final JButton loadButton;
 	private final JButton saveButton;
+	private final JPopupMenu popup;
+	private final JPersonPopupPanel personPanel;
+	private final JTextField personSelectTextField;
+	private final JButton personSelectButton;
+	private final JPanel panel;
+	private final Image arrow;
 	
 	/**
-	 * 非 final 域
+	 * 非 final 域。
 	 */
-	private int comboBoxWidth = 0;
+	private Person selectedPerson = null;
+	private String filterString = "";
+	private boolean textAdjustFlag = false;
 	
 	/*
 	 * 各模型。
@@ -93,6 +113,7 @@ public class JAttendanceOffsetPanel extends JPanel implements MutilangSupported,
 	/*
 	 * 视图模型以及渲染
 	 */
+	private final List<Person> personList = new ArrayList<>();
 	private final DefaultTableModel tableModel = new DefaultTableModel(){
 
 		private static final long serialVersionUID = 1995931789304479415L;
@@ -115,7 +136,6 @@ public class JAttendanceOffsetPanel extends JPanel implements MutilangSupported,
 			return false;
 		};
 	};
-	private final InnerComboBoxModel comboBoxModel = new InnerComboBoxModel();
 	private final TableCellRenderer tableRenderer = new DefaultTableCellRenderer(){
 		
 		private static final long serialVersionUID = -2854380488244617595L;
@@ -133,22 +153,20 @@ public class JAttendanceOffsetPanel extends JPanel implements MutilangSupported,
 			return this;
 		};
 	};
-	private final ListCellRenderer<Object> comboBoxRenderer = new DefaultListCellRenderer(){
-	
-		private static final long serialVersionUID = -6046116864760471615L;
+	private final ListCellRenderer<Object> listRenderer = new DefaultListCellRenderer(){
+		
+		private static final long serialVersionUID = 8124941868994157832L;
 
 		@Override
 		public java.awt.Component getListCellRendererComponent(javax.swing.JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
 			super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-			//该类型转换是安全的
-			if(Objects.nonNull(value)){
-				setText(FormatUtil.formatPerson((Person) value));
-			}
+			//此处转换是安全的。
+			setText(Objects.isNull(value) ? "" : FormatUtil.formatPerson((Person) value));
 			return this;
 		};
 		
 	};
-	private final InnerComboBoxEditor comboBoxEditor = new InnerComboBoxEditor();
+	private final MuaListModel<Person> listModel = new MuaListModel<>();
 	
 	/*
 	 * 各模型的观察器。
@@ -235,13 +253,8 @@ public class JAttendanceOffsetPanel extends JPanel implements MutilangSupported,
 			Mh4wUtil.invokeInEventQueue(new Runnable() {
 				@Override
 				public void run() {
-					int size = comboBoxModel.getSize();
-					comboBoxModel.insertElementAt(value.getPerson(), index);
-					if(size == 0 && comboBoxModel.getSize() == 1){
-						comboBox.setSelectedIndex(0);
-					}
-					checkComboBoxWidth();
-					comboBox.setPreferredSize(new Dimension(Math.max(MIN_COMBOBOX_WIDTH, comboBoxWidth), comboBox.getPreferredSize().height));
+					personList.add(value.getPerson());
+					adjustWork();
 				}
 			});
 		}
@@ -255,10 +268,9 @@ public class JAttendanceOffsetPanel extends JPanel implements MutilangSupported,
 			Mh4wUtil.invokeInEventQueue(new Runnable() {
 				@Override
 				public void run() {
-					comboBoxModel.removeElementAt(index);
-					comboBoxModel.insertElementAt(newValue.getPerson(), index);
-					checkComboBoxWidth();
-					comboBox.setPreferredSize(new Dimension(Math.max(MIN_COMBOBOX_WIDTH, comboBoxWidth), comboBox.getPreferredSize().height));
+					
+					personList.set(index, newValue.getPerson());
+					adjustWork();
 				}
 			});
 		}
@@ -272,9 +284,8 @@ public class JAttendanceOffsetPanel extends JPanel implements MutilangSupported,
 			Mh4wUtil.invokeInEventQueue(new Runnable() {
 				@Override
 				public void run() {
-					comboBoxModel.removeElementAt(index);
-					checkComboBoxWidth();
-					comboBox.setPreferredSize(new Dimension(Math.max(MIN_COMBOBOX_WIDTH, comboBoxWidth), comboBox.getPreferredSize().height));
+					personList.remove(index);
+					adjustWork();
 				}
 			});
 		}
@@ -288,15 +299,21 @@ public class JAttendanceOffsetPanel extends JPanel implements MutilangSupported,
 			Mh4wUtil.invokeInEventQueue(new Runnable() {
 				@Override
 				public void run() {
-					comboBoxModel.clear();
-					checkComboBoxWidth();
-					comboBox.setPreferredSize(new Dimension(Math.max(MIN_COMBOBOX_WIDTH, comboBoxWidth), comboBox.getPreferredSize().height));
+					personList.clear();
+					adjustWork();
 				}
 			});
 		}
 		
+		private void adjustWork(){
+			textAdjustFlag = true;
+			personSelectTextField.setText("");
+			textAdjustFlag = false;
+			maySelectFirstPerson();
+			fitPersonSelectTextFieldWidth();
+		}
+		
 	};
-
 	/**
 	 * 新实例。
 	 */
@@ -315,7 +332,9 @@ public class JAttendanceOffsetPanel extends JPanel implements MutilangSupported,
 		Objects.requireNonNull(mutilang, "入口参数 mutilang 不能为 null。");
 		
 		this.mutilang = mutilang;
-			
+		
+		arrow = ImageUtil.getImage(ImageKey.ARROW, ImageSize.ICON_SMALL);
+		
 		setLayout(new BorderLayout(0, 0));
 		
 		JScrollPane scrollPane = new JScrollPane();
@@ -328,9 +347,7 @@ public class JAttendanceOffsetPanel extends JPanel implements MutilangSupported,
 		table.getTableHeader().setReorderingAllowed(false);
 		table.getInputMap(JComponent.WHEN_FOCUSED).put(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0), "remove");
 		table.getActionMap().put("remove", new AbstractAction() {
-			
 			private static final long serialVersionUID = 7760542975339282553L;
-
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				int index = table.getSelectedRow();
@@ -351,43 +368,160 @@ public class JAttendanceOffsetPanel extends JPanel implements MutilangSupported,
 		
 		scrollPane.setViewportView(table);
 
-		JPanel panel = new JPanel();
+		panel = new JPanel();
 		add(panel, BorderLayout.SOUTH);
 		GridBagLayout gbl_panel = new GridBagLayout();
-		gbl_panel.columnWidths = new int[]{0, 0, 0, 0};
-		gbl_panel.rowHeights = new int[]{0, 0, 0};
-		gbl_panel.columnWeights = new double[]{0.0, 0.0, 1.0, Double.MIN_VALUE};
+		gbl_panel.columnWidths = new int[]{0, 8, 0, 0, 0};
+		gbl_panel.rowHeights = new int[]{16, 0, 0};
+		gbl_panel.columnWeights = new double[]{0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE};
 		gbl_panel.rowWeights = new double[]{0.0, 0.0, Double.MIN_VALUE};
 		panel.setLayout(gbl_panel);
 		
-		comboBox = new JComboBox<>();
-		comboBox.setEditable(true);
-		comboBox.setEditor(comboBoxEditor);
-		comboBox.setModel(comboBoxModel);
-		comboBox.setRenderer(comboBoxRenderer);
-		GridBagConstraints gbc_comboBox = new GridBagConstraints();
-		gbc_comboBox.insets = new Insets(0, 0, 5, 5);
-		gbc_comboBox.fill = GridBagConstraints.HORIZONTAL;
-		gbc_comboBox.gridx = 0;
-		gbc_comboBox.gridy = 0;
-		panel.add(comboBox, gbc_comboBox);
+		personSelectTextField = new JTextField();
+		personSelectTextField.setAutoscrolls(false);
+		personSelectTextField.getDocument().addDocumentListener(new DocumentListener() {
+			@Override
+			public void removeUpdate(DocumentEvent e) {
+				update();
+			}
+			@Override
+			public void insertUpdate(DocumentEvent e) {
+				update();
+			}
+			@Override
+			public void changedUpdate(DocumentEvent e) {
+				update();
+			}
+			private void update(){
+				if(textAdjustFlag) return;
+				filterString = personSelectTextField.getText();
+				updateFilter();
+				maySelectFirstPerson();
+				if(! popup.isVisible()){
+					showPersonPanel();
+				}
+			}
+		});
+		personSelectTextField.getInputMap(JComponent.WHEN_FOCUSED).put(
+				KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0), "previousPerson");
+		personSelectTextField.getInputMap(JComponent.WHEN_FOCUSED).put(
+				KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0), "nextPerson");
+		personSelectTextField.getInputMap(JComponent.WHEN_FOCUSED).put(
+				KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "confirmPerson");
+		personSelectTextField.getInputMap(JComponent.WHEN_FOCUSED).put(
+				KeyStroke.getKeyStroke(KeyEvent.VK_BACKSPACE, InputEvent.CTRL_MASK), "resetPerson");
+		personSelectTextField.getInputMap(JComponent.WHEN_FOCUSED).put(
+				KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), "hidePopup");
+		personSelectTextField.getActionMap().put("previousPerson", new AbstractAction() {
+			private static final long serialVersionUID = -7236020602549865514L;
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				int index = personPanel.getList().getSelectedIndex();
+				if(index > 0){
+					personPanel.getList().setSelectedIndex(index - 1);
+					personPanel.getList().ensureIndexIsVisible(index - 1);
+				}
+			}
+		});
+		personSelectTextField.getActionMap().put("nextPerson", new AbstractAction() {
+			private static final long serialVersionUID = -5891070508133564157L;
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				int index = personPanel.getList().getSelectedIndex();
+				if(index < listModel.getSize() - 1){
+					personPanel.getList().setSelectedIndex(index + 1);
+					personPanel.getList().ensureIndexIsVisible(index + 1);
+				}
+			}
+		});
+		personSelectTextField.getActionMap().put("confirmPerson", new AbstractAction() {
+			private static final long serialVersionUID = 7137591399348273480L;
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				Person person = personPanel.getList().getSelectedValue();
+				if(Objects.nonNull(person)){
+					selectedPerson = person;
+					textAdjustFlag = true;
+					personSelectTextField.setText(FormatUtil.formatPerson(person));
+					textAdjustFlag = false;
+					if(popup.isVisible()){
+						popup.setVisible(false);
+					}
+				}
+			}
+		});
+		personSelectTextField.getActionMap().put("resetPerson", new AbstractAction() {
+			private static final long serialVersionUID = -7675696809088020204L;
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				textAdjustFlag = true;
+				personSelectTextField.setText("");
+				textAdjustFlag = false;
+				filterString = "";
+				updateFilter();
+				maySelectFirstPerson();
+				if(! popup.isVisible()){
+					showPersonPanel();
+				}
+			}
+		});
+		personSelectTextField.getActionMap().put("hidePopup", new AbstractAction() {
+			private static final long serialVersionUID = -852449548511340389L;
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if(popup.isVisible()){
+					popup.setVisible(false);
+				}
+			}
+		});
+		
+		GridBagConstraints gbc_personSelectTextField = new GridBagConstraints();
+		gbc_personSelectTextField.insets = new Insets(0, 0, 5, 0);
+		gbc_personSelectTextField.fill = GridBagConstraints.HORIZONTAL;
+		gbc_personSelectTextField.gridx = 0;
+		gbc_personSelectTextField.gridy = 0;
+		panel.add(personSelectTextField, gbc_personSelectTextField);
+		
+		personSelectButton = new JButton();
+		personSelectButton.setBorder(null);
+		personSelectButton.setIcon(new ImageIcon(arrow));
+		personSelectButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				textAdjustFlag = true;
+				personSelectTextField.setText("");
+				textAdjustFlag = false;
+				filterString = "";
+				updateFilter();
+				maySelectFirstPerson();
+				if(! popup.isVisible()){
+					showPersonPanel();
+				}
+			}
+		});
+		GridBagConstraints gbc_btnNewButton = new GridBagConstraints();
+		gbc_btnNewButton.fill = GridBagConstraints.BOTH;
+		gbc_btnNewButton.insets = new Insets(0, 0, 5, 5);
+		gbc_btnNewButton.gridx = 1;
+		gbc_btnNewButton.gridy = 0;
+		panel.add(personSelectButton, gbc_btnNewButton);
 		
 		timeLabel = new JLabel();
 		timeLabel.setText(getLabel(LabelStringKey.JAttendanceOffsetPanel_5));
 		GridBagConstraints gbc_timeLabel = new GridBagConstraints();
 		gbc_timeLabel.insets = new Insets(0, 0, 5, 5);
 		gbc_timeLabel.anchor = GridBagConstraints.EAST;
-		gbc_timeLabel.gridx = 1;
+		gbc_timeLabel.gridx = 2;
 		gbc_timeLabel.gridy = 0;
 		panel.add(timeLabel, gbc_timeLabel);
 		
 		timeTextField = new JTextField();
-		GridBagConstraints gbc_textField = new GridBagConstraints();
-		gbc_textField.insets = new Insets(0, 0, 5, 0);
-		gbc_textField.fill = GridBagConstraints.HORIZONTAL;
-		gbc_textField.gridx = 2;
-		gbc_textField.gridy = 0;
-		panel.add(timeTextField, gbc_textField);
+		GridBagConstraints gbc_timeTextField = new GridBagConstraints();
+		gbc_timeTextField.insets = new Insets(0, 0, 5, 0);
+		gbc_timeTextField.fill = GridBagConstraints.HORIZONTAL;
+		gbc_timeTextField.gridx = 3;
+		gbc_timeTextField.gridy = 0;
+		panel.add(timeTextField, gbc_timeTextField);
 		timeTextField.setColumns(10);
 		
 		submitButton = new JButton();
@@ -395,50 +529,47 @@ public class JAttendanceOffsetPanel extends JPanel implements MutilangSupported,
 		submitButton.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(
 				KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "submit");
 		submitButton.getActionMap().put("submit", new AbstractAction() {
-			
 			private static final long serialVersionUID = 7760542975339282553L;
-
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if(Objects.isNull(comboBox.getSelectedItem())) return;
-				//此处转换是安全的。
-				Person person = (Person) comboBox.getSelectedItem();
-				fireSubmitAttendanceOffset(new DefaultUnsafeAttendanceOffset(person.getName(), person.getDepartment(), 
-						person.getWorkNumber(), timeTextField.getText(), descriptionTextField.getText()));
+				if(Objects.isNull(selectedPerson)) return;
+				fireSubmitAttendanceOffset(new DefaultUnsafeAttendanceOffset(selectedPerson.getName(), 
+						selectedPerson.getDepartment(), selectedPerson.getWorkNumber(), timeTextField.getText(), 
+						descriptionTextField.getText()));
 			}
 		});
 		submitButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if(Objects.isNull(comboBox.getSelectedItem())) return;
-				//此处转换是安全的。
-				Person person = (Person) comboBox.getSelectedItem();
-				fireSubmitAttendanceOffset(new DefaultUnsafeAttendanceOffset(person.getName(), person.getDepartment(), 
-						person.getWorkNumber(), timeTextField.getText(), descriptionTextField.getText()));
+				if(Objects.isNull(selectedPerson)) return;
+				fireSubmitAttendanceOffset(new DefaultUnsafeAttendanceOffset(selectedPerson.getName(),
+						selectedPerson.getDepartment(), selectedPerson.getWorkNumber(), timeTextField.getText(), 
+						descriptionTextField.getText()));
 			}
 		});
-		GridBagConstraints gbc_btnNewButton = new GridBagConstraints();
-		gbc_btnNewButton.insets = new Insets(0, 0, 0, 5);
-		gbc_btnNewButton.fill = GridBagConstraints.BOTH;
-		gbc_btnNewButton.gridx = 0;
-		gbc_btnNewButton.gridy = 1;
-		panel.add(submitButton, gbc_btnNewButton);
+		GridBagConstraints gbc_submitButton = new GridBagConstraints();
+		gbc_submitButton.gridwidth = 2;
+		gbc_submitButton.insets = new Insets(0, 0, 0, 5);
+		gbc_submitButton.fill = GridBagConstraints.BOTH;
+		gbc_submitButton.gridx = 0;
+		gbc_submitButton.gridy = 1;
+		panel.add(submitButton, gbc_submitButton);
 		
 		descritionLabel = new JLabel();
 		descritionLabel.setText(getLabel(LabelStringKey.JAttendanceOffsetPanel_6));
 		GridBagConstraints gbc_descritionLabel = new GridBagConstraints();
 		gbc_descritionLabel.insets = new Insets(0, 0, 0, 5);
 		gbc_descritionLabel.anchor = GridBagConstraints.EAST;
-		gbc_descritionLabel.gridx = 1;
+		gbc_descritionLabel.gridx = 2;
 		gbc_descritionLabel.gridy = 1;
 		panel.add(descritionLabel, gbc_descritionLabel);
 		
 		descriptionTextField = new JTextField();
-		GridBagConstraints gbc_textField_1 = new GridBagConstraints();
-		gbc_textField_1.fill = GridBagConstraints.HORIZONTAL;
-		gbc_textField_1.gridx = 2;
-		gbc_textField_1.gridy = 1;
-		panel.add(descriptionTextField, gbc_textField_1);
+		GridBagConstraints gbc_descriptionTextField = new GridBagConstraints();
+		gbc_descriptionTextField.fill = GridBagConstraints.HORIZONTAL;
+		gbc_descriptionTextField.gridx = 3;
+		gbc_descriptionTextField.gridy = 1;
+		panel.add(descriptionTextField, gbc_descriptionTextField);
 		descriptionTextField.setColumns(10);
 		
 		JPanel panel_1 = new JPanel();
@@ -473,12 +604,12 @@ public class JAttendanceOffsetPanel extends JPanel implements MutilangSupported,
 				fireSaveAttendanceOffset();
 			}
 		});
-		GridBagConstraints gbc_btnNewButton_2 = new GridBagConstraints();
-		gbc_btnNewButton_2.fill = GridBagConstraints.BOTH;
-		gbc_btnNewButton_2.insets = new Insets(0, 0, 5, 0);
-		gbc_btnNewButton_2.gridx = 0;
-		gbc_btnNewButton_2.gridy = 2;
-		panel_1.add(saveButton, gbc_btnNewButton_2);
+		GridBagConstraints gbc_saveButton = new GridBagConstraints();
+		gbc_saveButton.fill = GridBagConstraints.BOTH;
+		gbc_saveButton.insets = new Insets(0, 0, 5, 0);
+		gbc_saveButton.gridx = 0;
+		gbc_saveButton.gridy = 2;
+		panel_1.add(saveButton, gbc_saveButton);
 		
 		loadButton = new JButton();
 		loadButton.addActionListener(new ActionListener() {
@@ -488,12 +619,33 @@ public class JAttendanceOffsetPanel extends JPanel implements MutilangSupported,
 			}
 		});
 		loadButton.setText(getLabel(LabelStringKey.JAttendanceOffsetPanel_9));
-		GridBagConstraints gbc_button = new GridBagConstraints();
-		gbc_button.fill = GridBagConstraints.BOTH;
-		gbc_button.insets = new Insets(0, 0, 5, 0);
-		gbc_button.gridx = 0;
-		gbc_button.gridy = 3;
-		panel_1.add(loadButton, gbc_button);
+		GridBagConstraints gbc_btnNewButton1 = new GridBagConstraints();
+		gbc_btnNewButton1.fill = GridBagConstraints.BOTH;
+		gbc_btnNewButton1.insets = new Insets(0, 0, 5, 0);
+		gbc_btnNewButton1.gridx = 0;
+		gbc_btnNewButton1.gridy = 3;
+		panel_1.add(loadButton, gbc_btnNewButton1);
+		
+		personPanel = new JPersonPopupPanel();
+		personPanel.setPreferredSize(new Dimension(personSelectButton.getPreferredSize().width, 
+				personPanel.getPreferredSize().height));
+		
+		popup = new JPopupMenu();
+		popup.setFocusable(false);
+		popup.addPopupMenuListener(new PopupMenuListener() {
+			
+			@Override
+			public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
+			}
+			@Override
+			public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
+			}
+			@Override
+			public void popupMenuCanceled(PopupMenuEvent e) {
+				personSelectTextField.requestFocus();
+			}
+		});
+		popup.add(personPanel);
 		
 		if(Objects.nonNull(attendanceOffsetModel)){
 			attendanceOffsetModel.addObverser(attendanceOffsetObverser);
@@ -518,13 +670,14 @@ public class JAttendanceOffsetPanel extends JPanel implements MutilangSupported,
 			countResultModel.getLock().readLock().lock();
 			try{
 				for(CountResult countResult : countResultModel){
-					comboBoxModel.addElement(countResult.getPerson());
+					personList.add(countResult.getPerson());
 				}
+				fitPersonSelectTextFieldWidth();
+				updateFilter();
+				maySelectFirstPerson();
 			}finally {
 				countResultModel.getLock().readLock().unlock();
 			}
-			checkComboBoxWidth();
-			comboBox.setPreferredSize(new Dimension(Math.max(MIN_COMBOBOX_WIDTH, comboBoxWidth), comboBox.getPreferredSize().height));
 		}
 		
 		this.countResultModel = countResultModel;
@@ -645,7 +798,12 @@ public class JAttendanceOffsetPanel extends JPanel implements MutilangSupported,
 	 * @param countResultModel the countResultModel to set
 	 */
 	public void setCountResultModel(DataListModel<CountResult> countResultModel) {
-		comboBoxModel.clear();
+		personList.clear();
+		listModel.clear();
+		textAdjustFlag = true;
+		personSelectTextField.setText("");
+		textAdjustFlag = false;
+		filterString = "";
 		
 		if(Objects.nonNull(this.countResultModel)){
 			this.countResultModel.removeObverser(countResultObverser);
@@ -656,14 +814,14 @@ public class JAttendanceOffsetPanel extends JPanel implements MutilangSupported,
 			countResultModel.getLock().readLock().lock();
 			try{
 				for(CountResult countResult : countResultModel){
-					comboBoxModel.addElement(countResult.getPerson());
+					personList.add(countResult.getPerson());
 				}
-				
+				fitPersonSelectTextFieldWidth();
+				updateFilter();
+				maySelectFirstPerson();
 			}finally {
 				countResultModel.getLock().readLock().unlock();
 			}
-			checkComboBoxWidth();
-			comboBox.setPreferredSize(new Dimension(Math.max(MIN_COMBOBOX_WIDTH, comboBoxWidth), comboBox.getPreferredSize().height));
 		}
 		
 		this.countResultModel = countResultModel;
@@ -715,247 +873,89 @@ public class JAttendanceOffsetPanel extends JPanel implements MutilangSupported,
 	private String getLabel(LabelStringKey labelStringKey){
 		return mutilang.getString(labelStringKey.getName());
 	}
-	
-	private void checkComboBoxWidth(){
-		int max = 0;
-		for(Person person : comboBoxModel.rawList){
-			if(Objects.nonNull(person)){
-				String str = FormatUtil.formatPerson(person);
-				max = Math.max(comboBox.getFontMetrics(comboBox.getFont()).stringWidth(str) + 50, max);
-			}
+
+	private void fitPersonSelectTextFieldWidth(){
+		int max = MIN_PERSON_SELECT_TEXT_FIELD_WIDTH;
+		for(Person person : personList){
+			if(Objects.isNull(person)) continue;
+			String str = FormatUtil.formatPerson(person);
+			int width = personPanel.getFontMetrics(personPanel.getFont()).stringWidth(str);
+			max = Math.max(width, max);
 		}
-		comboBoxWidth = max;
+		max += 30;
+		personSelectTextField.setPreferredSize(new Dimension(max, personSelectTextField.getPreferredSize().height));
+		personPanel.setPreferredSize(new Dimension(max + personSelectButton.getPreferredSize().width - 4, 
+				personPanel.getPreferredSize().height));
+		personSelectTextField.revalidate();
+		panel.revalidate();
 	}
 	
-	private final class InnerComboBoxEditor extends BasicComboBoxEditor{
-
-		private boolean adjustFlag = false;
-		private Person person;
+	private void updateFilter(){
+		listModel.clear();
+		for(Person person : personList){
+			if(Objects.isNull(person)) continue;
+			String str = FormatUtil.formatPerson(person);
+			if(str.indexOf(filterString) >= 0){
+				listModel.add(person);
+			}
+		}
+	}
+	
+	private void maySelectFirstPerson(){
+		if(listModel.size() >= 0){
+			personPanel.getList().setSelectedIndex(0);
+			personPanel.getList().ensureIndexIsVisible(0);
+		}
+	}
+	
+	private void showPersonPanel(){
+		Point point = SwingUtilities.convertPoint(personSelectTextField, 0, 0, this);
+		popup.show(this, point.x, point.y - personPanel.getPreferredSize().height-10);
+	}
+	
+	private final class JPersonPopupPanel extends JPanel{
 		
-		public InnerComboBoxEditor() {
-			editor.getDocument().addDocumentListener(new DocumentListener() {
-				
-				/*
-				 * (non-Javadoc)
-				 * @see javax.swing.event.DocumentListener#removeUpdate(javax.swing.event.DocumentEvent)
-				 */
+		private static final long serialVersionUID = 3811207208095246283L;
+		
+		private final JList<Person> list;
+		
+		public JPersonPopupPanel() {
+			
+			setLayout(new BorderLayout());
+			
+			JScrollPane scrollPane = new JScrollPane();
+			add(scrollPane, BorderLayout.CENTER);
+			
+			list = new JList<>();
+			list.setModel(listModel);
+			list.addMouseListener(new MouseAdapter() {
 				@Override
-				public void removeUpdate(DocumentEvent e) {
-					action();
-				}
-				
-				/*
-				 * (non-Javadoc)
-				 * @see javax.swing.event.DocumentListener#insertUpdate(javax.swing.event.DocumentEvent)
-				 */
-				@Override
-				public void insertUpdate(DocumentEvent e) {
-					action();
-				}
-				
-				/*
-				 * (non-Javadoc)
-				 * @see javax.swing.event.DocumentListener#changedUpdate(javax.swing.event.DocumentEvent)
-				 */
-				@Override
-				public void changedUpdate(DocumentEvent e) {
-					action();
-				}
-				
-				private void action(){
-					if(! adjustFlag){
-						comboBoxModel.setFilter(editor.getText());
-						checkComboBoxWidth();
-						comboBox.setPreferredSize(new Dimension(Math.max(MIN_COMBOBOX_WIDTH, comboBoxWidth), comboBox.getPreferredSize().height));
-						comboBox.showPopup();
+				public void mouseClicked(MouseEvent e) {
+					if(e.getClickCount() == 2){
+						Person person = list.getSelectedValue();
+						if(Objects.nonNull(person)){
+							selectedPerson = person;
+							textAdjustFlag = true;
+							personSelectTextField.setText(FormatUtil.formatPerson(person));
+							textAdjustFlag = false;
+							if(popup.isVisible()){
+								popup.setVisible(false);
+							}
+						}
 					}
 				}
 			});
+			list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+			list.setModel(listModel);
+			list.setCellRenderer(listRenderer);
+			list.setModel(listModel);
 			
-
-			
-		}
-		
-		/*
-		 * (non-Javadoc)
-		 * @see javax.swing.plaf.basic.BasicComboBoxEditor#setItem(java.lang.Object)
-		 */
-		@Override
-		public void setItem(Object anObject) {
-			if(! (anObject instanceof Person)) return;
-			person = (Person) anObject;
-			adjustFlag = true;
-			checkComboBoxWidth();
-			comboBox.setPreferredSize(new Dimension(Math.max(MIN_COMBOBOX_WIDTH, comboBoxWidth), comboBox.getPreferredSize().height));
-			adjustFlag = false;
-		};
-		
-		/*
-		 * (non-Javadoc)
-		 * @see javax.swing.plaf.basic.BasicComboBoxEditor#getItem()
-		 */
-		@Override
-		public Object getItem() {
-			return person;
-		}
-		
-	}
-	
-	private final class InnerComboBoxModel extends AbstractListModel<Person> implements MutableComboBoxModel<Person>{
-
-		private Person selectedItem;
-		private String filter = "";
-		
-		private List<Person> filteredList = new ArrayList<>();
-		private List<Person> rawList = new ArrayList<>();
-		
-		/*
-		 * (non-Javadoc)
-		 * @see javax.swing.ComboBoxModel#setSelectedItem(java.lang.Object)
-		 */
-		@Override
-		public void setSelectedItem(Object anItem) {
-			if(! (anItem instanceof Person)) return;
-			this.selectedItem = (Person) anItem;
+			scrollPane.getViewport().setView(list);
 		}
 
-		/*
-		 * (non-Javadoc)
-		 * @see javax.swing.ComboBoxModel#getSelectedItem()
-		 */
-		@Override
-		public Object getSelectedItem() {
-			return selectedItem;
+		public JList<Person> getList() {
+			return list;
 		}
-
-		/*
-		 * (non-Javadoc)
-		 * @see javax.swing.ListModel#getSize()
-		 */
-		@Override
-		public int getSize() {
-			return filteredList.size();
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * @see javax.swing.ListModel#getElementAt(int)
-		 */
-		@Override
-		public Person getElementAt(int index) {
-			return filteredList.get(index);
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * @see javax.swing.MutableComboBoxModel#addElement(java.lang.Object)
-		 */
-		@Override
-		public void addElement(Person item) {
-			rawList.add(item);
-			if(acceptPerson(item)){
-				int index = filteredList.size();
-				filteredList.add(item);
-				fireIntervalAdded(this, index, index);
-			}
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * @see javax.swing.MutableComboBoxModel#removeElement(java.lang.Object)
-		 */
-		@Override
-		public void removeElement(Object obj) {
-			rawList.remove(obj);
-			filteredList.remove(obj);
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * @see javax.swing.MutableComboBoxModel#insertElementAt(java.lang.Object, int)
-		 */
-		@Override
-		public void insertElementAt(Person item, int index) {
-			rawList.add(index, item);
-			if(acceptPerson(item)){
-				if(filteredList.size() == 0){
-					filteredList.add(item);
-					fireIntervalAdded(this, 0, 0);
-					return;
-				}
-				
-				if(filteredList.size() == 1){
-					filteredList.add(item);
-					fireIntervalAdded(this, 1, 1);
-					return;
-				}
-				for(int i = 0 ; i < filteredList.size() - 1 ; i ++){
-					Person former = filteredList.get(i);
-					Person later = filteredList.get(i + 1);
-					
-					if(rawList.indexOf(former) < index && rawList.indexOf(later) > index){
-						filteredList.add(i, item);
-						fireIntervalAdded(this, i, i);
-						return;
-					}
-				}
-				
-				int i = filteredList.size();
-				filteredList.add(item);
-				fireIntervalAdded(this, i, i);
-			}
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * @see javax.swing.MutableComboBoxModel#removeElementAt(int)
-		 */
-		@Override
-		public void removeElementAt(int index) {
-			Person person = rawList.remove(index);
-			int i = filteredList.indexOf(person);
-			filteredList.remove(person);
-			if(i >= 0){
-				fireIntervalRemoved(this, i, i);
-			}
-		}
-		
-		public void clear(){
-			int size = filteredList.size();
-			rawList.clear();
-			filteredList.clear();
-			if(size > 0){
-				fireIntervalRemoved(this, 0, size - 1);
-			}
-		}
-		
-		public void setFilter(String filter){
-			this.filter = filter;
-			int size = filteredList.size();
-			filteredList.clear();
-			if(size > 0){
-				fireIntervalRemoved(this, 0, size - 1);
-			}
-			
-			for(int i = 0 ; i < rawList.size() ; i ++){
-				Person person = rawList.get(i);
-				if(acceptPerson(person)){
-					size = filteredList.size();
-					filteredList.add(person);
-					fireIntervalAdded(this, size, size);
-				}
-			}
-		}
-		
-		private boolean acceptPerson(Person person){
-			if(Objects.isNull(person)) return false;
-			if(filter == null || filter.equals("")) return true;
-			
-			String name = person.getName();
-			String workNumber = person.getWorkNumber();
-			
-			return name.indexOf(filter) >= 0 || workNumber.indexOf(filter) >= 0;
- 		}
 		
 	}
 

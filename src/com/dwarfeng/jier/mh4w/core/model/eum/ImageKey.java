@@ -20,6 +20,7 @@ public enum ImageKey implements Name {
 	EXTRA_SHIFT_SECTION(new DefaultName("/com/dwarfeng/jier/mh4w/resource/image/extra_shift_section.png")),
 	REST_SECTION(new DefaultName("/com/dwarfeng/jier/mh4w/resource/image/rest_section.png")),
 	PROGRAM_ICON(new DefaultName("/com/dwarfeng/jier/mh4w/resource/image/program_icon.png")),
+	ARROW(new DefaultName("/com/dwarfeng/jier/mh4w/resource/image/arrow.png")),
 
 	;
 
