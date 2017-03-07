@@ -1,6 +1,7 @@
 package com.dwarfeng.jier.mh4w.core.view.gui;
 
 import java.awt.BorderLayout;
+import java.awt.Image;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.WindowAdapter;
@@ -17,6 +18,8 @@ import com.dwarfeng.dutil.basic.prog.ObverserSet;
 import com.dwarfeng.jier.mh4w.core.model.cm.DataListModel;
 import com.dwarfeng.jier.mh4w.core.model.cm.StateModel;
 import com.dwarfeng.jier.mh4w.core.model.eum.CountState;
+import com.dwarfeng.jier.mh4w.core.model.eum.ImageKey;
+import com.dwarfeng.jier.mh4w.core.model.eum.ImageSize;
 import com.dwarfeng.jier.mh4w.core.model.eum.LabelStringKey;
 import com.dwarfeng.jier.mh4w.core.model.obv.StateAdapter;
 import com.dwarfeng.jier.mh4w.core.model.obv.StateObverser;
@@ -30,6 +33,7 @@ import com.dwarfeng.jier.mh4w.core.model.struct.OriginalWorkticketData;
 import com.dwarfeng.jier.mh4w.core.model.struct.UnsafeAttendanceOffset;
 import com.dwarfeng.jier.mh4w.core.model.struct.WorkticketData;
 import com.dwarfeng.jier.mh4w.core.util.Constants;
+import com.dwarfeng.jier.mh4w.core.util.ImageUtil;
 import com.dwarfeng.jier.mh4w.core.util.Mh4wUtil;
 import com.dwarfeng.jier.mh4w.core.view.obv.AttendanceOffsetPanelAdapter;
 import com.dwarfeng.jier.mh4w.core.view.obv.AttendanceOffsetPanelObverser;
@@ -39,7 +43,7 @@ import com.dwarfeng.jier.mh4w.core.view.obv.DetailFrameObverser;
 
 public class DetailFrame extends JFrame implements MutilangSupported, ObverserSet<DetailFrameObverser>{
 
-	private static final long serialVersionUID = 2328522059977800328L;
+	private static final long serialVersionUID = -8661030714248862553L;
 
 	/**观察器集合*/
 	private final Set<DetailFrameObverser> obversers = Collections.newSetFromMap(new WeakHashMap<>());
@@ -57,6 +61,7 @@ public class DetailFrame extends JFrame implements MutilangSupported, ObverserSe
 	private final JWorkticketDataPanel workticketDataPanel;
 	private final JCountResultPanel countResultPanel;
 	private final JAttendanceOffsetPanel attendanceOffsetPanel;
+	private final Image program_icon;
 
 	/*
 	 * 非 final 域。
@@ -193,6 +198,8 @@ public class DetailFrame extends JFrame implements MutilangSupported, ObverserSe
 	
 		this.mutilang = mutilang;
 		
+		program_icon = ImageUtil.getImage(ImageKey.PROGRAM_ICON, ImageSize.ICON_SUPER_LARGE);
+		
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
@@ -200,6 +207,7 @@ public class DetailFrame extends JFrame implements MutilangSupported, ObverserSe
 			}
 		});
 		
+		setIconImage(program_icon);
 		setTitle(getLabel(LabelStringKey.DetailFrame_1));
 		setBounds(0, 0, 1000, 800);
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);

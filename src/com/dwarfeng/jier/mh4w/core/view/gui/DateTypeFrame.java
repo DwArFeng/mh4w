@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Image;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -30,6 +31,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.KeyStroke;
 import javax.swing.ListCellRenderer;
+import javax.swing.ListSelectionModel;
 import javax.swing.SpinnerNumberModel;
 
 import org.eclipse.wb.swing.FocusTraversalOnArray;
@@ -38,6 +40,8 @@ import com.dwarfeng.dutil.basic.gui.swing.MuaListModel;
 import com.dwarfeng.dutil.basic.prog.ObverserSet;
 import com.dwarfeng.jier.mh4w.core.model.cm.DateTypeModel;
 import com.dwarfeng.jier.mh4w.core.model.eum.DateType;
+import com.dwarfeng.jier.mh4w.core.model.eum.ImageKey;
+import com.dwarfeng.jier.mh4w.core.model.eum.ImageSize;
 import com.dwarfeng.jier.mh4w.core.model.eum.LabelStringKey;
 import com.dwarfeng.jier.mh4w.core.model.obv.DateTypeAdapter;
 import com.dwarfeng.jier.mh4w.core.model.obv.DateTypeObverser;
@@ -46,14 +50,14 @@ import com.dwarfeng.jier.mh4w.core.model.struct.Mutilang;
 import com.dwarfeng.jier.mh4w.core.model.struct.MutilangSupported;
 import com.dwarfeng.jier.mh4w.core.util.Constants;
 import com.dwarfeng.jier.mh4w.core.util.FormatUtil;
+import com.dwarfeng.jier.mh4w.core.util.ImageUtil;
 import com.dwarfeng.jier.mh4w.core.util.Mh4wUtil;
 import com.dwarfeng.jier.mh4w.core.view.obv.DateTypeFrameObverser;
 import com.sun.glass.events.KeyEvent;
-import javax.swing.ListSelectionModel;
 
 public class DateTypeFrame extends JDialog implements MutilangSupported, ObverserSet<DateTypeFrameObverser>{
 	
-	private static final long serialVersionUID = -2100678924457813559L;
+	private static final long serialVersionUID = -7672388975522026876L;
 
 	/**观察器集合*/
 	private final Set<DateTypeFrameObverser> obversers = Collections.newSetFromMap(new WeakHashMap<>());
@@ -76,6 +80,7 @@ public class DateTypeFrame extends JDialog implements MutilangSupported, Obverse
 	private final JButton submitButton;
 	private final JButton clearButton;
 	private final  JComboBox<DateType> comboBox;
+	private final Image program_icon;
 
 	/*
 	 * 各模型。
@@ -203,6 +208,8 @@ public class DateTypeFrame extends JDialog implements MutilangSupported, Obverse
 	public DateTypeFrame(Mutilang mutilang, DateTypeModel dateTypeModel) {
 		Objects.requireNonNull(mutilang, "入口参数 mutilang 不能为 null。");
 
+		program_icon = ImageUtil.getImage(ImageKey.PROGRAM_ICON, ImageSize.ICON_SUPER_LARGE);
+		
 		this.mutilang = mutilang;
 		
 		addWindowListener(new WindowAdapter() {
@@ -212,6 +219,9 @@ public class DateTypeFrame extends JDialog implements MutilangSupported, Obverse
 			}
 		});
 		
+		setType(Type.UTILITY);
+		setAlwaysOnTop(true);
+		setIconImage(program_icon);
 		setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
 		setTitle(getLabel(LabelStringKey.DateTypeFrame_1));
 		setBounds(100, 100, 600, 400);

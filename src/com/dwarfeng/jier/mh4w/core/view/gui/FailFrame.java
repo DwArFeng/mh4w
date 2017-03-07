@@ -1,6 +1,7 @@
 package com.dwarfeng.jier.mh4w.core.view.gui;
 
 import java.awt.BorderLayout;
+import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -20,6 +21,8 @@ import javax.swing.table.TableCellRenderer;
 import com.dwarfeng.dutil.basic.prog.ObverserSet;
 import com.dwarfeng.jier.mh4w.core.model.cm.DataListModel;
 import com.dwarfeng.jier.mh4w.core.model.eum.FailType;
+import com.dwarfeng.jier.mh4w.core.model.eum.ImageKey;
+import com.dwarfeng.jier.mh4w.core.model.eum.ImageSize;
 import com.dwarfeng.jier.mh4w.core.model.eum.LabelStringKey;
 import com.dwarfeng.jier.mh4w.core.model.obv.ListOperateAdapter;
 import com.dwarfeng.jier.mh4w.core.model.obv.ListOperateObverser;
@@ -29,12 +32,13 @@ import com.dwarfeng.jier.mh4w.core.model.struct.Mutilang;
 import com.dwarfeng.jier.mh4w.core.model.struct.MutilangSupported;
 import com.dwarfeng.jier.mh4w.core.util.Constants;
 import com.dwarfeng.jier.mh4w.core.util.FormatUtil;
+import com.dwarfeng.jier.mh4w.core.util.ImageUtil;
 import com.dwarfeng.jier.mh4w.core.util.Mh4wUtil;
 import com.dwarfeng.jier.mh4w.core.view.obv.FailFrameObverser;
 
 public final class FailFrame extends JFrame implements MutilangSupported, ObverserSet<FailFrameObverser>{
 	
-	private static final long serialVersionUID = 7871583751089485861L;
+	private static final long serialVersionUID = -3782263635285273867L;
 
 	/**观察器集合*/
 	private final Set<FailFrameObverser> obversers = Collections.newSetFromMap(new WeakHashMap<>());
@@ -46,7 +50,8 @@ public final class FailFrame extends JFrame implements MutilangSupported, Obvers
 	 * final 域。
 	 */
 	private final JTable table;
-	
+	private final Image program_icon;
+
 	/*
 	 * 各模型。
 	 */
@@ -189,6 +194,8 @@ public final class FailFrame extends JFrame implements MutilangSupported, Obvers
 	public FailFrame(Mutilang mutilang, DataListModel<Fail> failModel) {
 		Objects.requireNonNull(mutilang, "入口参数 mutilang 不能为 null。");
 
+		program_icon = ImageUtil.getImage(ImageKey.PROGRAM_ICON, ImageSize.ICON_SUPER_LARGE);
+		
 		this.mutilang = mutilang;
 		
 		addWindowListener(new WindowAdapter() {
@@ -198,6 +205,7 @@ public final class FailFrame extends JFrame implements MutilangSupported, Obvers
 			}
 		});
 		
+		setIconImage(program_icon);
 		setTitle(getLabel(LabelStringKey.FailFrame_3));
 		setBounds(new Rectangle(100, 100, 427, 505));
 		setAlwaysOnTop(true);

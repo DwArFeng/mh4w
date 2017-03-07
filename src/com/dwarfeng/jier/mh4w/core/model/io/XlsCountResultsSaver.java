@@ -64,8 +64,8 @@ public final class XlsCountResultsSaver extends StreamSaver<XlsCountResultsSaver
 			saver.createSheet(0, getLabel(LabelStringKey.JxlCountResultsSaver_1));
 			saver.setString(0, 0, 0, getLabel(LabelStringKey.JxlCountResultsSaver_2));
 			saver.setString(0, 1, 0, formatLable(LabelStringKey.JxlCountResultsSaver_3, Calendar.getInstance().getTime().toString()));
-			saver.mergeCell(0, 0, 0, 0, 3 + countResults.getJobModel().size());
-			saver.mergeCell(0, 1, 0, 1, 3 + countResults.getJobModel().size());
+			saver.mergeCell(0, 0, 0, 0, 4 + countResults.getJobModel().size());
+			saver.mergeCell(0, 1, 0, 1, 4 + countResults.getJobModel().size());
 			saver.setCellFormat(0, 0, 0, true, TITLE_SIZE, Alignment.CENTER);
 			saver.setCellFormat(0, 1, 0, false, NORMAL_SIZE, Alignment.RIGHT);
 			
@@ -76,8 +76,9 @@ public final class XlsCountResultsSaver extends StreamSaver<XlsCountResultsSaver
 			for(int i = 0 ; i < countResults.getJobModel().size() ; i ++){
 				saver.setString(0, 2, 3 + i, formatLable(LabelStringKey.JxlCountResultsSaver_7, jobIterator.next().getName()));
 			}
-			saver.setString(0, 2, 3 + countResults.getJobModel().size(), getLabel(LabelStringKey.JxlCountResultsSaver_9));
-			
+			saver.setString(0, 2, 3 + countResults.getJobModel().size(), getLabel(LabelStringKey.JxlCountResultsSaver_42));
+			saver.setString(0, 2, 4 + countResults.getJobModel().size(), getLabel(LabelStringKey.JxlCountResultsSaver_9));
+
 			int writeRow;
 			
 			writeRow = 3;
@@ -91,7 +92,8 @@ public final class XlsCountResultsSaver extends StreamSaver<XlsCountResultsSaver
 					for(int i = 0 ; i < countResults.getJobModel().size() ; i ++){
 						saver.setNumber(0, writeRow, 3 + i, data.getEquivalentWorkticket(jobIterator.next()));
 					}
-					saver.setNumber(0, writeRow, 3 + countResults.getJobModel().size(), data.getEquivalentWorkticket());
+					saver.setNumber(0, writeRow, 3 + countResults.getJobModel().size(), data.getWorkticket());
+					saver.setNumber(0, writeRow, 4 + countResults.getJobModel().size(), data.getEquivalentWorkticket());
 					saver.setRowHeight(0, writeRow, 17);
 					writeRow ++;
 				}
@@ -106,7 +108,8 @@ public final class XlsCountResultsSaver extends StreamSaver<XlsCountResultsSaver
 				saver.setColumnWidth(0, 3 + i, COLUMN_WIDTH_SHORT);
 			}
 			saver.setColumnWidth(0, 3 + countResults.getJobModel().size(), COLUMN_WIDTH_SHORT);
-			
+			saver.setColumnWidth(0, 4 + countResults.getJobModel().size(), COLUMN_WIDTH_SHORT);
+
 			saver.setColumnFormatAsString(0, 0, false, NORMAL_SIZE, Alignment.LEFT);
 			saver.setColumnFormatAsString(0, 1, false, NORMAL_SIZE, Alignment.LEFT);
 			saver.setColumnFormatAsString(0, 2, false, NORMAL_SIZE, Alignment.LEFT);
@@ -114,7 +117,8 @@ public final class XlsCountResultsSaver extends StreamSaver<XlsCountResultsSaver
 				saver.setColumnFormatAsNumber(0, 3 + i, NUMBER_FORMAT);
 			}
 			saver.setColumnFormatAsNumber(0, 3 + countResults.getJobModel().size(), NUMBER_FORMAT);
-			
+			saver.setColumnFormatAsNumber(0, 4 + countResults.getJobModel().size(), NUMBER_FORMAT);
+
 			//--------------------------------第二张表--------------------------------
 			saver.createSheet(1, getLabel(LabelStringKey.JxlCountResultsSaver_8));
 			saver.setString(1, 0, 0, getLabel(LabelStringKey.JxlCountResultsSaver_27));

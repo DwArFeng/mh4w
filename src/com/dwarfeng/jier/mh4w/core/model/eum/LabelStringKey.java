@@ -167,6 +167,7 @@ public enum LabelStringKey implements Name{
 	JxlCountResultsSaver_39(new DefaultName("JxlCountResultsSaver.39")),
 	JxlCountResultsSaver_40(new DefaultName("JxlCountResultsSaver.40")),
 	JxlCountResultsSaver_41(new DefaultName("JxlCountResultsSaver.41")),
+	JxlCountResultsSaver_42(new DefaultName("JxlCountResultsSaver.42")),
 
 	JAttendanceOffsetPanel_1(new DefaultName("JAttendanceOffsetPanel.1")),
 	JAttendanceOffsetPanel_2(new DefaultName("JAttendanceOffsetPanel.2")),
