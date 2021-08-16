@@ -28,12 +28,19 @@ local.properties
 # PDT-specific
 .buildpath
 
+#################
+## Idea
+#################
+**/*.iml
+.idea/
+
+#################
+## Project Path
+#################
 /bin/
 /doc/
 /archive/
 /config/
-
-/doc/
 /release/
 /lib_src/
 /logs/
@@ -43,3 +50,4 @@ local.properties
 /tools/
 /tool_lib/
 /sample/
+/out/
